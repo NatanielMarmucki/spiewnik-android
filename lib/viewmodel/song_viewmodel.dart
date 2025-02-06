@@ -1,0 +1,96 @@
+import 'package:flutter/foundation.dart';
+import 'package:objectbox/objectbox.dart';
+import 'package:spiewnik/model/song_model.dart';
+import 'package:spiewnik/objectbox.g.dart';
+import 'package:spiewnik/model/review_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
+
+class SongViewModel {
+  final Store store;
+  final ValueNotifier<List<Song>> allSongsNotifier = ValueNotifier([]);
+  final ValueNotifier<List<Song>> favoriteSongsNotifier = ValueNotifier([]);
+  final ValueNotifier<List<Song>> filteredSongsNotifier = ValueNotifier([]);
+  bool _firstAddition = true;
+  final reviewModel = ReviewModel();
+
+  String _searchText = '';
+
+  SongViewModel(this.store) {
+    _loadAllSongs();
+    _loadFavoriteSongs();
+    _filterSongs();
+  }
+
+  set searchText(String value) {
+    _searchText = value;
+    _filterSongs();
+  }
+
+  void _loadAllSongs() {
+    allSongsNotifier.value = getAllSongs();
+    _filterSongs();
+  }
+
+  void _loadFavoriteSongs() {
+    favoriteSongsNotifier.value = getFavoriteSongs();
+  }
+
+  List<Song> getAllSongs() {
+    final box = store.box<Song>();
+    return box.getAll();
+  }
+
+  List<Song> getFavoriteSongs() {
+    final box = store.box<Song>();
+    return box.query(Song_.favorite.equals(true)).build().find();
+  }
+
+  Song? findSongByNumber(int number) {
+    final box = store.box<Song>();
+    return box.query(Song_.number.equals(number)).build().findFirst();
+  }
+
+  void toggleFavoriteStatus(Song song) async {
+    final box = store.box<Song>();
+    song.favorite = !song.favorite;
+    box.put(song);
+    _loadAllSongs();
+    _loadFavoriteSongs();
+
+    if (song.favorite && _firstAddition) {
+      _firstAddition = false;
+      await reviewModel.requestReview();
+    }
+  }
+
+  void _filterSongs() {
+    if (_searchText.isEmpty) {
+      filteredSongsNotifier.value = List.from(allSongsNotifier.value);
+      return;
+    }
+
+    final lowercaseSearchText = _searchText.toLowerCase();
+    filteredSongsNotifier.value = allSongsNotifier.value.where((song) {
+      final lowercaseContent = song.content?.toLowerCase() ?? '';
+      final cleanedContent = _removeNumber(lowercaseContent);
+
+      return cleanedContent.contains(lowercaseSearchText) ||
+          song.number.toString().contains(_searchText);
+    }).toList();
+  }
+
+  String _removeNumber(String str) {
+    const charactersToRemove = "123456789,.;:'[]()!?-”—„x";
+    final filteredCharacters = str.split('').where((char) => !charactersToRemove.contains(char)).join().trim();
+    return filteredCharacters;
+  }
+
+  Song? findNextSong(int currentNumber) {
+    return findSongByNumber(currentNumber + 1);
+  }
+
+  Song? findPreviousSong(int currentNumber) {
+    return findSongByNumber(currentNumber - 1);
+  }
+}
