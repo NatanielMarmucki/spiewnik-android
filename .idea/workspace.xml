@@ -4,39 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d305617b-5425-4ae9-8560-dfe9666de6cb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/Spiewnik.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/songs_data.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/emulatorDisplays.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/KotlinJavaRuntime.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/main_dart.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/songs.sqlite" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/database_manager.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/json_manager.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/model/font_size_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/model/font_size_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/model/song_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/model/song_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/objectbox-model.json" beforeDir="false" afterPath="$PROJECT_DIR$/lib/objectbox-model.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/objectbox.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/objectbox.g.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/theme/theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/theme/theme.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/view/favorite_songs_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/favorite_songs_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/view/settings_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/settings_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/view/song_detail_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/song_detail_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/view/song_list_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/song_list_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="d305617b-5425-4ae9-8560-dfe9666de6cb" name="Changes" comment="Update to version 1.1.0" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -103,6 +71,23 @@
       <option name="presentableId" value="Default" />
       <updated>1755882735015</updated>
     </task>
+    <task id="LOCAL-00001" summary="Update to version 1.1.0">
+      <option name="closed" value="true" />
+      <created>1760772823114</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1760772823114</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Update to version 1.1.0">
+      <option name="closed" value="true" />
+      <created>1760772868480</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1760772868480</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -115,5 +100,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial commit" />
+    <MESSAGE value="Update to version 1.1.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update to version 1.1.0" />
   </component>
 </project>
