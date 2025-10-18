@@ -1,9 +1,11 @@
 <component name="libraryTable">
   <library name="Dart SDK">
     <CLASSES>
+      <root url="file://$USER_HOME$/development/flutter/bin/cache/dart-sdk/lib/_internal" />
       <root url="file://$USER_HOME$/development/flutter/bin/cache/dart-sdk/lib/async" />
       <root url="file://$USER_HOME$/development/flutter/bin/cache/dart-sdk/lib/cli" />
       <root url="file://$USER_HOME$/development/flutter/bin/cache/dart-sdk/lib/collection" />
+      <root url="file://$USER_HOME$/development/flutter/bin/cache/dart-sdk/lib/concurrent" />
       <root url="file://$USER_HOME$/development/flutter/bin/cache/dart-sdk/lib/convert" />
       <root url="file://$USER_HOME$/development/flutter/bin/cache/dart-sdk/lib/core" />
       <root url="file://$USER_HOME$/development/flutter/bin/cache/dart-sdk/lib/developer" />

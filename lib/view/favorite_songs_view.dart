@@ -6,7 +6,7 @@ import 'package:spiewnik/model/song_model.dart';
 class FavoriteSongsView extends StatelessWidget {
   final SongViewModel viewModel;
 
-  FavoriteSongsView({required this.viewModel});
+  const FavoriteSongsView({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class FavoriteSongsView extends StatelessWidget {
             valueListenable: viewModel.favoriteSongsNotifier,
             builder: (context, favoriteSongs, _) {
               if (favoriteSongs.isEmpty) {
-                return Center(
+                return const Center(
                   child: Text(
                     'Brak ulubionych pieśni',
                     style: TextStyle(fontSize: 18, color: Colors.grey),
@@ -44,7 +44,7 @@ class FavoriteSongsView extends StatelessWidget {
                               width: 15.0,
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.primary,
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(15.0),
                                   bottomLeft: Radius.circular(15.0),
                                 ),
@@ -55,18 +55,18 @@ class FavoriteSongsView extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 8.0),
                             child: ListTile(
                               contentPadding:
-                              EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
+                              const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
                               leading: CircleAvatar(
                                 backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                                 child: Text(
                                   song.number.toString(),
-                                  style: TextStyle(color: Colors.white),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                               ),
                               title: Text(
                                 song.title,
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                               onTap: () {
                                 Navigator.push(

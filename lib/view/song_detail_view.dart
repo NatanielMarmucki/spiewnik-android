@@ -10,14 +10,13 @@ class SongDetailView extends StatefulWidget {
   final Song song;
   final SongViewModel viewModel;
 
-
-  SongDetailView({required this.song, required this.viewModel});
+  const SongDetailView({super.key, required this.song, required this.viewModel});
 
   @override
-  _SongDetailViewState createState() => _SongDetailViewState();
+  SongDetailViewState createState() => SongDetailViewState();
 }
 
-class _SongDetailViewState extends State<SongDetailView> {
+class SongDetailViewState extends State<SongDetailView> {
   late Song song;
 
   @override
@@ -40,7 +39,7 @@ class _SongDetailViewState extends State<SongDetailView> {
           titleSpacing: 0,
           title: Text(
               '${song.number}. ${song.title}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.0,
               ),
@@ -69,12 +68,12 @@ class _SongDetailViewState extends State<SongDetailView> {
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: song.content));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Treść skopiowana do schowka')),
+                    const SnackBar(content: Text('Treść skopiowana do schowka')),
                   );
                 },
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                child: Icon(
+                child: const Icon(
                   Icons.share,
                   size: 24.0,
                 ),
@@ -88,7 +87,7 @@ class _SongDetailViewState extends State<SongDetailView> {
                 },
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                child: Icon(
+                child: const Icon(
                   Icons.search,
                   size: 24.0,
                 ),
@@ -132,7 +131,7 @@ class _SongDetailViewState extends State<SongDetailView> {
   Widget _buildIconButton({required IconData icon, Color? color, required VoidCallback onPressed}) {
     return IconButton(
       icon: Icon(icon, color: color),
-      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       onPressed: onPressed,
     );
   }
@@ -170,7 +169,7 @@ class _SongDetailViewState extends State<SongDetailView> {
                   fontSize: 14,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 focusNode: focusNode,
                 autofocus: true,
@@ -209,9 +208,9 @@ class _SongDetailViewState extends State<SongDetailView> {
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
-                    padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                   ),
-                  child: Text('Anuluj', style: TextStyle(fontSize: 18)),
+                  child: const Text('Anuluj', style: TextStyle(fontSize: 18)),
                 ),
                 TextButton(
                   onPressed: () {
@@ -220,9 +219,9 @@ class _SongDetailViewState extends State<SongDetailView> {
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.blue,
-                    padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                   ),
-                  child: Text('Przejdź', style: TextStyle(fontSize: 18)),
+                  child: const Text('Przejdź', style: TextStyle(fontSize: 18)),
                 ),
               ],
             ),
@@ -261,7 +260,7 @@ class _SongDetailViewState extends State<SongDetailView> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK', style: TextStyle(color: Colors.blue)),
+              child: const Text('OK', style: TextStyle(color: Colors.blue)),
             ),
           ],
         );

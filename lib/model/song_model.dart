@@ -5,9 +5,11 @@ class Song {
   @Id()
   int id;
 
+  @Index()
+  int number;
+
   String content;
   bool favorite;
-  int number;
   String title;
 
   Song({
@@ -17,4 +19,23 @@ class Song {
     required this.number,
     required this.title,
   });
+
+  factory Song.fromJson(Map<String, dynamic> json) {
+    return Song(
+      number: json['number'] as int,
+      title: json['title'] as String,
+      content: json['content'] as String,
+      favorite: json['favorite'] as bool? ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'number': number,
+      'title': title,
+      'content': content,
+      'favorite': favorite,
+    };
+  }
 }

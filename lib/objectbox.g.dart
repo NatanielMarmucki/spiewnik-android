@@ -20,39 +20,46 @@ export 'package:objectbox/objectbox.dart'; // so that callers only have to impor
 
 final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
-      id: const obx_int.IdUid(1, 668007825265052091),
-      name: 'Song',
-      lastPropertyId: const obx_int.IdUid(5, 3166716226409056261),
-      flags: 0,
-      properties: <obx_int.ModelProperty>[
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(1, 3978059592178831290),
-            name: 'id',
-            type: 6,
-            flags: 1),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(2, 6301132552975073782),
-            name: 'content',
-            type: 9,
-            flags: 0),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(3, 6320005701937599207),
-            name: 'favorite',
-            type: 1,
-            flags: 0),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(4, 5797442437404568959),
-            name: 'number',
-            type: 6,
-            flags: 0),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(5, 3166716226409056261),
-            name: 'title',
-            type: 9,
-            flags: 0)
-      ],
-      relations: <obx_int.ModelRelation>[],
-      backlinks: <obx_int.ModelBacklink>[])
+    id: const obx_int.IdUid(1, 668007825265052091),
+    name: 'Song',
+    lastPropertyId: const obx_int.IdUid(5, 3166716226409056261),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 3978059592178831290),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 6301132552975073782),
+        name: 'content',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 6320005701937599207),
+        name: 'favorite',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 5797442437404568959),
+        name: 'number',
+        type: 6,
+        flags: 8,
+        indexId: const obx_int.IdUid(1, 2701213689850694877),
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 3166716226409056261),
+        name: 'title',
+        type: 9,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -66,85 +73,105 @@ final _entities = <obx_int.ModelEntity>[
 /// For Flutter apps, also calls `loadObjectBoxLibraryAndroidCompat()` from
 /// the ObjectBox Flutter library to fix loading the native ObjectBox library
 /// on Android 6 and older.
-Future<obx.Store> openStore(
-    {String? directory,
-    int? maxDBSizeInKB,
-    int? maxDataSizeInKB,
-    int? fileMode,
-    int? maxReaders,
-    bool queriesCaseSensitiveDefault = true,
-    String? macosApplicationGroup}) async {
+Future<obx.Store> openStore({
+  String? directory,
+  int? maxDBSizeInKB,
+  int? maxDataSizeInKB,
+  int? fileMode,
+  int? maxReaders,
+  bool queriesCaseSensitiveDefault = true,
+  String? macosApplicationGroup,
+}) async {
   await loadObjectBoxLibraryAndroidCompat();
-  return obx.Store(getObjectBoxModel(),
-      directory: directory ?? (await defaultStoreDirectory()).path,
-      maxDBSizeInKB: maxDBSizeInKB,
-      maxDataSizeInKB: maxDataSizeInKB,
-      fileMode: fileMode,
-      maxReaders: maxReaders,
-      queriesCaseSensitiveDefault: queriesCaseSensitiveDefault,
-      macosApplicationGroup: macosApplicationGroup);
+  return obx.Store(
+    getObjectBoxModel(),
+    directory: directory ?? (await defaultStoreDirectory()).path,
+    maxDBSizeInKB: maxDBSizeInKB,
+    maxDataSizeInKB: maxDataSizeInKB,
+    fileMode: fileMode,
+    maxReaders: maxReaders,
+    queriesCaseSensitiveDefault: queriesCaseSensitiveDefault,
+    macosApplicationGroup: macosApplicationGroup,
+  );
 }
 
 /// Returns the ObjectBox model definition for this project for use with
 /// [obx.Store.new].
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
-      entities: _entities,
-      lastEntityId: const obx_int.IdUid(1, 668007825265052091),
-      lastIndexId: const obx_int.IdUid(0, 0),
-      lastRelationId: const obx_int.IdUid(0, 0),
-      lastSequenceId: const obx_int.IdUid(0, 0),
-      retiredEntityUids: const [],
-      retiredIndexUids: const [],
-      retiredPropertyUids: const [],
-      retiredRelationUids: const [],
-      modelVersion: 5,
-      modelVersionParserMinimum: 5,
-      version: 1);
+    entities: _entities,
+    lastEntityId: const obx_int.IdUid(1, 668007825265052091),
+    lastIndexId: const obx_int.IdUid(1, 2701213689850694877),
+    lastRelationId: const obx_int.IdUid(0, 0),
+    lastSequenceId: const obx_int.IdUid(0, 0),
+    retiredEntityUids: const [],
+    retiredIndexUids: const [],
+    retiredPropertyUids: const [],
+    retiredRelationUids: const [],
+    modelVersion: 5,
+    modelVersionParserMinimum: 5,
+    version: 1,
+  );
 
   final bindings = <Type, obx_int.EntityDefinition>{
     Song: obx_int.EntityDefinition<Song>(
-        model: _entities[0],
-        toOneRelations: (Song object) => [],
-        toManyRelations: (Song object) => {},
-        getId: (Song object) => object.id,
-        setId: (Song object, int id) {
-          object.id = id;
-        },
-        objectToFB: (Song object, fb.Builder fbb) {
-          final contentOffset = fbb.writeString(object.content);
-          final titleOffset = fbb.writeString(object.title);
-          fbb.startTable(6);
-          fbb.addInt64(0, object.id);
-          fbb.addOffset(1, contentOffset);
-          fbb.addBool(2, object.favorite);
-          fbb.addInt64(3, object.number);
-          fbb.addOffset(4, titleOffset);
-          fbb.finish(fbb.endTable());
-          return object.id;
-        },
-        objectFromFB: (obx.Store store, ByteData fbData) {
-          final buffer = fb.BufferContext(fbData);
-          final rootOffset = buffer.derefObject(0);
-          final idParam =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
-          final contentParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGet(buffer, rootOffset, 6, '');
-          final favoriteParam =
-              const fb.BoolReader().vTableGet(buffer, rootOffset, 8, false);
-          final numberParam =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0);
-          final titleParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGet(buffer, rootOffset, 12, '');
-          final object = Song(
-              id: idParam,
-              content: contentParam,
-              favorite: favoriteParam,
-              number: numberParam,
-              title: titleParam);
+      model: _entities[0],
+      toOneRelations: (Song object) => [],
+      toManyRelations: (Song object) => {},
+      getId: (Song object) => object.id,
+      setId: (Song object, int id) {
+        object.id = id;
+      },
+      objectToFB: (Song object, fb.Builder fbb) {
+        final contentOffset = fbb.writeString(object.content);
+        final titleOffset = fbb.writeString(object.title);
+        fbb.startTable(6);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, contentOffset);
+        fbb.addBool(2, object.favorite);
+        fbb.addInt64(3, object.number);
+        fbb.addOffset(4, titleOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final contentParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final favoriteParam = const fb.BoolReader().vTableGet(
+          buffer,
+          rootOffset,
+          8,
+          false,
+        );
+        final numberParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          10,
+          0,
+        );
+        final titleParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 12, '');
+        final object = Song(
+          id: idParam,
+          content: contentParam,
+          favorite: favoriteParam,
+          number: numberParam,
+          title: titleParam,
+        );
 
-          return object;
-        })
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -156,18 +183,22 @@ class Song_ {
   static final id = obx.QueryIntegerProperty<Song>(_entities[0].properties[0]);
 
   /// See [Song.content].
-  static final content =
-      obx.QueryStringProperty<Song>(_entities[0].properties[1]);
+  static final content = obx.QueryStringProperty<Song>(
+    _entities[0].properties[1],
+  );
 
   /// See [Song.favorite].
-  static final favorite =
-      obx.QueryBooleanProperty<Song>(_entities[0].properties[2]);
+  static final favorite = obx.QueryBooleanProperty<Song>(
+    _entities[0].properties[2],
+  );
 
   /// See [Song.number].
-  static final number =
-      obx.QueryIntegerProperty<Song>(_entities[0].properties[3]);
+  static final number = obx.QueryIntegerProperty<Song>(
+    _entities[0].properties[3],
+  );
 
   /// See [Song.title].
-  static final title =
-      obx.QueryStringProperty<Song>(_entities[0].properties[4]);
+  static final title = obx.QueryStringProperty<Song>(
+    _entities[0].properties[4],
+  );
 }

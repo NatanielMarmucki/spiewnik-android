@@ -5,16 +5,20 @@ import 'song_detail_view.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
+@immutable
 class SongListView extends StatefulWidget {
-final SongViewModel viewModel;
+  final SongViewModel viewModel;
 
-SongListView({required this.viewModel});
+  const SongListView({
+    super.key,
+    required this.viewModel,
+  });
 
-@override
-_SongListViewState createState() => _SongListViewState();
+  @override
+  SongListViewState createState() => SongListViewState();
 }
 
-class _SongListViewState extends State<SongListView> {
+class SongListViewState extends State<SongListView> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _controller = TextEditingController();
   Timer? _debounce;
@@ -49,10 +53,10 @@ class _SongListViewState extends State<SongListView> {
                 controller: _controller,
                 decoration: InputDecoration(
                   hintText: 'Szukaj',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   suffixIcon: value.text.isNotEmpty
                       ? IconButton(
-                          icon: Icon(Icons.cancel),
+                          icon: const Icon(Icons.cancel),
                           onPressed: _clearSearch,
                         )
                       : null,
@@ -81,9 +85,9 @@ class _SongListViewState extends State<SongListView> {
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 labelTextBuilder: (double offset) {
                   if (songs.length != 2000) {
-                    return Text('');
+                    return const Text('');
                   }
-                  final int currentIndex = (offset ~/ 70); // Użycie dzielenia całkowitego
+                  final int currentIndex = (offset ~/ 70);
                   return Text('${currentIndex + 1}');
                 },
 
@@ -94,9 +98,9 @@ class _SongListViewState extends State<SongListView> {
                   itemBuilder: (context, index) {
                     final song = songs[index];
                     return Container(
-                      margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
+                      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardTheme.color, // Użyj koloru karty z tematu
+                        color: Theme.of(context).cardTheme.color,
                         borderRadius: BorderRadius.circular(15.0),
                       ),
                       child: Stack(
@@ -109,7 +113,7 @@ class _SongListViewState extends State<SongListView> {
                               width: 15.0,
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.primary,
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(15.0),
                                   bottomLeft: Radius.circular(15.0),
                                 ),
@@ -122,19 +126,19 @@ class _SongListViewState extends State<SongListView> {
                               padding: const EdgeInsets.only(left: 8.0),
                               child: ListTile(
                                 contentPadding:
-                                EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
+                                const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
                                 leading: CircleAvatar(
                                   backgroundColor:
                                   Theme.of(context).colorScheme.primary,
                                   child: Text(
                                     song.number.toString(),
                                     style:
-                                    TextStyle(color: Colors.white),
+                                    const TextStyle(color: Colors.white),
                                   ),
                                 ),
                                 title:
                                 Text(song.title, style:
-                                TextStyle(fontWeight:
+                                const TextStyle(fontWeight:
                                 FontWeight.bold), maxLines:
                                 1, overflow:
                                 TextOverflow.ellipsis),
@@ -142,7 +146,7 @@ class _SongListViewState extends State<SongListView> {
                                 Column(mainAxisAlignment:
                                 MainAxisAlignment.center, children:
                                 [if (song.favorite)
-                                  Icon(Icons.favorite, color:
+                                  const Icon(Icons.favorite, color:
                                   Colors.red)]),
                                 onTap:
                                     () {Navigator.push(context, MaterialPageRoute(builder:

@@ -4,23 +4,25 @@ import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
 
 class SettingsView extends StatelessWidget {
+  const SettingsView({super.key});
+
   @override
   Widget build(BuildContext context) {
     final settingsViewModel = Provider.of<SettingsViewModel>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ustawienia', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Ustawienia', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Consumer<FontSizeModel>(
         builder: (context, fontSizeModel, child) {
           return ListView(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             children: [
               Card(
                 child: Container(
-                  constraints: BoxConstraints(maxHeight: 180.0, minHeight: 180),
+                  constraints: const BoxConstraints(maxHeight: 180.0, minHeight: 180),
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
                     "Alleluja, chwalcie Pana, Nućcie Jemu chwałę, cześć! "
@@ -43,7 +45,7 @@ class SettingsView extends StatelessWidget {
                     ListTile(
                       subtitle: Row(
                         children: [
-                          Icon(Icons.text_fields, size: 20),
+                          const Icon(Icons.text_fields, size: 20),
                           Expanded(
                             child: Slider(
                               value: fontSizeModel.fontSize,
@@ -56,28 +58,27 @@ class SettingsView extends StatelessWidget {
                               },
                             ),
                           ),
-                          Icon(Icons.text_fields, size: 28),
+                          const Icon(Icons.text_fields, size: 28),
                         ],
                       ),
                     ),
                     ListTile(
                       subtitle: Row(
                         children: [
-                          Icon(Icons.format_line_spacing, size: 20),
+                          const Icon(Icons.format_line_spacing, size: 20),
                           Expanded(
                             child: Slider(
                               value: fontSizeModel.lineHeight,
                               min: 1.0,
                               max: 3.0,
                               divisions: 10,
-                              label:
-                              "${fontSizeModel.lineHeight.toStringAsFixed(1)}",
+                              label: fontSizeModel.lineHeight.toStringAsFixed(1),
                               onChanged: (value) {
                                 fontSizeModel.setLineHeight(value);
                               },
                             ),
                           ),
-                          Icon(Icons.format_line_spacing, size: 28),
+                          const Icon(Icons.format_line_spacing, size: 28),
                         ],
                       ),
                     ),
@@ -89,7 +90,7 @@ class SettingsView extends StatelessWidget {
                           onPressed:
                               () => fontSizeModel.resetToDefaults(),
                           child:
-                          Text('Przywróć ustawienia domyślne'),
+                          const Text('Przywróć ustawienia domyślne'),
                         ),
                       ),
                     ),
@@ -105,9 +106,9 @@ class SettingsView extends StatelessWidget {
                       child:
                       ListTile(
                         leading:
-                        Icon(Icons.sms),
+                        const Icon(Icons.sms),
                         title:
-                        Text('Kontakt'),
+                        const Text('Kontakt'),
                         onTap:
                             () => settingsViewModel.launchURL('https://spiewnik.odoo.com/contactus'),
                       ),
@@ -116,9 +117,9 @@ class SettingsView extends StatelessWidget {
                     Theme.of(context).colorScheme.primary),
                     ListTile(
                       leading:
-                      Icon(Icons.person),
+                      const Icon(Icons.person),
                       title:
-                      Text('O mnie'),
+                      const Text('O mnie'),
                       onTap:
                           () => settingsViewModel.launchURL('https://spiewnik.odoo.com/about-us'),
                     ),
@@ -126,9 +127,9 @@ class SettingsView extends StatelessWidget {
                     Theme.of(context).colorScheme.primary),
                     ListTile(
                       leading:
-                      Icon(Icons.favorite),
+                      const Icon(Icons.favorite),
                       title:
-                      Text('Wesprzyj'),
+                      const Text('Wesprzyj'),
                       onTap:
                           () => settingsViewModel.launchURL('https://suppi.pl/spiewnik'),
                     ),
@@ -141,9 +142,9 @@ class SettingsView extends StatelessWidget {
                       child:
                       ListTile(
                         leading:
-                        Icon(Icons.error),
+                        const Icon(Icons.error),
                         title:
-                        Text('Zgłoś błąd'),
+                        const Text('Zgłoś błąd'),
                         onTap:
                             () async {
                           String version =
