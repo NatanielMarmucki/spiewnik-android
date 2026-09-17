@@ -26,7 +26,8 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Fallback pustego tytułu | `"Brak tytułu"` (lista główna, szczegóły) / `"Brak tytuł"` (ulubione, moje pieśni) | Brak. `title` jest typu `String` non-null. | **R** |
 | Szybkie przewijanie z etykietą numeru | Brak | `DraggableScrollbar.semicircle`; etykieta tylko przy liście o długości 2000 | **B** |
 | **Wyszukiwanie: pola** | `content` (po oczyszczeniu) + podciąg `number` | `content` (po oczyszczeniu) + podciąg `number` | **—** |
-| Wyszukiwanie: tytuł | Nieprzeszukiwany | Nieprzeszukiwany | **—** |
+| Wyszukiwanie: tytuł | Nieprzeszukiwany: filtr sprawdza tylko treść i numer | Nieprzeszukiwany: to samo | **—** wspólne zachowanie, **do decyzji**: propozycja dodania tytułu do przeszukiwanych pól, do rozstrzygnięcia przy grupie A |
+| Wyszukiwanie: białe znaki po usunięciu ignorowanych znaków | Usunięcie znaku wewnątrz tekstu zostawia podwójną spację (przycinane są tylko końce), więc „boży zmiłuj” nie pasuje do „Baranku Boży, x zmiłuj się”, a „boży  zmiłuj” tak | To samo zachowanie | **—** wspólne zachowanie, **błąd, nie decyzja projektowa**. Do naprawy przy grupie A: normalizacja białych znaków po usunięciu ignorowanych znaków |
 | Wyszukiwanie: usuwane znaki z treści | `1 2 3 4 5 6 7 8 9 , . ; : ' [ ] ( ) ! ? - ” — „ x` | `"123456789,.;:'[]()!?-”—„x"` (ten sam zestaw) | **—** |
 | Wyszukiwanie: obróbka zapytania | Tylko `lowercased()` | Tylko `toLowerCase()` | **—** |
 | Wyszukiwanie: polskie znaki | Brak normalizacji diakrytyków | Od 12.0.0: polskie litery zamieniane na litery bazowe w treści i w zapytaniu (`removePolishDiacritics`), więc „zrodlo” znajduje „źródło” i odwrotnie | **R** — świadome ulepszenie, nie odtworzenie zachowania iOS (stara wersja Androida też tego nie miała) |
