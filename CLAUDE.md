@@ -1,0 +1,68 @@
+# Śpiewnik — instrukcja dla agentów
+
+Aplikacja Flutter (3.47.4) na iOS i Androida, bez backendu. 2000 pieśni z `assets/songs_data.json` w ObjectBoksie,
+ulubione jako pole `Song.favorite`, własne pieśni (`MySong`), ustawienia w SharedPreferences.
+Wersja 12.0.0 wychodzi jako aktualizacja starej aplikacji iOS (Swift, Core Data) i aplikacji ze sklepu Play.
+UI po polsku; kod, komentarze, commity i opisy PR po angielsku.
+
+## Gdzie co leży
+
+- `lib/main.dart` — start: store → asset pieśni → migracja z iOS → migracja ustawień → `runApp`.
+  **Kolejność ma znaczenie:** migracja dopasowuje ulubione po numerze, więc pieśni muszą być już w bazie.
+- `lib/model/` — encje ObjectBoksa (`Song`, `MySong`), `FontSizeModel`, `ReviewModel`, `polish_collation.dart`
+  (polska kolejność liter i usuwanie ogonków do wyszukiwania). Po zmianie encji: `dart run build_runner build`.
+- `lib/json_manager.dart` — parsowanie assetu (`SongsData`), aktualizacja pieśni z zachowaniem ulubionych, `dataVersion`.
+- `lib/migration/` — jednorazowe migracje ze starej aplikacji iOS: czytnik bazy Core Data i zapis do ObjectBoksa,
+  osobno rozmiar czcionki przez kanał platformy z `ios/Runner/AppDelegate.swift`. **Migracja jest skończona i przetestowana
+  end-to-end** — nie zmieniaj jej bez ponownego testu (procedura w README).
+- `lib/viewmodel/` — view modele: zwykłe klasy z `ValueNotifier`, zależności przez konstruktor.
+- `lib/view/` — ekrany. `ScreenWakeLock` (`view/screen_wake_lock.dart`) liczy otwarte ekrany szczegółów.
+- `ios/`, `android/` — projekty natywne. Wtyczki iOS idą przez Swift Package Manager; w CocoaPods został tylko ObjectBox.
+- Dokumenty: `README.md` (testy, pułapki, test migracji E2E), `docs/PARITY.md` (różnice wobec starej aplikacji iOS),
+  `SCHEMA-ZMYSONG.md` (schemat bazy iOS), `test/fixtures/README.md`.
+
+## Zasady
+
+- Nowa funkcja: widok w `lib/view/`, logika w view modelu, dane przez repozytorium (po PR-ach 2 i 3).
+  `Store` i `Box` tylko w `lib/data/`, `lib/migration/`, `lib/json_manager.dart` i `lib/main.dart` — nigdy w widokach ani view modelach.
+- **Testy view modeli i widoków nie mogą wymagać prawdziwej bazy** (po PR-ach 2 i 3): używaj fake'ów repozytoriów.
+  Na `TestStore` i fixtures testuj tylko repozytoria, `JsonManager` i migracje.
+- Wtyczki platformy (wakelock, share, url_launcher, in_app_review, package_info) testuj atrapami kanałów
+  z `test/support/platform_fakes.dart` albo owijaj w klasę wstrzykiwaną.
+- Czas przez wstrzykiwane `DateTime Function() now`, ścieżki i platformę przez parametry (wzorzec: `CoreDataMigration.runOnStartup`).
+- Logowanie przez wstrzykiwany `Logger`, nie `print`.
+- Każda zmiana z testem. Conventional commits, osobny commit na logiczną zmianę, gałąź `feature/...` od `main`.
+
+## Czego nie ruszać
+
+- `lib/objectbox-model.json` — UID-y schematu. Usunięcie oznacza niezgodną bazę u użytkowników.
+- `lib/objectbox.g.dart` — tylko przez `build_runner`.
+- `test/fixtures/*.sqlite*` — prawdziwe bazy z iOS, tylko do odczytu. Dane syntetyczne twórz na kopiach
+  (`CoreDataFixtures.copyTo` + `changeCopy`) i oznaczaj komentarzem `SYNTHETIC DATA`. Puste `-wal` i `-shm` są celowe.
+- Klucze SharedPreferences (`fontSize`, `lineHeight`, `launch_count`, `last_run_app_version`, `songs_data_version`,
+  `coreDataMigration*`, `legacySettingsMigrationDone`) — są na urządzeniach użytkowników.
+- `assets/songs_data.json` — generowany przez `tools/song_merge/`, nie edytować ręcznie.
+- `android/key.properties` i `android/upload_certificate.pem` — nie otwierać, nie cytować.
+
+## Testy
+
+```sh
+tools/fetch_objectbox_lib.sh   # raz po klonie: pobiera lib/libobjectbox.dylib (poza gitem)
+flutter test
+flutter analyze
+```
+
+## Pułapki
+
+- Bez `lib/libobjectbox.dylib` padają wszystkie testy używające `TestStore`. To brak biblioteki, nie błąd w kodzie.
+- `openStore()` w `testWidgets` nigdy nie kończy działania (path_provider bez implementacji). Zawsze `TestStore.open()`.
+- Pierwsze `flutter test` pobiera przez build hook bibliotekę SQLite (potrzebna sieć).
+- `dart run flutter_native_splash:create` nadpisuje `ios/Runner/Info.plist` (ustawia `UIStatusBarHidden` na `false`)
+  i zasoby splasha Androida. Po uruchomieniu przywróć — szczegóły w README.
+- `flutter test integration_test -d <urządzenie>` **odinstalowuje aplikację i kasuje jej dane**. Nie uruchamiaj go na
+  symulatorze przygotowanym do testu migracji.
+- Migracja z iOS działa raz (flaga `coreDataMigrationDone`), po błędzie nie ponawia, nigdy nie rzuca i nigdy nie usuwa
+  starej bazy. Nie filtruj po `Z_ENT` (patrz `SCHEMA-ZMYSONG.md`).
+- Zmiana wersji aplikacji (także numeru builda) nadpisuje tytuły i treści wszystkich pieśni z assetu.
+- Android: po zmianie wersji wtyczek potrafi zostać nieaktualny cache Gradle (dziwne błędy Kotlina, brakujące klasy
+  wtyczek) — pomaga `flutter clean`.
