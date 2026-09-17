@@ -3,26 +3,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/model/font_size_model.dart';
-import 'package:spiewnik/model/my_song_model.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/my_song_detail_view.dart';
 import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 
+import 'support/fakes/fake_my_song_repository.dart';
 import 'support/platform_fakes.dart';
-import 'support/test_store.dart';
 
 void main() {
-  late TestStore testStore;
+  late FakeMySongRepository repository;
   late MySongViewModel viewModel;
   late FakeWakelock wakelock;
   late FakeShare share;
 
   setUp(() {
     SharedPreferences.setMockInitialValues({'fontSize': 22.0, 'lineHeight': 2.0});
-    testStore = TestStore.open();
-    viewModel = MySongViewModel(testStore.store);
+    repository = FakeMySongRepository();
+    viewModel = MySongViewModel(repository);
     wakelock = FakeWakelock()..install();
     share = FakeShare()..install();
   });
@@ -30,7 +29,6 @@ void main() {
   tearDown(() {
     wakelock.uninstall();
     share.uninstall();
-    testStore.close();
   });
 
   /// Shows the user songs list; songs are opened by tapping them, like in the app.
@@ -111,7 +109,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(MySongDetailView), findsOneWidget);
-      expect(testStore.store.box<MySong>().get(song.id), isNotNull);
+      expect(repository.byId(song.id), isNotNull);
     });
 
     testWidgets('deletes the song after confirmation and returns to the list', (tester) async {
@@ -125,7 +123,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(MySongDetailView), findsNothing);
-      expect(testStore.store.box<MySong>().get(song.id), isNull);
+      expect(repository.byId(song.id), isNull);
       expect(find.text('Brak własnych pieśni'), findsOneWidget);
       expect(wakelock.toggles, [true, false]);
     });
@@ -148,7 +146,7 @@ void main() {
     expect(find.byType(MySongDetailView), findsOneWidget);
     expect(find.descendant(of: find.byType(AppBar), matching: find.text('Po edycji')), findsOneWidget);
     expect(find.text('Nowa treść'), findsOneWidget);
-    expect(testStore.store.box<MySong>().get(song.id)!.content, 'Nowa treść');
+    expect(repository.byId(song.id)!.content, 'Nowa treść');
 
     await tester.pageBack();
     await tester.pumpAndSettle();

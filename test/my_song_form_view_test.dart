@@ -5,19 +5,18 @@ import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 
-import 'support/test_store.dart';
+import 'support/fakes/fake_my_song_repository.dart';
 
 void main() {
-  late TestStore testStore;
+  late FakeMySongRepository repository;
   late DateTime now;
   late MySongViewModel viewModel;
 
   setUp(() {
-    testStore = TestStore.open();
+    repository = FakeMySongRepository();
     now = DateTime(2026, 9, 17, 12);
-    viewModel = MySongViewModel(testStore.store, now: () => now);
+    viewModel = MySongViewModel(repository, now: () => now);
   });
-  tearDown(() => testStore.close());
 
   final titleField = find.widgetWithText(TextFormField, 'Tytuł');
   final contentField = find.widgetWithText(TextFormField, 'Treść');
@@ -65,7 +64,7 @@ void main() {
       await tester.pump();
       await tapSave(tester);
 
-      final saved = testStore.store.box<MySong>().getAll().single;
+      final saved = repository.songs.single;
       expect(saved.title, 'Moja pieśń');
       expect(saved.content, '1. Pierwsza zwrotka\n\n2. Druga zwrotka');
       expect(saved.createdAt.isAtSameMomentAs(now), isTrue);
@@ -80,7 +79,7 @@ void main() {
 
       expect(find.text('Podaj tytuł pieśni'), findsOneWidget);
       expect(find.text('Podaj treść pieśni'), findsOneWidget);
-      expect(testStore.store.box<MySong>().isEmpty(), isTrue);
+      expect(repository.songs.isEmpty, isTrue);
       expect(formIsOpen(), isTrue);
     });
 
@@ -94,7 +93,7 @@ void main() {
 
       expect(find.text('Podaj tytuł pieśni'), findsOneWidget);
       expect(find.text('Podaj treść pieśni'), findsOneWidget);
-      expect(testStore.store.box<MySong>().isEmpty(), isTrue);
+      expect(repository.songs.isEmpty, isTrue);
     });
 
     testWidgets('clears a validation message once the field is filled', (tester) async {
@@ -122,11 +121,11 @@ void main() {
       await tester.pump();
       await tapSave(tester);
 
-      final stored = testStore.store.box<MySong>().get(song.id)!;
+      final stored = repository.byId(song.id)!;
       expect(stored.title, 'Stary tytuł');
       expect(stored.content, 'Nowa treść');
       expect(stored.updatedAt.isAtSameMomentAs(now), isTrue);
-      expect(testStore.store.box<MySong>().count(), 1);
+      expect(repository.songs.length, 1);
       expect(formIsOpen(), isFalse);
     });
 
@@ -153,7 +152,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(formIsOpen(), isFalse);
-      expect(testStore.store.box<MySong>().get(song.id)!.title, 'Tytuł');
+      expect(repository.byId(song.id)!.title, 'Tytuł');
     });
   });
 
@@ -217,7 +216,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(formIsOpen(), isFalse);
-      expect(testStore.store.box<MySong>().isEmpty(), isTrue);
+      expect(repository.songs.isEmpty, isTrue);
     });
   });
 }
