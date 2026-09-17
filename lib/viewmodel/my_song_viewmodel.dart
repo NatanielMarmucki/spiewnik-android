@@ -41,6 +41,11 @@ class MySongViewModel {
     return true;
   }
 
+  void deleteSong(MySong song) {
+    store.box<MySong>().remove(song.id);
+    _loadMySongs();
+  }
+
   void _loadMySongs() {
     mySongsNotifier.value = getMySongs();
   }

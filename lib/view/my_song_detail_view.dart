@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/model/my_song_model.dart';
+import 'package:spiewnik/view/delete_my_song_dialog.dart';
 import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -52,6 +53,15 @@ class MySongDetailViewState extends State<MySongDetailView> {
     }
   }
 
+  Future<void> _delete() async {
+    final confirmed = await confirmMySongDeletion(context, widget.song);
+    if (!confirmed || !mounted) {
+      return;
+    }
+    widget.viewModel.deleteSong(widget.song);
+    Navigator.pop(context);
+  }
+
   Widget _buildAction({required IconData icon, required VoidCallback onTap}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -81,6 +91,7 @@ class MySongDetailViewState extends State<MySongDetailView> {
             builder: (buttonContext) => _buildAction(icon: Icons.share, onTap: () => _share(buttonContext)),
           ),
           _buildAction(icon: Icons.edit, onTap: _edit),
+          _buildAction(icon: Icons.delete, onTap: _delete),
         ],
       ),
       // TODO: Unify with SongDetailView, which renders song content the same way.

@@ -97,6 +97,40 @@ void main() {
     expect(share.shares.single['originWidth'], greaterThan(0));
   });
 
+  group('deleting from the preview', () {
+    testWidgets('asks for confirmation and keeps the song when cancelled', (tester) async {
+      final song = viewModel.addSong(title: 'Moja pieśń', content: 'Treść');
+      await pumpList(tester);
+      await openSong(tester, 'Moja pieśń');
+
+      await tester.tap(find.byIcon(Icons.delete));
+      await tester.pumpAndSettle();
+      expect(find.text('Usunąć pieśń?'), findsOneWidget);
+      expect(find.text('Pieśń „Moja pieśń” zostanie trwale usunięta.'), findsOneWidget);
+      await tester.tap(find.text('Anuluj'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MySongDetailView), findsOneWidget);
+      expect(testStore.store.box<MySong>().get(song.id), isNotNull);
+    });
+
+    testWidgets('deletes the song after confirmation and returns to the list', (tester) async {
+      final song = viewModel.addSong(title: 'Moja pieśń', content: 'Treść');
+      await pumpList(tester);
+      await openSong(tester, 'Moja pieśń');
+
+      await tester.tap(find.byIcon(Icons.delete));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Usuń'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MySongDetailView), findsNothing);
+      expect(testStore.store.box<MySong>().get(song.id), isNull);
+      expect(find.text('Brak własnych pieśni'), findsOneWidget);
+      expect(wakelock.toggles, [true, false]);
+    });
+  });
+
   testWidgets('edits the open song and shows the saved changes', (tester) async {
     final song = viewModel.addSong(title: 'Przed edycją', content: 'Stara treść');
     await pumpList(tester);

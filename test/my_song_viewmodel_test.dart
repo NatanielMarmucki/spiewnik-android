@@ -69,6 +69,16 @@ void main() {
       expect(viewModel.mySongsNotifier.value.single.title, 'Po');
     });
 
+    test('deletes a user song and refreshes the list', () {
+      final kept = viewModel.addSong(title: 'Zostaje', content: 'treść');
+      final removed = viewModel.addSong(title: 'Do usunięcia', content: 'treść');
+
+      viewModel.deleteSong(removed);
+
+      expect(testStore.store.box<MySong>().get(removed.id), isNull);
+      expect(viewModel.mySongsNotifier.value.map((song) => song.id), [kept.id]);
+    });
+
     test('editing without changes leaves updatedAt untouched', () {
       final createdAt = now;
       final song = viewModel.addSong(title: 'Bez zmian', content: 'treść');
