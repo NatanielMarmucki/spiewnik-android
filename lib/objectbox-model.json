@@ -38,9 +38,43 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "2:3938641074242367669",
+      "lastPropertyId": "5:1761442361365989912",
+      "name": "MySong",
+      "properties": [
+        {
+          "id": "1:3119382516938279091",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:518437909453992773",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "3:8286221452805232626",
+          "name": "content",
+          "type": 9
+        },
+        {
+          "id": "4:4549469558482212416",
+          "name": "createdAt",
+          "type": 12
+        },
+        {
+          "id": "5:1761442361365989912",
+          "name": "updatedAt",
+          "type": 12
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "1:668007825265052091",
+  "lastEntityId": "2:3938641074242367669",
   "lastIndexId": "1:2701213689850694877",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
