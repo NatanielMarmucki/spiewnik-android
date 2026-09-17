@@ -55,7 +55,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Podgląd tekstu w ustawieniach | Jest (ten sam fragment „Alleluja, chwalcie Pana…”) | Jest (ten sam fragment) | **—** |
 | Przełącznik „Dynamiczna wyszukiwarka” | Jest (`isSearchDynamic`) | Brak | **B** |
 | **Tryb nocny** | Systemowy, brak przełącznika | Systemowy (`ThemeMode.system`), brak przełącznika; własne motywy `lightTheme` / `darkTheme` | **—** (brak przełącznika po obu stronach); **R** (kolorystyka) |
-| **Blokada wygaszania ekranu** | Brak | Zawsze włączona na ekranie szczegółów (`wakelock_plus`); NIEPOTWIERDZONE wyłączanie po `pushReplacement` | **B** |
+| **Blokada wygaszania ekranu** | Brak | Zawsze włączona na ekranach szczegółów pieśni i własnej pieśni (`wakelock_plus`), bez ustawienia (przełącznik planowany w A3). **Naprawione w 12.0.0:** wcześniej po `pushReplacement` (przejście do numeru, przeciągnięcie na następną lub poprzednią pieśń) blokada się wyłączała, bo `dispose` starego ekranu wywoływał `disable` po `enable` nowego. Teraz `ScreenWakeLock` liczy otwarte ekrany: `enable` przy przejściu z 0 na 1, `disable` z 1 na 0; testy w `test/song_detail_view_wakelock_test.dart` | **B** |
 | Link „Kontakt” | `https://spiewnik.odoo.com/contactus` | `https://spiewnik.odoo.com/contactus` | **—** |
 | Link „O mnie” | `https://spiewnik.odoo.com/about-us` | `https://spiewnik.odoo.com/about-us` | **—** |
 | „Wesprzyj” | Link `https://suppi.pl/spiewnik` (+ niepodpięty kod zakupów) | Link `https://suppi.pl/spiewnik` | **—** w UI; **R** w kodzie |
