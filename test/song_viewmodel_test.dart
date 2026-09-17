@@ -90,7 +90,7 @@ void main() {
     });
 
     test('reports how many songs the songbook has', () {
-      expect(viewModel.songCount, 3);
+      expect(viewModel.songCount, 4); // Deliberately wrong: throwaway branch to show CI blocking a red test.
     });
 
     test('finds the song for a number that exists', () {
