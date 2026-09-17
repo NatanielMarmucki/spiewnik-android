@@ -26,3 +26,7 @@ doc/api/
 
 # macOS Finder metadata
 .DS_Store
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
