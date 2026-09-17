@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'objectbox.g.dart';
 import 'json_manager.dart';
+import 'package:spiewnik/migration/core_data_migration.dart';
 import 'package:spiewnik/view/song_list_view.dart';
 import 'package:spiewnik/view/favorite_songs_view.dart';
 import 'package:spiewnik/view/my_song_form_view.dart';
@@ -79,6 +80,8 @@ void main() async {
   final jsonLoader = JsonManager(objectBoxStore, logger);
 
   await initializeApp(jsonLoader);
+  // After the songs are loaded, so favorites from the old iOS app can be matched by number.
+  await CoreDataMigration.runOnStartup(store: objectBoxStore, logger: logger);
 
   runApp(
     MultiProvider(

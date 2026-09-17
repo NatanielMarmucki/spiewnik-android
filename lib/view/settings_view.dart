@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spiewnik/model/font_size_model.dart';
+import 'package:spiewnik/view/data_migration_notice.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
 
 class SettingsView extends StatelessWidget {
@@ -156,6 +157,7 @@ class SettingsView extends StatelessWidget {
                   ],
                 ),
               ),
+              DataMigrationNotice(settingsViewModel: settingsViewModel),
             ],
           );
         },
