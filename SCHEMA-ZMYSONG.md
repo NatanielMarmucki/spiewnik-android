@@ -30,5 +30,15 @@ CREATE TABLE ZMYSONG (
 
 ## Z_ENT — potwierdzone wartości
 
-- ZSONG: Z_ENT = NULL we wszystkich wierszach (zasiew z bundla), mimo że
-  Z_PRIMARYKEY przypisuje encji Song
+Bazy z urządzenia (ios_fresh, ios_with_data):
+- Z_PRIMARYKEY: MySong = 1, Song = 2
+- ZSONG: Z_ENT = NULL we wszystkich wierszach (zasiew z bundla),
+  mimo przypisania Song = 2
+- ZMYSONG: Z_ENT = 1, zgodnie z Z_PRIMARYKEY
+
+Szablon z repo iOS (ios_no_mysong):
+- Z_PRIMARYKEY: Song = 1, encji MySong brak
+- numeracja encji różni się od baz z urządzenia
+
+Wniosek: NIE filtrować po Z_ENT w żadnej tabeli. Numeracja encji nie jest
+stabilna między szablonem a bazą utworzoną na urządzeniu.
