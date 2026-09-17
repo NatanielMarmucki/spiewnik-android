@@ -81,3 +81,25 @@ class FakeUrlLauncher {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(_channel, null);
   }
 }
+
+/// Records in_app_review calls made through its method channel.
+class FakeInAppReview {
+  static const _channel = MethodChannel('dev.britannio.in_app_review');
+
+  /// Every call, in order, e.g. "isAvailable", "requestReview".
+  final List<String> calls = [];
+
+  void install() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      _channel,
+      (MethodCall call) async {
+        calls.add(call.method);
+        return call.method == 'isAvailable' ? true : null;
+      },
+    );
+  }
+
+  void uninstall() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(_channel, null);
+  }
+}

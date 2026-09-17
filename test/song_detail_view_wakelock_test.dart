@@ -10,28 +10,24 @@ import 'package:spiewnik/view/song_detail_view.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
 import 'support/platform_fakes.dart';
-import 'support/test_store.dart';
+import 'support/fakes/fake_song_repository.dart';
 
 void main() {
-  late TestStore testStore;
   late SongViewModel viewModel;
   late FakeWakelock wakelock;
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
-    testStore = TestStore.open();
-    testStore.store.box<Song>().putMany([
-      for (var number = 1; number <= 3; number++)
-        Song(number: number, title: 'Pieśń $number', content: 'treść $number', favorite: false),
-    ]);
-    viewModel = SongViewModel(testStore.store);
+    viewModel = SongViewModel(
+      FakeSongRepository([
+        for (var number = 1; number <= 3; number++)
+          Song(number: number, title: 'Pieśń $number', content: 'treść $number', favorite: false),
+      ]),
+    );
     wakelock = FakeWakelock()..install();
   });
 
-  tearDown(() {
-    wakelock.uninstall();
-    testStore.close();
-  });
+  tearDown(() => wakelock.uninstall());
 
   Future<void> openSong(WidgetTester tester, int number) async {
     await tester.pumpWidget(
