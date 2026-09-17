@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.2.1+5
+version: 12.0.0+6
 
 environment:
   sdk: ^3.5.3
@@ -30,10 +30,17 @@ flutter_native_splash:
   color: "#ffffff"
   image: assets/playstore-transparent.png
   android: true
-  ios: false
+  ios: true
   web: false
   image_dark: assets/playstore-transparent.png
   color_dark: "#000000"
+  # iOS uses the launch logo of the previous App Store app (applogo, shown at 341 pt on white or,
+  # in dark mode, black background). The generator treats the source as @4x, hence 1364 px.
+  image_ios: assets/splash/ios_launch_logo.png
+  image_dark_ios: assets/splash/ios_launch_logo.png
+  # After `dart run flutter_native_splash:create` restore ios/Runner/Info.plist: the generator sets
+  # UIStatusBarHidden to false (fullscreen defaults to false; true would also change the Android splash).
+  # See "Znane pułapki" in README.md.
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
