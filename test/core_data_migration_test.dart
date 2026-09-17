@@ -235,6 +235,30 @@ void main() {
         '|',
       });
     });
+
+    test('gives user songs increasing creation times in the order of the old database', () async {
+      final path = CoreDataFixtures.copyTo('ios_with_data', documents);
+      await CoreDataFixtures.changeCopy(path, (database) async {
+        // SYNTHETIC DATA: rows inserted out of order to check that Z_PK decides, not the title.
+        await database.rawInsert(
+          'INSERT INTO ZMYSONG (Z_PK, Z_ENT, Z_OPT, ZCONTENT, ZTITLE) VALUES (3, 1, 1, ?, ?), (2, 1, 1, ?, ?)',
+          ['treść trzecia', 'Apel wieczorny', 'treść druga', 'Zwiastowanie'],
+        );
+      });
+
+      await runMigration(path);
+
+      final songs = mySongs()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      expect(songs.map((song) => song.title), ['Pieśń poranna', 'Zwiastowanie', 'Apel wieczorny']);
+      expect(songs.map((song) => song.createdAt.difference(migrationTime)), [
+        Duration.zero,
+        const Duration(milliseconds: 1),
+        const Duration(milliseconds: 2),
+      ]);
+      for (final song in songs) {
+        expect(song.updatedAt.isAtSameMomentAs(song.createdAt), isTrue);
+      }
+    });
   });
 
   group('startup', () {

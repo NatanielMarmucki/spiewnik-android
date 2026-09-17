@@ -11,9 +11,10 @@ class MySongViewModel {
     _loadMySongs();
   }
 
-  /// User songs, newest first.
+  /// User songs, newest first. Songs created at the same moment keep a stable order: lower id first.
   List<MySong> getMySongs() {
-    final query = store.box<MySong>().query().order(MySong_.createdAt, flags: Order.descending).build();
+    final query =
+        store.box<MySong>().query().order(MySong_.createdAt, flags: Order.descending).order(MySong_.id).build();
     final songs = query.find();
     query.close();
     return songs;
