@@ -2,33 +2,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
+import 'support/fakes/fake_song_repository.dart';
 import 'support/platform_fakes.dart';
-import 'support/test_store.dart';
 
 /// Characterization tests: they describe what SongViewModel does today, including the
 /// surprising parts, so a refactoring cannot change behaviour unnoticed.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late TestStore testStore;
+  late FakeSongRepository repository;
   late FakeInAppReview inAppReview;
 
   setUp(() {
-    testStore = TestStore.open();
+    repository = FakeSongRepository();
     inAppReview = FakeInAppReview()..install();
   });
 
-  tearDown(() {
-    inAppReview.uninstall();
-    testStore.close();
-  });
+  tearDown(() => inAppReview.uninstall());
 
-  void putSongs(List<Song> songs) => testStore.store.box<Song>().putMany(songs);
+  void putSongs(List<Song> songs) => songs.forEach(repository.songs.add);
 
   Song song(int number, {String? title, String? content, bool favorite = false}) =>
       Song(number: number, title: title ?? 'Pieśń $number', content: content ?? 'treść $number', favorite: favorite);
 
-  SongViewModel open() => SongViewModel(testStore.store);
+  SongViewModel open() => SongViewModel(repository);
 
   List<int> numbers(List<Song> songs) => songs.map((song) => song.number).toList();
 
@@ -93,7 +90,7 @@ void main() {
 
       expect(numbers(viewModel.favoriteSongsNotifier.value), [1]);
       expect(viewModel.allSongsNotifier.value.first.favorite, isTrue);
-      expect(testStore.store.box<Song>().get(1)!.favorite, isTrue);
+      expect(repository.byNumber(1)!.favorite, isTrue);
     });
 
     test('marking a song again removes it from favorites', () {
@@ -103,7 +100,7 @@ void main() {
       viewModel.toggleFavoriteStatus(viewModel.allSongsNotifier.value.single);
 
       expect(viewModel.favoriteSongsNotifier.value, isEmpty);
-      expect(testStore.store.box<Song>().get(1)!.favorite, isFalse);
+      expect(repository.byNumber(1)!.favorite, isFalse);
     });
 
     test('keeps the current search filter', () {

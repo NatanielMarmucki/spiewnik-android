@@ -3,24 +3,20 @@ import 'package:spiewnik/model/polish_collation.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
-import 'support/test_store.dart';
+import 'support/fakes/fake_song_repository.dart';
 
 void main() {
-  late TestStore testStore;
   late SongViewModel viewModel;
 
   setUp(() {
-    testStore = TestStore.open();
-    testStore.store.box<Song>().putMany([
+    final repository = FakeSongRepository([
       Song(number: 1, title: 'Źródło', content: 'Źródło wody żywej', favorite: false),
       Song(number: 2, title: 'Zrodlo', content: 'Zrodlo bez ogonkow', favorite: false),
       Song(number: 3, title: 'Żniwo', content: 'ŻNIWO WIELKIE, ŁASKA PANA', favorite: false),
       Song(number: 12, title: 'Inna', content: '1. Chwalcie, ludy, Pana!', favorite: false),
     ]);
-    viewModel = SongViewModel(testStore.store);
+    viewModel = SongViewModel(repository);
   });
-
-  tearDown(() => testStore.close());
 
   List<int> search(String query) {
     viewModel.searchText = query;
