@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/theme/theme.dart';
+import 'package:spiewnik/view/screen_wake_lock.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
@@ -58,10 +59,8 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  // Known bug, listed in docs/PARITY.md, to be fixed with group A: SongDetailView enables the wakelock
-  // in initState and disables it in dispose. pushReplacement builds the new screen before the old one
-  // is disposed, so the old screen's disable arrives last and the screen can turn off while a song is
-  // open. Remove the skips together with the fix.
+  // Regression tests: pushReplacement builds the new screen before the old one is disposed, so a plain
+  // enable/disable pair turned the screen off while a song was open. See ScreenWakeLock.
   testWidgets('screen stays on after going to another song by number', (tester) async {
     await openSong(tester, 1);
     expect(wakelock.toggles, [true]);
@@ -74,7 +73,7 @@ void main() {
 
     expect(find.text('2. Pieśń 2'), findsOneWidget);
     expect(wakelock.toggles.last, isTrue, reason: 'toggles: ${wakelock.toggles}');
-  }, skip: true); // Known bug, see the comment above.
+  });
 
   testWidgets('screen stays on after swiping to the next song', (tester) async {
     await openSong(tester, 1);
@@ -84,5 +83,18 @@ void main() {
 
     expect(find.text('2. Pieśń 2'), findsOneWidget);
     expect(wakelock.toggles.last, isTrue, reason: 'toggles: ${wakelock.toggles}');
-  }, skip: true); // Known bug, see the comment above.
+  });
+
+  testWidgets('screen turns off when leaving the song after switching songs', (tester) async {
+    await openSong(tester, 1);
+    await tester.drag(find.text('treść 1'), const Offset(-300, 0));
+    await tester.pumpAndSettle();
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SongDetailView), findsNothing);
+    expect(wakelock.toggles.last, isFalse, reason: 'toggles: ${wakelock.toggles}');
+    expect(ScreenWakeLock.holders, 0);
+  });
 }

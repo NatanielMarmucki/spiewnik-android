@@ -4,7 +4,7 @@ import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:spiewnik/model/font_size_model.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:spiewnik/view/screen_wake_lock.dart';
 
 class SongDetailView extends StatefulWidget {
   final Song song;
@@ -22,13 +22,13 @@ class SongDetailViewState extends State<SongDetailView> {
   @override
   void initState() {
     super.initState();
-    WakelockPlus.enable();
+    ScreenWakeLock.acquire();
     song = widget.song;
   }
 
   @override
   void dispose() {
-    WakelockPlus.disable();
+    ScreenWakeLock.release();
     super.dispose();
   }
 
