@@ -33,13 +33,13 @@ void main() {
     expect(find.byType(ListTile), findsNothing);
   });
 
-  testWidgets('lists user songs newest first', (tester) async {
-    putMySongs(['Pierwsza dodana', 'Druga dodana', 'Trzecia dodana']);
+  testWidgets('lists user songs alphabetically by title', (tester) async {
+    putMySongs(['Żniwo', 'Łaska', 'Modlitwa']);
 
     await tester.pumpWidget(wrap(MySongsView(viewModel: MySongViewModel(testStore.store))));
 
     final titles = tester.widgetList<ListTile>(find.byType(ListTile)).map((tile) => (tile.title as Text).data);
-    expect(titles, ['Trzecia dodana', 'Druga dodana', 'Pierwsza dodana']);
+    expect(titles, ['Łaska', 'Modlitwa', 'Żniwo']);
     expect(find.text('Brak własnych pieśni'), findsNothing);
   });
 

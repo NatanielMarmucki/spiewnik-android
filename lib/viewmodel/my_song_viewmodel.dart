@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:spiewnik/model/my_song_model.dart';
+import 'package:spiewnik/model/polish_collation.dart';
 import 'package:spiewnik/objectbox.g.dart';
 
 class MySongViewModel {
@@ -11,13 +12,14 @@ class MySongViewModel {
     _loadMySongs();
   }
 
-  /// User songs, newest first. Songs created at the same moment keep a stable order: lower id first.
+  /// User songs in Polish alphabetical order of titles, ignoring letter case, like the old iOS app.
+  /// Songs with the same title are ordered by id, lowest first.
   List<MySong> getMySongs() {
-    final query =
-        store.box<MySong>().query().order(MySong_.createdAt, flags: Order.descending).order(MySong_.id).build();
-    final songs = query.find();
-    query.close();
-    return songs;
+    return store.box<MySong>().getAll()
+      ..sort((a, b) {
+        final byTitle = comparePolish(a.title, b.title);
+        return byTitle != 0 ? byTitle : a.id.compareTo(b.id);
+      });
   }
 
   MySong addSong({required String title, required String content}) {
