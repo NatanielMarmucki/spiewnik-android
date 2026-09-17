@@ -4,7 +4,9 @@ import 'objectbox.g.dart';
 import 'json_manager.dart';
 import 'package:spiewnik/view/song_list_view.dart';
 import 'package:spiewnik/view/favorite_songs_view.dart';
+import 'package:spiewnik/view/my_songs_view.dart';
 import 'package:spiewnik/view/settings_view.dart';
+import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/theme/theme.dart';
@@ -136,17 +138,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   late SongViewModel viewModel;
+  late MySongViewModel mySongViewModel;
 
   @override
   void initState() {
     super.initState();
     viewModel = SongViewModel(widget.store);
+    mySongViewModel = MySongViewModel(widget.store);
   }
 
   List<Widget> _buildScreens() {
     return [
       SongListView(viewModel: viewModel),
       FavoriteSongsView(viewModel: viewModel),
+      MySongsView(viewModel: mySongViewModel),
     ];
   }
 
@@ -180,6 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           TabItem(icon: Icons.auto_stories, title: 'Śpiewnik'),
           TabItem(icon: Icons.favorite, title: 'Ulubione'),
+          TabItem(icon: Icons.edit_note, title: 'Moje pieśni'),
         ],
         backgroundColor: Theme.of(context).colorScheme.primary,
         activeColor: Colors.white.withAlpha(153),
