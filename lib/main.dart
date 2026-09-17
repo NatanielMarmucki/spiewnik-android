@@ -29,38 +29,53 @@ final logger = Logger(
 
 const String _kLastRunAppVersionKey = 'last_run_app_version';
 
+Future<void> initializeApp(JsonManager jsonManager) async {
+  bool shouldForceUpdate = false;
+  String? currentAppVersion;
+
+  try {
+    logger.i("Starting app initialization and version check...");
+    final prefs = await SharedPreferences.getInstance();
+    final packageInfo = await PackageInfo.fromPlatform();
+
+    currentAppVersion = "${packageInfo.version}+${packageInfo.buildNumber}";
+
+    final lastRunAppVersion = prefs.getString(_kLastRunAppVersionKey);
+
+    logger.i("Current app version: $currentAppVersion");
+    logger.i("Stored app version: $lastRunAppVersion");
+
+    if (lastRunAppVersion == null || lastRunAppVersion != currentAppVersion) {
+      logger.i('Version mismatch or first launch. Forcing data update.');
+      shouldForceUpdate = true;
+    } else {
+      logger.i('App versions match. No data update needed.');
+    }
+  } catch (e, stacktrace) {
+    logger.e('Error during version check!', error: e, stackTrace: stacktrace);
+    shouldForceUpdate = false;
+  }
+
+  await jsonManager.loadDataFromJsonIfNeeded(forceUpdate: shouldForceUpdate);
+
+  if (shouldForceUpdate && currentAppVersion != null) {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_kLastRunAppVersionKey, currentAppVersion);
+      logger.i('Successfully saved current app version: $currentAppVersion');
+    } catch (e) {
+      logger.e('Failed to save the new app version string!', error: e);
+    }
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final objectBoxStore = await openStore();
   final jsonLoader = JsonManager(objectBoxStore, logger);
 
-  bool shouldForceUpdate = false;
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final packageInfo = await PackageInfo.fromPlatform();
-    final currentAppVersion = "${packageInfo.version}+${packageInfo.buildNumber}";
-
-    final lastRunAppVersion = prefs.getString(_kLastRunAppVersionKey);
-
-    if (lastRunAppVersion == null || lastRunAppVersion != currentAppVersion) {
-      logger.i('First launch after installation/update or version change. Current version: $currentAppVersion, previous: $lastRunAppVersion');
-      shouldForceUpdate = true;
-    } else {
-      logger.i('Launching with the same app version: $currentAppVersion');
-    }
-
-    await jsonLoader.loadDataFromJsonIfNeeded(forceUpdate: shouldForceUpdate);
-
-    if (shouldForceUpdate) {
-      await prefs.setString(_kLastRunAppVersionKey, currentAppVersion);
-      logger.i('Saved current app version: $currentAppVersion');
-    }
-
-  } catch (e) {
-    logger.e('Error during app version check or data loading: $e');
-    await jsonLoader.loadDataFromJsonIfNeeded(forceUpdate: false);
-  }
+  await initializeApp(jsonLoader);
 
   runApp(
     MultiProvider(
@@ -133,12 +148,6 @@ class _HomeScreenState extends State<HomeScreen> {
       SongListView(viewModel: viewModel),
       FavoriteSongsView(viewModel: viewModel),
     ];
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
   }
 
   @override
