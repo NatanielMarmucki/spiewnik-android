@@ -34,6 +34,25 @@ final Map<int, (int, int)> _polishLetters = {
     entry.key.runes.single: (entry.value.$1.runes.single, entry.value.$2),
 };
 
+/// Replaces Polish letters with their base letters, keeping letter case: "Źródło" becomes "Zrodlo".
+/// Used by search, so a query typed without diacritics finds text with them and the other way round.
+String removePolishDiacritics(String text) {
+  final buffer = StringBuffer();
+  for (final rune in text.runes) {
+    buffer.writeCharCode(_baseLetters[rune] ?? rune);
+  }
+  return buffer.toString();
+}
+
+/// Base letter of each Polish letter, in lower and upper case.
+final Map<int, int> _baseLetters = {
+  for (final entry in _polishLetters.entries) ...{
+    entry.key: entry.value.$1,
+    String.fromCharCode(entry.key).toUpperCase().runes.single:
+        String.fromCharCode(entry.value.$1).toUpperCase().runes.single,
+  },
+};
+
 int _weight(int rune) {
   final polish = _polishLetters[rune];
   return polish == null ? rune * 3 : polish.$1 * 3 + polish.$2;
