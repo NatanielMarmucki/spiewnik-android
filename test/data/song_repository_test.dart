@@ -55,6 +55,11 @@ void main() {
         expect(repository.favorites(), isEmpty);
       });
 
+      test('counts the songs', () {
+        expect(open([]).count(), 0);
+        expect(open([buildSong(1), buildSong(2)]).count(), 2);
+      });
+
       test('has empty lists without songs', () {
         final repository = open([]);
 

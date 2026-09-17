@@ -81,6 +81,50 @@ void main() {
     });
   });
 
+  group('going to a number', () {
+    late SongViewModel viewModel;
+
+    setUp(() {
+      putSongs([song(1), song(2), song(4)]);
+      viewModel = open();
+    });
+
+    test('reports how many songs the songbook has', () {
+      expect(viewModel.songCount, 3);
+    });
+
+    test('finds the song for a number that exists', () {
+      final result = viewModel.goToNumber('2');
+
+      expect(result.outcome, GoToSongOutcome.found);
+      expect(result.song?.number, 2);
+    });
+
+    test('ignores spaces around the number', () {
+      expect(viewModel.goToNumber(' 2 ').outcome, GoToSongOutcome.found);
+    });
+
+    test('rejects text that is not a number, including an empty input', () {
+      for (final input in ['', '   ', 'abc', '1a', '2,5']) {
+        expect(viewModel.goToNumber(input).outcome, GoToSongOutcome.invalidNumber, reason: 'input "$input"');
+      }
+    });
+
+    test('rejects numbers outside the songbook', () {
+      for (final input in ['0', '-1', '4', '2000']) {
+        expect(viewModel.goToNumber(input).outcome, GoToSongOutcome.invalidNumber, reason: 'input "$input"');
+      }
+    });
+
+    test('reports a gap in the numbering separately from an invalid number', () {
+      putSongs([song(10)]);
+      final withGap = open();
+
+      expect(withGap.goToNumber('3').outcome, GoToSongOutcome.notFound);
+      expect(withGap.goToNumber('5').outcome, GoToSongOutcome.invalidNumber);
+    });
+  });
+
   group('favorites', () {
     test('marking a song updates the song, the favorites list and the full list', () {
       putSongs([song(1), song(2)]);

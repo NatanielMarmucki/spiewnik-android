@@ -35,6 +35,23 @@ class SongViewModel {
     favoriteSongsNotifier.value = getFavoriteSongs();
   }
 
+  /// How many songs the songbook has. Used by the "go to number" dialog and the scrollbar label.
+  int get songCount => repository.count();
+
+  /// Looks up the song for what the user typed in the "go to number" dialog.
+  /// Accepts numbers from 1 to [songCount], like the hardcoded 1..2000 before,
+  /// which is the whole songbook as long as the numbering has no gaps.
+  GoToSongResult goToNumber(String input) {
+    final number = int.tryParse(input.trim());
+    if (number == null || number < 1 || number > songCount) {
+      return const GoToSongResult(GoToSongOutcome.invalidNumber);
+    }
+    final song = findSongByNumber(number);
+    return song == null
+        ? const GoToSongResult(GoToSongOutcome.notFound)
+        : GoToSongResult(GoToSongOutcome.found, song);
+  }
+
   List<Song> getAllSongs() => repository.all();
 
   List<Song> getFavoriteSongs() => repository.favorites();
@@ -82,4 +99,22 @@ class SongViewModel {
   Song? findPreviousSong(int currentNumber) {
     return findSongByNumber(currentNumber - 1);
   }
+}
+
+enum GoToSongOutcome {
+  /// The song is in the songbook.
+  found,
+
+  /// Not a number, or outside 1..[SongViewModel.songCount].
+  invalidNumber,
+
+  /// A number inside the range, but there is no song with it.
+  notFound,
+}
+
+class GoToSongResult {
+  final GoToSongOutcome outcome;
+  final Song? song;
+
+  const GoToSongResult(this.outcome, [this.song]);
 }

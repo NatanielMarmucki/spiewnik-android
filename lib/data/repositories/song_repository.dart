@@ -9,6 +9,9 @@ abstract class SongRepository {
 
   List<Song> favorites();
 
+  /// How many songs the songbook has.
+  int count();
+
   Song? byNumber(int number);
 
   void setFavorite(Song song, bool favorite);
@@ -21,6 +24,9 @@ class ObjectBoxSongRepository implements SongRepository {
 
   @override
   List<Song> all() => _store.box<Song>().getAll();
+
+  @override
+  int count() => _store.box<Song>().count();
 
   @override
   List<Song> favorites() {

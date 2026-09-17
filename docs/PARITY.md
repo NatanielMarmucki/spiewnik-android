@@ -24,9 +24,10 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | **Lista pieśni: sortowanie** | Jawne: `number` rosnąco (`NSSortDescriptor`) | Brak jawnego: `box.getAll()`, kolejność wg `id` ObjectBox (NIEPOTWIERDZONE, czy gwarantowana) | **R** |
 | Lista pieśni: wygląd wiersza | `"<number>. "` (headline) + tytuł, 1 linia, serce przy ulubionych | `CircleAvatar` z numerem + pogrubiony tytuł, 1 linia, serce przy ulubionych | **R** (wizualnie) |
 | Fallback pustego tytułu | `"Brak tytułu"` (lista główna, szczegóły) / `"Brak tytuł"` (ulubione, moje pieśni) | Brak. `title` jest typu `String` non-null. | **R** |
-| Szybkie przewijanie z etykietą numeru | Brak | `DraggableScrollbar.semicircle`; etykieta tylko przy liście o długości 2000 | **B** |
+| Szybkie przewijanie z etykietą numeru | Brak | `DraggableScrollbar.semicircle`; etykieta tylko przy pełnej liście, od 12.0.0 długość brana z bazy zamiast zakodowanego 2000 | **B** |
 | **Wyszukiwanie: pola** | `content` (po oczyszczeniu) + podciąg `number` | `content` (po oczyszczeniu) + podciąg `number` | **—** |
-| Wyszukiwanie: tytuł | Nieprzeszukiwany | Nieprzeszukiwany | **—** |
+| Wyszukiwanie: tytuł | Nieprzeszukiwany: filtr sprawdza tylko treść i numer | Nieprzeszukiwany: to samo | **—** wspólne zachowanie, **do decyzji**: propozycja dodania tytułu do przeszukiwanych pól, do rozstrzygnięcia przy grupie A |
+| Wyszukiwanie: białe znaki po usunięciu ignorowanych znaków | Usunięcie znaku wewnątrz tekstu zostawia podwójną spację (przycinane są tylko końce), więc „boży zmiłuj” nie pasuje do „Baranku Boży, x zmiłuj się”, a „boży  zmiłuj” tak | To samo zachowanie | **—** wspólne zachowanie, **błąd, nie decyzja projektowa**. Do naprawy przy grupie A: normalizacja białych znaków po usunięciu ignorowanych znaków |
 | Wyszukiwanie: usuwane znaki z treści | `1 2 3 4 5 6 7 8 9 , . ; : ' [ ] ( ) ! ? - ” — „ x` | `"123456789,.;:'[]()!?-”—„x"` (ten sam zestaw) | **—** |
 | Wyszukiwanie: obróbka zapytania | Tylko `lowercased()` | Tylko `toLowerCase()` | **—** |
 | Wyszukiwanie: polskie znaki | Brak normalizacji diakrytyków | Od 12.0.0: polskie litery zamieniane na litery bazowe w treści i w zapytaniu (`removePolishDiacritics`), więc „zrodlo” znajduje „źródło” i odwrotnie | **R** — świadome ulepszenie, nie odtworzenie zachowania iOS (stara wersja Androida też tego nie miała) |
@@ -38,8 +39,8 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | **Szczegóły: tytuł paska** | `"<number>. <title>"` | `'${song.number}. ${song.title}'` | **—** |
 | Szczegóły: wyświetlanie treści | Jeden `Text`, bez parsowania | Jeden `Text`, bez parsowania | **—** |
 | **Przejście do numeru: wejście** | `UIAlertController`, klawiatura `.numberPad`, brak limitu długości | `AlertDialog`, `digitsOnly`, maks. 4 znaki | **R** |
-| Przejście do numeru: zakres | 1…2000 (zakodowane) | 1…2000 (zakodowane) | **—** |
-| Przejście do numeru: błąd | Alert „Podano niepoprawny numer” / „W śpiewniku znajdują się 2000 pieśni.”; po OK dialog wejściowy otwiera się ponownie | Dialog „Uwaga”: `'Podano niepoprawny numer. W śpiewniku znajduje się 2000 pieśni.'` lub `'Pieśń o podanym numerze nie została znaleziona'`; bez ponownego otwarcia | **R** |
+| Przejście do numeru: zakres | 1…2000 (zakodowane) | Od 12.0.0: 1…liczba pieśni w bazie, bez zakodowanej wartości | **—** zachowanie takie samo przy pełnym śpiewniku |
+| Przejście do numeru: błąd | Alert „Podano niepoprawny numer” / „W śpiewniku znajdują się 2000 pieśni.”; po OK dialog wejściowy otwiera się ponownie | Dialog „Uwaga”: „Podano niepoprawny numer. W śpiewniku znajduje się N pieśni.” (N z bazy) lub „Pieśń o podanym numerze nie została znaleziona”; bez ponownego otwarcia | **R** |
 | Przejście do numeru: mechanizm | Podmiana `song` w tym samym widoku; `currentIndex` **nie** jest aktualizowany | `Navigator.pushReplacement` na nowy `SongDetailView` | **R** |
 | **Swipe poprzednia/następna** | `DragGesture(minimumDistance: 50)`, rozstrzygane na końcu gestu; `width > 0` → poprzednia, pozostałe → następna | `onPanUpdate` przy każdym zdarzeniu z `\|dx\| > 10` (NIEPOTWIERDZONE: wielokrotne wyzwolenie) | **R** |
 | Swipe: po przejściu do numeru | Liczy od pierwotnie otwartej pieśni | Liczy od wyświetlanej pieśni | **R** |
@@ -97,7 +98,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 |---|---|
 | Blokada wygaszania ekranu na ekranie szczegółów | Zawsze włączona, bez ustawienia |
 | Kopiowanie treści do schowka z SnackBarem | W miejscu udostępniania |
-| Przeciągany pasek przewijania z etykietą numeru | Tylko przy pełnej liście 2000 |
+| Przeciągany pasek przewijania z etykietą numeru | Tylko przy pełnej liście |
 | Prośba o ocenę po pierwszym dodaniu ulubionej | Raz na uruchomienie |
 | Wejście do ustawień z każdej zakładki | — |
 | Komunikat „Pieśń o podanym numerze nie została znaleziona” | Osobny od „niepoprawny numer” |
