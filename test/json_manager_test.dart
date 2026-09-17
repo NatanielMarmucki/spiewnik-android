@@ -55,19 +55,9 @@ void main() {
       expect(data.songs.every((s) => s.title.trim().isNotEmpty && s.content.trim().isNotEmpty), isTrue);
     }
 
-    test('assets/songs_data_v2.json parses with dataVersion 1', () {
-      final file = File('assets/songs_data_v2.json');
-      if (!file.existsSync()) {
-        markTestSkipped('assets/songs_data_v2.json not present');
-        return;
-      }
-      final data = SongsData.fromJsonString(file.readAsStringSync());
-      expect(data.dataVersion, 1);
-      expectFullSongbook(data);
-    });
-
-    test('assets/songs_data.json parses', () {
+    test('assets/songs_data.json parses in the versioned format', () {
       final data = SongsData.fromJsonString(File(JsonManager.assetPath).readAsStringSync());
+      expect(data.dataVersion, greaterThanOrEqualTo(1));
       expectFullSongbook(data);
     });
   });
