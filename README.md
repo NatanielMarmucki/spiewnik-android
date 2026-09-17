@@ -98,6 +98,42 @@ xcrun simctl spawn "$SIM" log show --last 5m --style compact --predicate 'proces
 - w aplikacji: te same ulubione, własne pieśni z pełną treścią, po drugim uruchomieniu bez duplikatów;
 - `Model.sqlite`, `-wal` i `-shm` identyczne z kopią.
 
+## CI
+
+GitHub Actions, `.github/workflows/`:
+
+| Workflow | Kiedy | Co robi |
+|---|---|---|
+| `ci.yml`, zadanie „Analyze and test” | każdy pull request i push do `main` | `flutter analyze --no-fatal-infos` i `flutter test` na Ubuntu |
+| `ci.yml`, zadanie „Build the Android app” | jw., równolegle | `flutter build apk --debug --target-platform android-arm64` |
+| `ios-build.yml` | **tylko ręcznie** (zakładka Actions → „iOS build” → „Run workflow”) | `flutter build ios --simulator --no-codesign` na macOS |
+
+Oba zadania `ci.yml` idą równolegle, więc wynik testów jest po około dwóch minutach, niezależnie od dłuższego buildu
+Androida. Build debug powstaje tylko dla `android-arm64`: to wystarczy, żeby wykryć błędy kompilacji i linkowania,
+a pełny build robi to samo trzy razy.
+
+Flutter jest przypięty do wersji 3.47.4, tej samej co w projekcie. Przed testami CI instaluje `libsqlite3-dev`
+i pobiera bibliotekę ObjectBoksa skryptem `tools/fetch_objectbox_lib.sh`. Każdy nieudany krok przerywa przebieg,
+więc czerwone testy blokują scalenie.
+
+CI uruchamia `flutter analyze --no-fatal-infos`: bez tej flagi analiza kończy się błędem przy każdej uwadze,
+także poziomu „info”. Uwagi „info” (m.in. `print` i przestarzałe `canLaunch`) są znane i znikną przy porządkach
+w widokach; błędy i ostrzeżenia przerywają przebieg.
+
+Workflow iOS jest ręczny, bo minuty na runnerze macOS liczą się razy dziesięć. Warto go uruchomić przed wydaniem
+oraz po zmianach w `ios/`, we wtyczkach albo w wersji Fluttera.
+
+To samo lokalnie:
+
+```sh
+tools/fetch_objectbox_lib.sh
+flutter pub get
+flutter analyze --no-fatal-infos
+flutter test
+flutter build apk --debug --target-platform android-arm64
+flutter build ios --simulator --no-codesign   # tylko na macOS
+```
+
 ## Znane pułapki
 
 ### `flutter_native_splash` nadpisuje `UIStatusBarHidden` i zasoby Androida

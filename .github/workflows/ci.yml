@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push to the same branch cancels the previous run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Fast feedback: finishes in about two minutes, so a broken test shows up long before the Android build.
+  test:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pinned on purpose: the project is built and tested with this Flutter version.
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.4
+          channel: stable
+          cache: true
+
+      # Recommended by the README of sqflite_common_ffi, used by the tests of the old iOS database reader.
+      - name: Install SQLite
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+
+      - name: Cache pub packages and build hooks
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/hooks_runner
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-pub-
+
+      - name: Get packages
+        run: flutter pub get
+
+      # lib/libobjectbox.so is not in the repository; without it every test using ObjectBox fails.
+      - name: Download the ObjectBox library
+        run: tools/fetch_objectbox_lib.sh
+
+      # flutter analyze fails on any issue by default. Info-level hints (print, deprecated canLaunch)
+      # are known and go away with the redesign, so only they are tolerated; errors and warnings fail the step.
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: Test
+        run: flutter test
+
+  android:
+    name: Build the Android app
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.4
+          channel: stable
+          cache: true
+
+      - name: Cache pub packages and Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.gradle/caches/modules-2
+            ~/.gradle/caches/build-cache-1
+            ~/.gradle/wrapper
+            android/.gradle
+            build/app/intermediates/cxx
+          key: ${{ runner.os }}-android-${{ hashFiles('pubspec.lock', 'android/gradle/wrapper/gradle-wrapper.properties', 'android/settings.gradle') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-android-${{ hashFiles('pubspec.lock', 'android/gradle/wrapper/gradle-wrapper.properties', 'android/settings.gradle') }}-
+            ${{ runner.os }}-android-
+
+      - name: Get packages
+        run: flutter pub get
+
+      # One architecture is enough to catch compile and linking errors; a full build makes three.
+      - name: Build the Android app
+        run: flutter build apk --debug --target-platform android-arm64
