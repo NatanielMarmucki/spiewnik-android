@@ -9,6 +9,7 @@ import 'package:spiewnik/view/favorite_songs_view.dart';
 import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
 import 'package:spiewnik/view/settings_view.dart';
+import 'package:spiewnik/data/repositories/my_song_repository.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/model/font_size_model.dart';
@@ -151,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     viewModel = SongViewModel(widget.store);
-    mySongViewModel = MySongViewModel(widget.store);
+    mySongViewModel = MySongViewModel(ObjectBoxMySongRepository(widget.store));
   }
 
   List<Widget> _buildScreens() {
