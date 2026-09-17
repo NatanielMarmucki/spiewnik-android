@@ -80,9 +80,14 @@ jobs:
           path: |
             ~/.pub-cache
             ~/.gradle/caches/modules-2
+            ~/.gradle/caches/build-cache-1
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-android-${{ hashFiles('pubspec.lock', 'android/gradle/wrapper/gradle-wrapper.properties', 'android/settings.gradle') }}
-          restore-keys: ${{ runner.os }}-android-
+            android/.gradle
+            build/app/intermediates/cxx
+          key: ${{ runner.os }}-android-${{ hashFiles('pubspec.lock', 'android/gradle/wrapper/gradle-wrapper.properties', 'android/settings.gradle') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-android-${{ hashFiles('pubspec.lock', 'android/gradle/wrapper/gradle-wrapper.properties', 'android/settings.gradle') }}-
+            ${{ runner.os }}-android-
 
       - name: Get packages
         run: flutter pub get
