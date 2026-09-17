@@ -14,6 +14,7 @@ import 'package:objectbox/internal.dart'
 import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
+import 'model/my_song_model.dart';
 import 'model/song_model.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
@@ -60,6 +61,46 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(2, 3938641074242367669),
+    name: 'MySong',
+    lastPropertyId: const obx_int.IdUid(5, 1761442361365989912),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 3119382516938279091),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 518437909453992773),
+        name: 'title',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 8286221452805232626),
+        name: 'content',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 4549469558482212416),
+        name: 'createdAt',
+        type: 12,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 1761442361365989912),
+        name: 'updatedAt',
+        type: 12,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -100,7 +141,7 @@ Future<obx.Store> openStore({
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(1, 668007825265052091),
+    lastEntityId: const obx_int.IdUid(2, 3938641074242367669),
     lastIndexId: const obx_int.IdUid(1, 2701213689850694877),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
@@ -172,6 +213,60 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    MySong: obx_int.EntityDefinition<MySong>(
+      model: _entities[1],
+      toOneRelations: (MySong object) => [],
+      toManyRelations: (MySong object) => {},
+      getId: (MySong object) => object.id,
+      setId: (MySong object, int id) {
+        object.id = id;
+      },
+      objectToFB: (MySong object, fb.Builder fbb) {
+        final titleOffset = fbb.writeString(object.title);
+        final contentOffset = fbb.writeString(object.content);
+        fbb.startTable(6);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, titleOffset);
+        fbb.addOffset(2, contentOffset);
+        fbb.addInt64(3, object.createdAt.microsecondsSinceEpoch * 1000);
+        fbb.addInt64(4, object.updatedAt.microsecondsSinceEpoch * 1000);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final titleParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final contentParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 8, '');
+        final createdAtParam = DateTime.fromMicrosecondsSinceEpoch(
+          (const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0) / 1000)
+              .round(),
+        );
+        final updatedAtParam = DateTime.fromMicrosecondsSinceEpoch(
+          (const fb.Int64Reader().vTableGet(buffer, rootOffset, 12, 0) / 1000)
+              .round(),
+        );
+        final object = MySong(
+          id: idParam,
+          title: titleParam,
+          content: contentParam,
+          createdAt: createdAtParam,
+          updatedAt: updatedAtParam,
+        );
+
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -200,5 +295,33 @@ class Song_ {
   /// See [Song.title].
   static final title = obx.QueryStringProperty<Song>(
     _entities[0].properties[4],
+  );
+}
+
+/// [MySong] entity fields to define ObjectBox queries.
+class MySong_ {
+  /// See [MySong.id].
+  static final id = obx.QueryIntegerProperty<MySong>(
+    _entities[1].properties[0],
+  );
+
+  /// See [MySong.title].
+  static final title = obx.QueryStringProperty<MySong>(
+    _entities[1].properties[1],
+  );
+
+  /// See [MySong.content].
+  static final content = obx.QueryStringProperty<MySong>(
+    _entities[1].properties[2],
+  );
+
+  /// See [MySong.createdAt].
+  static final createdAt = obx.QueryDateNanoProperty<MySong>(
+    _entities[1].properties[3],
+  );
+
+  /// See [MySong.updatedAt].
+  static final updatedAt = obx.QueryDateNanoProperty<MySong>(
+    _entities[1].properties[4],
   );
 }
