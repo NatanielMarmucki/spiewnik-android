@@ -58,3 +58,26 @@ class FakeShare {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(_channel, null);
   }
 }
+
+/// Records url_launcher calls made through its method channel. Every URL can be launched.
+class FakeUrlLauncher {
+  static const _channel = MethodChannel('plugins.flutter.io/url_launcher');
+
+  final List<String> launchedUrls = [];
+
+  void install() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      _channel,
+      (MethodCall call) async {
+        if (call.method == 'launch') {
+          launchedUrls.add((call.arguments as Map<Object?, Object?>)['url'] as String);
+        }
+        return true;
+      },
+    );
+  }
+
+  void uninstall() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(_channel, null);
+  }
+}
