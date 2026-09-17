@@ -14,27 +14,60 @@ void main() {
     return MySong(title: title, content: 'treść', createdAt: createdAt, updatedAt: createdAt);
   }
 
-  test('loads user songs newest first', () {
-    testStore.store.box<MySong>().putMany([
-      buildMySong('Środkowa', DateTime(2026, 5, 1)),
-      buildMySong('Najnowsza', DateTime(2026, 9, 1)),
-      buildMySong('Najstarsza', DateTime(2025, 1, 1)),
-    ]);
+  group('order', () {
+    List<String> titles(MySongViewModel viewModel) =>
+        viewModel.mySongsNotifier.value.map((song) => song.title).toList();
 
-    final viewModel = MySongViewModel(testStore.store);
+    test('lists user songs alphabetically by title, not by creation date', () {
+      testStore.store.box<MySong>().putMany([
+        buildMySong('Środkowa', DateTime(2026, 5, 1)),
+        buildMySong('Najnowsza', DateTime(2026, 9, 1)),
+        buildMySong('Najstarsza', DateTime(2025, 1, 1)),
+      ]);
 
-    expect(viewModel.mySongsNotifier.value.map((song) => song.title), ['Najnowsza', 'Środkowa', 'Najstarsza']);
-  });
+      expect(titles(MySongViewModel(testStore.store)), ['Najnowsza', 'Najstarsza', 'Środkowa']);
+    });
 
-  test('orders user songs created at the same moment by id, lowest first', () {
-    final createdAt = DateTime(2026, 9, 17, 18, 1, 55);
-    final box = testStore.store.box<MySong>();
-    final first = box.put(buildMySong('Zapisana pierwsza', createdAt));
-    final second = box.put(buildMySong('Dodana druga', createdAt));
+    test('puts Polish letters right after their base letters', () {
+      testStore.store.box<MySong>().putMany([
+        for (final title in ['Żniwo', 'Modlitwa', 'Źródło', 'Ósemka', 'Łaska', 'Zbawienie', 'Oda', 'Lampa'])
+          buildMySong(title, DateTime(2026)),
+      ]);
 
-    final viewModel = MySongViewModel(testStore.store);
+      expect(
+        titles(MySongViewModel(testStore.store)),
+        ['Lampa', 'Łaska', 'Modlitwa', 'Oda', 'Ósemka', 'Zbawienie', 'Źródło', 'Żniwo'],
+      );
+    });
 
-    expect(viewModel.mySongsNotifier.value.map((song) => song.id), [first, second]);
+    test('ignores letter case', () {
+      testStore.store.box<MySong>().putMany([
+        for (final title in ['baranek', 'CIEBIE', 'Anioł', 'łaska', 'Lampa']) buildMySong(title, DateTime(2026)),
+      ]);
+
+      expect(titles(MySongViewModel(testStore.store)), ['Anioł', 'baranek', 'CIEBIE', 'Lampa', 'łaska']);
+    });
+
+    test('orders songs with the same title by id, lowest first', () {
+      final box = testStore.store.box<MySong>();
+      final first = box.put(buildMySong('Ta sama', DateTime(2026, 9, 1)));
+      final second = box.put(buildMySong('ta sama', DateTime(2026, 1, 1)));
+      final third = box.put(buildMySong('Ta sama', DateTime(2025, 1, 1)));
+
+      final viewModel = MySongViewModel(testStore.store);
+
+      expect(viewModel.mySongsNotifier.value.map((song) => song.id), [first, second, third]);
+    });
+
+    test('puts songs with an empty title first', () {
+      testStore.store.box<MySong>().putMany([
+        buildMySong('Alleluja', DateTime(2026)),
+        buildMySong('', DateTime(2026)),
+        buildMySong('1. Psalm', DateTime(2026)),
+      ]);
+
+      expect(titles(MySongViewModel(testStore.store)), ['', '1. Psalm', 'Alleluja']);
+    });
   });
 
   test('starts with an empty list when there are no user songs', () {
@@ -50,7 +83,7 @@ void main() {
       viewModel = MySongViewModel(testStore.store, now: () => now);
     });
 
-    test('adds a user song with createdAt and updatedAt set to now and shows it first', () {
+    test('adds a user song with createdAt and updatedAt set to now and shows it in the list', () {
       viewModel.addSong(title: 'Starsza', content: 'treść');
       now = DateTime(2026, 9, 17, 13);
 
