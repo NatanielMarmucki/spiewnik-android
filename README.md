@@ -15,9 +15,15 @@ Skrypt pobiera `objectbox-c` w wersji zgodnej z pakietem `objectbox` z `pubspec.
 kontrolną archiwum. Obsługuje macOS oraz Linux x64 i aarch64. Po aktualizacji pakietu `objectbox` skrypt
 przerwie działanie i trzeba w nim podbić wersję biblioteki oraz sumy kontrolne.
 
-Testy czytnika starej bazy iOS (`test/core_data_reader_test.dart`) używają systemowej biblioteki SQLite przez
-`sqflite_common_ffi`. Na macOS jest dostępna od razu, na Linuksie (np. CI na Ubuntu) potrzebny jest pakiet
-`libsqlite3-dev`.
+Testy czytnika starej bazy iOS (`test/core_data_reader_test.dart`, `test/core_data_migration_test.dart`) używają
+SQLite przez `sqflite_common_ffi`. Pakiet `sqlite3` (od wersji 3) przy pierwszym uruchomieniu testów pobiera przez
+build hook prekompilowaną bibliotekę z wydań `sqlite3.dart` na GitHubie (sprawdzaną sumą kontrolną) do
+`.dart_tool/hooks_runner/`, więc pierwsze uruchomienie, także na CI, wymaga dostępu do sieci. Na Linuksie README
+`sqflite_common_ffi` nadal zaleca pakiet `libsqlite3-dev`.
+
+`sqflite_common_ffi` jest zależnością deweloperską: biblioteka SQLite z hooka trafia do buildów debug (APK debug,
+aplikacja na symulator iOS), ale nie do APK release ani archiwum IPA. Aplikacja na urządzeniu czyta starą bazę iOS
+przez `sqflite`, czyli systemowe SQLite.
 
 ## Znane pułapki
 
