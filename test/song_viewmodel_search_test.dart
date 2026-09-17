@@ -1,0 +1,64 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:spiewnik/model/polish_collation.dart';
+import 'package:spiewnik/model/song_model.dart';
+import 'package:spiewnik/viewmodel/song_viewmodel.dart';
+
+import 'support/test_store.dart';
+
+void main() {
+  late TestStore testStore;
+  late SongViewModel viewModel;
+
+  setUp(() {
+    testStore = TestStore.open();
+    testStore.store.box<Song>().putMany([
+      Song(number: 1, title: 'Źródło', content: 'Źródło wody żywej', favorite: false),
+      Song(number: 2, title: 'Zrodlo', content: 'Zrodlo bez ogonkow', favorite: false),
+      Song(number: 3, title: 'Żniwo', content: 'ŻNIWO WIELKIE, ŁASKA PANA', favorite: false),
+      Song(number: 12, title: 'Inna', content: '1. Chwalcie, ludy, Pana!', favorite: false),
+    ]);
+    viewModel = SongViewModel(testStore.store);
+  });
+
+  tearDown(() => testStore.close());
+
+  List<int> search(String query) {
+    viewModel.searchText = query;
+    return viewModel.filteredSongsNotifier.value.map((song) => song.number).toList();
+  }
+
+  group('search', () {
+    test('a query without diacritics finds text with and without them', () {
+      expect(search('zrodlo'), [1, 2]);
+    });
+
+    test('a query with diacritics finds text with and without them', () {
+      expect(search('źródło'), [1, 2]);
+    });
+
+    test('ignores letter case, also for Polish capital letters', () {
+      expect(search('zniwo wielkie'), [3]);
+      expect(search('Łaska'), [3]);
+      expect(search('ŻYWEJ'), [1]);
+    });
+
+    test('still ignores the removed punctuation and matches song numbers', () {
+      expect(search('chwalcie ludy pana'), [12]);
+      expect(search('12'), [12]);
+    });
+
+    test('shows all songs for an empty query', () {
+      expect(search(''), [1, 2, 3, 12]);
+    });
+  });
+
+  group('removePolishDiacritics', () {
+    test('replaces every Polish letter with its base letter and keeps letter case', () {
+      expect(removePolishDiacritics('ąćęłńóśźż ĄĆĘŁŃÓŚŹŻ'), 'acelnoszz ACELNOSZZ');
+    });
+
+    test('keeps other characters unchanged', () {
+      expect(removePolishDiacritics('Café, „Pieśń” — 12!'), 'Café, „Piesn” — 12!');
+    });
+  });
+}
