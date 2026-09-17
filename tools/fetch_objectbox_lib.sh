@@ -3,15 +3,15 @@
 # The library is not committed (see .gitignore); run this once after cloning and on CI.
 #
 # The C library version must match the objectbox Dart package: the Dart bindings do not
-# detect C function signature mismatches. objectbox 5.0.1 requires objectbox-c 5.0.0-rc
-# (see install.sh in objectbox-dart v5.0.1).
+# detect C function signature mismatches. objectbox 5.3.2 requires objectbox-c 5.3.2
+# (see install.sh in objectbox-dart v5.3.2).
 #
 # Usage: tools/fetch_objectbox_lib.sh
 # Overrides (for testing the script): OBJECTBOX_PLATFORM=linux-x64, OBJECTBOX_LIB_DIR=/some/dir
 set -euo pipefail
 
-readonly C_LIBRARY_VERSION="5.0.0-rc"
-readonly DART_PACKAGE_VERSION="5.0.1"
+readonly C_LIBRARY_VERSION="5.3.2"
+readonly DART_PACKAGE_VERSION="5.3.2"
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 lib_dir="${OBJECTBOX_LIB_DIR:-${repo_root}/lib}"
@@ -42,17 +42,17 @@ fi
 case "${platform}" in
   macos-universal)
     archive="objectbox-macos-universal.zip"
-    checksum="ba1eced6e71b935b64cbe74861616d53c08b7723756b4ceaafac7b77881bd698"
+    checksum="680c598573ede04b9762565d48d4e161ad286f786f159abb8da89353bfa1d0bc"
     library="libobjectbox.dylib"
     ;;
   linux-x64)
     archive="objectbox-linux-x64.tar.gz"
-    checksum="280195f19594227068fcf389d32d5b315c9a6daabc3115cd3aac9c3cc8ad39a8"
+    checksum="6dbb5450c36dd11ee9074f16ecc61e79b45ff43c2082934601f3166b39c8a613"
     library="libobjectbox.so"
     ;;
   linux-aarch64)
     archive="objectbox-linux-aarch64.tar.gz"
-    checksum="d11d7be8b5ff9cac361de050f634be02f82571b0a16c76da0ca33cf2adc2613e"
+    checksum="bdfbfbf4971057e11018ca6645697d8a40ebc7df56ccde63397cbb0e0609c0e8"
     library="libobjectbox.so"
     ;;
   *)

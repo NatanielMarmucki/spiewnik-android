@@ -124,35 +124,40 @@ class SongListViewState extends State<SongListView> {
                             alignment: Alignment.center,
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
-                              child: ListTile(
-                                contentPadding:
-                                const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
-                                leading: CircleAvatar(
-                                  backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                                  child: Text(
-                                    song.number.toString(),
-                                    style:
-                                    const TextStyle(color: Colors.white),
+                              child: Material(
+                                // ListTile paints ink splashes on the nearest Material. Without this one, the colored
+                                // decoration of the row hides them, which newer Flutter versions assert in debug mode.
+                                type: MaterialType.transparency,
+                                child: ListTile(
+                                  contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
+                                  leading: CircleAvatar(
+                                    backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                    child: Text(
+                                      song.number.toString(),
+                                      style:
+                                      const TextStyle(color: Colors.white),
+                                    ),
                                   ),
+                                  title:
+                                  Text(song.title, style:
+                                  const TextStyle(fontWeight:
+                                  FontWeight.bold), maxLines:
+                                  1, overflow:
+                                  TextOverflow.ellipsis),
+                                  trailing:
+                                  Column(mainAxisAlignment:
+                                  MainAxisAlignment.center, children:
+                                  [if (song.favorite)
+                                    const Icon(Icons.favorite, color:
+                                    Colors.red)]),
+                                  onTap:
+                                      () {Navigator.push(context, MaterialPageRoute(builder:
+                                      (context) => SongDetailView(song:
+                                  song, viewModel:
+                                      widget.viewModel)));},
                                 ),
-                                title:
-                                Text(song.title, style:
-                                const TextStyle(fontWeight:
-                                FontWeight.bold), maxLines:
-                                1, overflow:
-                                TextOverflow.ellipsis),
-                                trailing:
-                                Column(mainAxisAlignment:
-                                MainAxisAlignment.center, children:
-                                [if (song.favorite)
-                                  const Icon(Icons.favorite, color:
-                                  Colors.red)]),
-                                onTap:
-                                    () {Navigator.push(context, MaterialPageRoute(builder:
-                                    (context) => SongDetailView(song:
-                                song, viewModel:
-                                    widget.viewModel)));},
                               ),
                             ),
                           ),
