@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/model/my_song_model.dart';
+import 'package:spiewnik/view/my_song_detail_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 
 class MySongsView extends StatelessWidget {
@@ -67,6 +68,14 @@ class MySongsView extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MySongDetailView(song: song, viewModel: viewModel),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),

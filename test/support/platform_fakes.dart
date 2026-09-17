@@ -1,0 +1,60 @@
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+/// Records wakelock_plus calls made through its pigeon channel.
+class FakeWakelock {
+  static const _toggleChannel = 'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle';
+  static const _codec = _PigeonMessageCodec();
+
+  /// Every requested state, in order: true for enable, false for disable.
+  final List<bool> toggles = [];
+
+  void install() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
+      _toggleChannel,
+      (ByteData? message) async {
+        final arguments = _codec.decodeMessage(message) as List<Object?>;
+        final toggleMessage = arguments.single as List<Object?>;
+        toggles.add(toggleMessage.first as bool);
+        return _codec.encodeMessage(<Object?>[]);
+      },
+    );
+  }
+
+  void uninstall() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(_toggleChannel, null);
+  }
+}
+
+/// Reads pigeon data classes (encoded as custom types 129+) as their field lists.
+class _PigeonMessageCodec extends StandardMessageCodec {
+  const _PigeonMessageCodec();
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    return type >= 129 ? readValue(buffer) : super.readValueOfType(type, buffer);
+  }
+}
+
+/// Records share_plus calls made through its method channel.
+class FakeShare {
+  static const _channel = MethodChannel('dev.fluttercommunity.plus/share');
+
+  final List<Map<Object?, Object?>> shares = [];
+
+  void install() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      _channel,
+      (MethodCall call) async {
+        if (call.method == 'share') {
+          shares.add(call.arguments as Map<Object?, Object?>);
+        }
+        return 'dev.fluttercommunity.plus/share/unavailable';
+      },
+    );
+  }
+
+  void uninstall() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(_channel, null);
+  }
+}
