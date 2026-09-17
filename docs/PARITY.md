@@ -34,6 +34,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Wyszukiwanie: przycisk „Anuluj” | Jest (chowa klawiaturę, czyści) | Brak; jest ikona `Icons.cancel` (czyści, przewija na górę) | **R** |
 | Wyszukiwanie w ulubionych | Brak | Brak | **—** |
 | Wyszukiwanie we własnych pieśniach | Pole widoczne, **nie filtruje** | Brak funkcji | **B** (i martwa funkcja po stronie iOS) |
+| Własne pieśni: sortowanie listy | `title` rosnąco (`NSSortDescriptor` bez porównania uwzględniającego lokalizację): kolejność punktów kodowych Unicode, polskie znaki diakrytyczne za „Z”, wielkie litery przed małymi | Od 12.0.0: `title` rosnąco według polskiego alfabetu (Ł po L, Ż po Ź), bez rozróżniania wielkości liter; te same tytuły po `id` rosnąco | **R** — świadome ulepszenie, nie odtworzenie zachowania iOS |
 | **Szczegóły: tytuł paska** | `"<number>. <title>"` | `'${song.number}. ${song.title}'` | **—** |
 | Szczegóły: wyświetlanie treści | Jeden `Text`, bez parsowania | Jeden `Text`, bez parsowania | **—** |
 | **Przejście do numeru: wejście** | `UIAlertController`, klawiatura `.numberPad`, brak limitu długości | `AlertDialog`, `digitsOnly`, maks. 4 znaki | **R** |
