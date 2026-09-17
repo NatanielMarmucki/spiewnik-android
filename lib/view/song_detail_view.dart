@@ -128,14 +128,6 @@ class SongDetailViewState extends State<SongDetailView> {
     );
   }
 
-  Widget _buildIconButton({required IconData icon, Color? color, required VoidCallback onPressed}) {
-    return IconButton(
-      icon: Icon(icon, color: color),
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      onPressed: onPressed,
-    );
-  }
-
   void _showSearchDialog(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final FocusNode focusNode = FocusNode();

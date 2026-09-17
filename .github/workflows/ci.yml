@@ -53,10 +53,10 @@ jobs:
       - name: Download the ObjectBox library
         run: tools/fetch_objectbox_lib.sh
 
-      # Without --fatal-infos for now: the repository still has known info-level hints
-      # (print, deprecated canLaunch) that go away with the redesign. Errors and warnings fail the step.
+      # flutter analyze fails on any issue by default. Info-level hints (print, deprecated canLaunch)
+      # are known and go away with the redesign, so only they are tolerated; errors and warnings fail the step.
       - name: Analyze
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Test
         run: flutter test

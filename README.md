@@ -111,8 +111,9 @@ Flutter jest przypięty do wersji 3.47.4, tej samej co w projekcie. Przed testam
 i pobiera bibliotekę ObjectBoksa skryptem `tools/fetch_objectbox_lib.sh`. Każdy nieudany krok przerywa przebieg,
 więc czerwone testy blokują scalenie.
 
-`flutter analyze` działa bez `--fatal-infos`: uwagi poziomu „info” (m.in. `print` i przestarzałe `canLaunch`)
-są znane i znikną przy porządkach w widokach. Błędy i ostrzeżenia przerywają przebieg.
+CI uruchamia `flutter analyze --no-fatal-infos`: bez tej flagi analiza kończy się błędem przy każdej uwadze,
+także poziomu „info”. Uwagi „info” (m.in. `print` i przestarzałe `canLaunch`) są znane i znikną przy porządkach
+w widokach; błędy i ostrzeżenia przerywają przebieg.
 
 Workflow iOS jest ręczny, bo minuty na runnerze macOS liczą się razy dziesięć. Warto go uruchomić przed wydaniem
 oraz po zmianach w `ios/`, we wtyczkach albo w wersji Fluttera.
@@ -122,7 +123,7 @@ To samo lokalnie:
 ```sh
 tools/fetch_objectbox_lib.sh
 flutter pub get
-flutter analyze
+flutter analyze --no-fatal-infos
 flutter test
 flutter build apk --debug
 flutter build ios --simulator --no-codesign   # tylko na macOS
