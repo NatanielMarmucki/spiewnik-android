@@ -84,7 +84,8 @@ class SongListViewState extends State<SongListView> {
                 controller: _scrollController,
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 labelTextBuilder: (double offset) {
-                  if (songs.length != 2000) {
+                  // The label shows the song number, which only matches the position in a full list.
+                  if (songs.length != widget.viewModel.songCount) {
                     return const Text('');
                   }
                   final int currentIndex = (offset ~/ 70);

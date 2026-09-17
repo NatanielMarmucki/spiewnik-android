@@ -19,6 +19,9 @@ class FakeSongRepository implements SongRepository {
   List<Song> all() => List.of(songs);
 
   @override
+  int count() => songs.length;
+
+  @override
   List<Song> favorites() => songs.where((song) => song.favorite).toList();
 
   @override

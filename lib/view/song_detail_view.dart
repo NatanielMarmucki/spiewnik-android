@@ -215,7 +215,7 @@ class SongDetailViewState extends State<SongDetailView> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    _navigateToSong(context, int.tryParse(input));
+                    _navigateToSong(context, input);
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.blue,
@@ -268,39 +268,39 @@ class SongDetailViewState extends State<SongDetailView> {
     );
   }
 
-  void _navigateToSong(BuildContext context, int? number) {
-    if (number != null && number >= 1 && number <= 2000) {
-      final foundSong = widget.viewModel.findSongByNumber(number);
-      if (foundSong != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SongDetailView(song: foundSong, viewModel: widget.viewModel)),
-        );
-      } else {
+  void _navigateToSong(BuildContext context, String input) {
+    final result = widget.viewModel.goToNumber(input);
+    switch (result.outcome) {
+      case GoToSongOutcome.found:
+        _openSong(context, result.song!);
+      case GoToSongOutcome.notFound:
         _showMessageDialog(context, 'Pieśń o podanym numerze nie została znaleziona');
-      }
-    } else {
-      _showMessageDialog(context, 'Podano niepoprawny numer. W śpiewniku znajduje się 2000 pieśni.');
+      case GoToSongOutcome.invalidNumber:
+        _showMessageDialog(
+          context,
+          'Podano niepoprawny numer. W śpiewniku znajduje się ${widget.viewModel.songCount} pieśni.',
+        );
     }
+  }
+
+  void _openSong(BuildContext context, Song song) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => SongDetailView(song: song, viewModel: widget.viewModel)),
+    );
   }
 
   void _goToNextSong() {
     final nextSong = widget.viewModel.findNextSong(song.number);
     if (nextSong != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SongDetailView(song: nextSong, viewModel: widget.viewModel)),
-      );
+      _openSong(context, nextSong);
     }
   }
 
   void _goToPreviousSong() {
     final previousSong = widget.viewModel.findPreviousSong(song.number);
     if (previousSong != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SongDetailView(song: previousSong, viewModel: widget.viewModel)),
-      );
+      _openSong(context, previousSong);
     }
   }
 }
