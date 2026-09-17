@@ -28,14 +28,4 @@ class Song {
       favorite: json['favorite'] as bool? ?? false,
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'number': number,
-      'title': title,
-      'content': content,
-      'favorite': favorite,
-    };
-  }
 }
