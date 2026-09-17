@@ -1,0 +1,35 @@
+name: iOS build
+
+# Manual only: macOS runner minutes are billed at ten times the rate, so this never runs by itself.
+# Run it before a release, or after changes to ios/, plugins or the Flutter version.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build the iOS app for the simulator
+    runs-on: macos-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.4
+          channel: stable
+          cache: true
+
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-spiewnik-${{ hashFiles('pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-spiewnik-
+
+      - name: Get packages
+        run: flutter pub get
+
+      # No signing certificate on the runner, so only the simulator build.
+      - name: Build for the simulator
+        run: flutter build ios --simulator --no-codesign

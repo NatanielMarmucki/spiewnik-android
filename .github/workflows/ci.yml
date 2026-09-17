@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push to the same branch cancels the previous run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Analyze, test and build the Android app
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Pinned on purpose: the project is built and tested with this Flutter version.
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.4
+          channel: stable
+          cache: true
+
+      # Recommended by the README of sqflite_common_ffi, used by the tests of the old iOS database reader.
+      - name: Install SQLite
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+
+      - name: Cache pub packages, Gradle and build hooks
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .dart_tool/hooks_runner
+          key: ${{ runner.os }}-spiewnik-${{ hashFiles('pubspec.lock', 'android/gradle/wrapper/gradle-wrapper.properties', 'android/settings.gradle') }}
+          restore-keys: ${{ runner.os }}-spiewnik-
+
+      - name: Get packages
+        run: flutter pub get
+
+      # lib/libobjectbox.so is not in the repository; without it every test using ObjectBox fails.
+      - name: Download the ObjectBox library
+        run: tools/fetch_objectbox_lib.sh
+
+      # Without --fatal-infos for now: the repository still has known info-level hints
+      # (print, deprecated canLaunch) that go away with the redesign. Errors and warnings fail the step.
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build the Android app
+        run: flutter build apk --debug
