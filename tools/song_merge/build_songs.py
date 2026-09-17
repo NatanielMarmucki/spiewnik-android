@@ -10,7 +10,8 @@ Skrypt odmawia działania, gdy:
   - brakuje którejkolwiek decyzji (wypisuje numery),
   - indeks i pliki się rozjeżdżają,
   - źródła zmieniły się od porównania (inny zestaw pieśni do decyzji),
-  - wynik nie przechodzi walidacji (2000 pozycji, numery 1–2000, niepuste pola).
+  - wynik nie przechodzi walidacji (2000 pozycji, numery 1–2000, niepuste pola,
+    brak niewidocznych znaków sterujących w tytułach i treściach).
 
 Użycie:
     python3 build_songs.py --work KATALOG [--src KATALOG] [--out PLIK] [--data-version N]
@@ -25,6 +26,7 @@ import os
 import re
 import sys
 import tempfile
+import unicodedata
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -202,6 +204,24 @@ def resolve_field(song: SongComparison, decision: Decision, field_name: str) -> 
     return getattr(items[0], field_name), None
 
 
+# Kategorie Unicode odrzucane w tytułach i treściach: Cc (znaki sterujące, np. \r, \t, NUL),
+# Cf (znaki formatujące, np. U+200B ZERO WIDTH SPACE, U+FEFF BOM, znaczniki kierunku tekstu),
+# Zl (U+2028 LINE SEPARATOR) i Zp (U+2029 PARAGRAPH SEPARATOR). Są niewidoczne, psują wyszukiwanie
+# i dzielenie tekstu, a w polskich tekstach pieśni nie mają zastosowania.
+FORBIDDEN_CATEGORIES = ("Cc", "Cf", "Zl", "Zp")
+# Wyjątki: \n dzieli zwrotki; U+00AD SOFT HYPHEN to typograficzna wskazówka podziału wyrazu
+# (występuje w zatwierdzonych danych, pieśń 118). Zwykła spacja i pozostałe Zs nie należą
+# do odrzucanych kategorii.
+ALLOWED_CHARACTERS = frozenset({"\n", "­"})
+
+
+def forbidden_characters(text: str) -> Counter:
+    return Counter(
+        ch for ch in text
+        if ch not in ALLOWED_CHARACTERS and unicodedata.category(ch) in FORBIDDEN_CATEGORIES
+    )
+
+
 def validate_output(songs: List[Dict[str, object]]) -> List[str]:
     errors = []
     if len(songs) != EXPECTED_COUNT:
@@ -222,6 +242,26 @@ def validate_output(songs: List[Dict[str, object]]) -> List[str]:
             value = song[name]
             if not isinstance(value, str) or not value.strip():
                 errors.append(f"nr {song['number']}: pole '{name}' jest puste lub nie jest tekstem")
+
+    offending: Dict[object, List[str]] = {}
+    for song in songs:
+        for name in ("title", "content"):
+            value = song[name]
+            if not isinstance(value, str):
+                continue
+            counts = forbidden_characters(value)
+            if counts:
+                details = ", ".join(
+                    f"U+{ord(ch):04X} {unicodedata.name(ch, '<control>')} ×{count}"
+                    for ch, count in sorted(counts.items())
+                )
+                offending.setdefault(song["number"], []).append(f"{name}: {details}")
+    if offending:
+        errors.append(
+            f"niewidoczne znaki sterujące w {len(offending)} pieśniach: "
+            + ", ".join(str(number) for number in offending)
+        )
+        errors += [f"nr {number}: {'; '.join(fields)}" for number, fields in offending.items()]
     return errors
 
 

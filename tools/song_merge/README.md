@@ -59,6 +59,17 @@ Automatycznie wypełniane są tylko pieśni różniące się wyłącznie białym
 `assets/songs_data_v2.json`: `{"dataVersion": N, "songs": [{"number", "title", "content"}]}`.
 Skrypt nigdy nie zapisuje do `songs_data.json`.
 
+Skrypt przerywa działanie i wypisuje numery pieśni, jeśli tytuł lub treść zawiera niewidoczne znaki
+z kategorii Unicode Cc, Cf, Zl lub Zp (np. `U+2028`, `U+2029`, `\r`, `\t`, `U+200B`, `U+FEFF`).
+Dozwolone są `\n` i `U+00AD` SOFT HYPHEN.
+
+## Testy
+
+```sh
+cd tools/song_merge
+python3 -m unittest test_build_songs.py
+```
+
 Każda zmiana tekstów w tym pliku wymaga podbicia `--data-version`, bo to ta liczba wyzwala nadpisanie
 tekstów u użytkowników. Przy nadpisywaniu pliku z inną treścią i niepodbitą wersją skrypt wypisze
 ostrzeżenie.
