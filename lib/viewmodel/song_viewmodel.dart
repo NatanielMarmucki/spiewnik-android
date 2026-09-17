@@ -1,11 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:objectbox/objectbox.dart';
 import 'package:spiewnik/model/polish_collation.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/objectbox.g.dart';
 import 'package:spiewnik/model/review_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 
 class SongViewModel {
   final Store store;
@@ -74,7 +72,7 @@ class SongViewModel {
     // Diacritics are removed from both sides, so "zrodlo" finds "źródło" and "źródło" finds "zrodlo".
     final lowercaseSearchText = removePolishDiacritics(_searchText.toLowerCase());
     filteredSongsNotifier.value = allSongsNotifier.value.where((song) {
-      final lowercaseContent = removePolishDiacritics(song.content?.toLowerCase() ?? '');
+      final lowercaseContent = removePolishDiacritics(song.content.toLowerCase());
       final cleanedContent = _removeNumber(lowercaseContent);
 
       return cleanedContent.contains(lowercaseSearchText) ||

@@ -169,6 +169,36 @@ void main() {
       expect(mySongs(), hasLength(1));
     });
 
+    test('does not treat different songs with the same joined title and content as duplicates', () async {
+      final path = CoreDataFixtures.copyTo('ios_with_data', documents);
+      await CoreDataFixtures.changeCopy(path, (database) async {
+        // SYNTHETIC DATA: "a b" + "c" is migrated first.
+        await database.rawInsert(
+          'INSERT INTO ZMYSONG (Z_PK, Z_ENT, Z_OPT, ZCONTENT, ZTITLE) VALUES (3, 1, 1, ?, ?)',
+          ['c', 'a b'],
+        );
+      });
+      await runMigration(path);
+      await (await prefs()).remove(CoreDataMigration.doneKey);
+      await CoreDataFixtures.changeCopy(path, (database) async {
+        // SYNTHETIC DATA: "a" + "b c" differs from "a b" + "c", but matches it when joined with a space.
+        // It is read first (lower Z_PK), so a joined key would skip it as already migrated.
+        await database.rawInsert(
+          'INSERT INTO ZMYSONG (Z_PK, Z_ENT, Z_OPT, ZCONTENT, ZTITLE) VALUES (2, 1, 1, ?, ?)',
+          ['b c', 'a'],
+        );
+      });
+
+      final second = await runMigration(path);
+
+      expect(second.mySongsAdded, 1);
+      expect(mySongs().map((song) => '${song.title}|${song.content}').toSet(), {
+        'Pieśń poranna|1. Dziękuję Ci, Panie, za nowy dzień.',
+        'a b|c',
+        'a|b c',
+      });
+    });
+
     test('running again without the done flag creates no duplicates', () async {
       // Simulates the app being killed after the data was written but before the flag was saved.
       final path = CoreDataFixtures.copyTo('ios_with_data', documents);
