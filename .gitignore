@@ -31,7 +31,7 @@ doc/api/
 .idea/
 *.iml
 
-# ObjectBox native library for local unit tests (see test/my_song_test.dart)
+# ObjectBox native library for local unit tests (fetched by tools/fetch_objectbox_lib.sh)
 lib/libobjectbox.dylib
 lib/libobjectbox.so
 lib/objectbox.dll

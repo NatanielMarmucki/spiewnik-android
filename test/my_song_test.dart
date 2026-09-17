@@ -1,5 +1,4 @@
-// Requires the ObjectBox native library for the host OS, e.g. lib/libobjectbox.dylib on macOS:
-// https://github.com/objectbox/objectbox-c/releases/download/v5.0.0-rc/objectbox-macos-universal.zip
+// Requires the ObjectBox native library in lib/; run tools/fetch_objectbox_lib.sh first.
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
