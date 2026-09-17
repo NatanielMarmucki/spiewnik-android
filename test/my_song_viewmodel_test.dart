@@ -26,6 +26,17 @@ void main() {
     expect(viewModel.mySongsNotifier.value.map((song) => song.title), ['Najnowsza', 'Środkowa', 'Najstarsza']);
   });
 
+  test('orders user songs created at the same moment by id, lowest first', () {
+    final createdAt = DateTime(2026, 9, 17, 18, 1, 55);
+    final box = testStore.store.box<MySong>();
+    final first = box.put(buildMySong('Zapisana pierwsza', createdAt));
+    final second = box.put(buildMySong('Dodana druga', createdAt));
+
+    final viewModel = MySongViewModel(testStore.store);
+
+    expect(viewModel.mySongsNotifier.value.map((song) => song.id), [first, second]);
+  });
+
   test('starts with an empty list when there are no user songs', () {
     expect(MySongViewModel(testStore.store).mySongsNotifier.value, isEmpty);
   });
