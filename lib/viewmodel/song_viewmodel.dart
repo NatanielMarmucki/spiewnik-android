@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:spiewnik/model/polish_collation.dart';
+import 'package:spiewnik/data/repositories/song_repository.dart';
 import 'package:spiewnik/model/song_model.dart';
-import 'package:spiewnik/objectbox.g.dart';
 import 'package:spiewnik/model/review_model.dart';
 import 'package:flutter/material.dart';
 
 class SongViewModel {
-  final Store store;
+  final SongRepository repository;
   final ValueNotifier<List<Song>> allSongsNotifier = ValueNotifier([]);
   final ValueNotifier<List<Song>> favoriteSongsNotifier = ValueNotifier([]);
   final ValueNotifier<List<Song>> filteredSongsNotifier = ValueNotifier([]);
@@ -15,7 +15,7 @@ class SongViewModel {
 
   String _searchText = '';
 
-  SongViewModel(this.store) {
+  SongViewModel(this.repository) {
     _loadAllSongs();
     _loadFavoriteSongs();
     _filterSongs();
@@ -35,25 +35,14 @@ class SongViewModel {
     favoriteSongsNotifier.value = getFavoriteSongs();
   }
 
-  List<Song> getAllSongs() {
-    final box = store.box<Song>();
-    return box.getAll();
-  }
+  List<Song> getAllSongs() => repository.all();
 
-  List<Song> getFavoriteSongs() {
-    final box = store.box<Song>();
-    return box.query(Song_.favorite.equals(true)).build().find();
-  }
+  List<Song> getFavoriteSongs() => repository.favorites();
 
-  Song? findSongByNumber(int number) {
-    final box = store.box<Song>();
-    return box.query(Song_.number.equals(number)).build().findFirst();
-  }
+  Song? findSongByNumber(int number) => repository.byNumber(number);
 
   void toggleFavoriteStatus(Song song) async {
-    final box = store.box<Song>();
-    song.favorite = !song.favorite;
-    box.put(song);
+    repository.setFavorite(song, !song.favorite);
     _loadAllSongs();
     _loadFavoriteSongs();
 
