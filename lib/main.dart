@@ -4,6 +4,7 @@ import 'objectbox.g.dart';
 import 'json_manager.dart';
 import 'package:spiewnik/view/song_list_view.dart';
 import 'package:spiewnik/view/favorite_songs_view.dart';
+import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
 import 'package:spiewnik/view/settings_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
@@ -165,6 +166,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
         actions: [
+          if (_selectedIndex == 2)
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: 'Dodaj pieśń',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MySongFormView(viewModel: mySongViewModel)),
+                );
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {

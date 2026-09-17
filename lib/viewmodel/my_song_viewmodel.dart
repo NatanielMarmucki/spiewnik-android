@@ -4,9 +4,10 @@ import 'package:spiewnik/objectbox.g.dart';
 
 class MySongViewModel {
   final Store store;
+  final DateTime Function() _now;
   final ValueNotifier<List<MySong>> mySongsNotifier = ValueNotifier([]);
 
-  MySongViewModel(this.store) {
+  MySongViewModel(this.store, {DateTime Function()? now}) : _now = now ?? DateTime.now {
     _loadMySongs();
   }
 
@@ -16,6 +17,28 @@ class MySongViewModel {
     final songs = query.find();
     query.close();
     return songs;
+  }
+
+  MySong addSong({required String title, required String content}) {
+    final now = _now();
+    final song = MySong(title: title, content: content, createdAt: now, updatedAt: now);
+    store.box<MySong>().put(song);
+    _loadMySongs();
+    return song;
+  }
+
+  /// Saves new title and content. Returns false and leaves updatedAt untouched when nothing changed.
+  bool updateSong(MySong song, {required String title, required String content}) {
+    if (song.title == title && song.content == content) {
+      return false;
+    }
+    song
+      ..title = title
+      ..content = content
+      ..updatedAt = _now();
+    store.box<MySong>().put(song);
+    _loadMySongs();
+    return true;
   }
 
   void _loadMySongs() {
