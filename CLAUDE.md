@@ -23,6 +23,11 @@ UI po polsku; kod, komentarze, commity i opisy PR po angielsku.
 
 ## Zasady
 
+- **Przed pierwszym commitem w sesji sprawdź gałąź: `git branch --show-current`.** Jeśli to `main`,
+  załóż nową gałąź (`git switch -c feature/...`) i dopiero commituj. Nigdy nie commituj bezpośrednio
+  na `main`, nawet drobiazgu: prywatne repo na planie Free nie ma ochrony gałęzi, więc nic cię nie
+  zatrzyma, a zmiana ominie review. Po scaleniu PR-a sprawdź gałąź ponownie — merge może cię
+  przestawić na `main`.
 - Nowa funkcja: widok w `lib/view/`, logika w view modelu, dane przez repozytorium (po PR-ach 2 i 3).
   `Store` i `Box` tylko w `lib/data/`, `lib/migration/`, `lib/json_manager.dart` i `lib/main.dart` — nigdy w widokach ani view modelach.
 - **Testy view modeli i widoków nie mogą wymagać prawdziwej bazy** (po PR-ach 2 i 3): używaj fake'ów repozytoriów.
