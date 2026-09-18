@@ -22,8 +22,9 @@ class GoToNumberIcon extends StatelessWidget {
   /// Odstęp między znakiem a obwódką soczewki.
   static const double _padding = 2.0;
 
-  /// Długość uchwytu lupy, liczona od krawędzi soczewki.
-  static const double _handle = 4.0;
+  /// Długość uchwytu lupy, liczona od krawędzi soczewki. Krótszy ginął przy soczewce
+  /// i lupa czytała się jak samo kółko.
+  static const double _handle = 7.0;
 
   static const double _stroke = 1.4;
   static const double _fontSize = 9.0;

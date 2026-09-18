@@ -46,17 +46,35 @@ void main() {
     expect(dialog.contentPadding, kDialogContentPadding);
   });
 
-  testWidgets('obie akcje stoją po prawej', (tester) async {
+  testWidgets('akcje rozchodzą się do krawędzi dialogu', (tester) async {
     await openConfirmation(tester);
 
     final row = tester.widget<Row>(
       find.descendant(of: find.byType(DialogActions), matching: find.byType(Row)).first,
     );
-    expect(row.mainAxisAlignment, MainAxisAlignment.end);
+    expect(row.mainAxisAlignment, MainAxisAlignment.spaceBetween);
+
+    // Pasek akcji zajmuje całą szerokość wnętrza dialogu, więc wystarczy porównać się z nim.
+    final actions = tester.getRect(find.byType(DialogActions));
+    final cancel = tester.getRect(find.widgetWithText(TextButton, 'Anuluj'));
+    final confirm = tester.getRect(find.widgetWithText(TextButton, 'Usuń'));
+
+    expect(cancel.left, closeTo(actions.left, 0.5), reason: 'wycofanie przy lewej krawędzi');
+    expect(confirm.right, closeTo(actions.right, 0.5), reason: 'potwierdzenie przy prawej');
+    expect(confirm.left - cancel.right, greaterThan(100.0), reason: 'akcje są rozsunięte');
+  });
+
+  testWidgets('każda akcja ma własne tło 12%', (tester) async {
+    await openConfirmation(tester);
+    final appColors = Theme.of(tester.element(find.byType(AlertDialog))).extension<AppColors>()!;
+
     expect(
-      tester.getCenter(find.text('Anuluj')).dx,
-      lessThan(tester.getCenter(find.text('Usuń')).dx),
-      reason: 'wycofanie się po lewej, akcja po prawej',
+      styleOf(tester, 'Anuluj')?.backgroundColor?.resolve({}),
+      appColors.textSecondary.withValues(alpha: 0.12),
+    );
+    expect(
+      styleOf(tester, 'Usuń')?.backgroundColor?.resolve({}),
+      appColors.destructive.withValues(alpha: 0.12),
     );
   });
 

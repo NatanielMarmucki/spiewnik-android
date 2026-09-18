@@ -181,9 +181,11 @@ w celach 40 × 48 dp.
 17 dp i podpis w jednej linii. Aktywna: kreska 2 dp w akcencie, ikona w akcencie, podpis w kolorze
 tekstu, waga 600. Nieaktywna: tekst trzeci.
 
-**Dialog** — promień 12 dp, wnętrze 24 dp. Tytuł 19, treść 15, dwie akcje po prawej, akcja
-niszcząca w kolorze niszczącym z tłem 12% — **nigdy jako wypełniony przycisk**. „Anuluj"
-przestaje być niebieskie.
+**Dialog** — promień 12 dp, wnętrze 24 dp. Tytuł 19, treść 15. Dwie akcje **rozsunięte do
+krawędzi**: wycofanie przy lewej, potwierdzenie przy prawej, każda na własnym kolorze ściszonym
+do 12% — **nigdy jako wypełniony przycisk**. Akcja niszcząca w kolorze niszczącym, „Anuluj"
+w tekście drugim, przestaje być niebieskie. Akcja zablokowana traci tło i idzie tekstem trzecim.
+Ustalone przy wdrożeniu kroku 5, zastępuje wcześniejsze „dwie akcje po prawej".
 
 **Arkusz** — uchwyt 34 × 3 dp, pozycje 52 dp, sekcja niszcząca odcięta hairline'em.
 
@@ -218,6 +220,8 @@ Liczone z tokenów, kolory półprzezroczyste po nałożeniu na tło. Pilnuje te
 | akcent na tle (trafienie wyszukiwania, wybrany wiersz) | 6,09:1 | 9,39:1 | 4,5 |
 | tekst na akcencie (przycisk-pastylka) | 6,58:1 | 9,39:1 | 4,5 |
 | kolor niszczący na tle | 6,80:1 | 7,60:1 | 4,5 |
+| akcent na własnym tle 12% | 4,74:1 | 6,09:1 | 4,5 |
+| tekst drugi na własnym tle 12% | 5,00:1 | 4,67:1 | 4,5 |
 | kolor niszczący na własnym tle 12% | 5,13:1 | 5,13:1 | 4,5 |
 | serce ulubionej na tle | 7,26:1 | 7,88:1 | 3 |
 | tekst główny w arkuszu i dialogu | 14,51:1 | 12,71:1 | 4,5 |
