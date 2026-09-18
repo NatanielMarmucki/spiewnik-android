@@ -124,6 +124,11 @@ void main() {
 
     final style = styleOf(tester, 'Przejdź');
     expect(style?.foregroundColor?.resolve({WidgetState.disabled}), appColors.textTertiary);
+    expect(
+      style?.backgroundColor?.resolve({WidgetState.disabled}),
+      appColors.line,
+      reason: 'kształt przycisku zostaje widoczny, tylko bez poświaty akcentu',
+    );
   });
 
   testWidgets('przyciski dialogu mają cel co najmniej 48 dp', (tester) async {

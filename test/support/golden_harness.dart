@@ -85,6 +85,9 @@ Future<void> goldenScreen(
           Provider<SettingsViewModel>(create: (_) => SettingsViewModel()),
         ],
         child: MaterialApp(
+          // Klucz na motyw: bez niego drugi przebieg trafia w to samo drzewo elementów,
+          // Navigator zachowuje stos tras i dialog otwarty w pierwszym motywie zostaje na ekranie.
+          key: ValueKey(theme.$1),
           theme: theme.$2,
           debugShowCheckedModeBanner: false,
           home: MediaQuery(

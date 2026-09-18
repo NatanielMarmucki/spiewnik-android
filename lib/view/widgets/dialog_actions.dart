@@ -35,9 +35,10 @@ ButtonStyle _actionStyle(BuildContext context, Color color) {
   return TextButton.styleFrom(
     foregroundColor: color,
     backgroundColor: color.withValues(alpha: 0.12),
-    // Wyłączona akcja traci tło: ma być widać, że nie ma w co kliknąć.
+    // Wyłączona akcja zostaje widoczna jako kształt, ale na neutralnym tle linii i w tekście
+    // trzecim — bez tego wyglądała, jakby przycisku w ogóle nie było.
     disabledForegroundColor: context.appColors.textTertiary,
-    disabledBackgroundColor: Colors.transparent,
+    disabledBackgroundColor: context.appColors.line,
     minimumSize: const Size(0.0, 48.0),
     padding: const EdgeInsets.symmetric(horizontal: 20.0),
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),

@@ -197,7 +197,22 @@ void main() {
       afterPump: (tester) async {
         // warnIfMissed: ikona leży w InkWellu w pasku; ostrzeżenie o trafieniu jest mylące,
         // dialog otwiera się poprawnie.
-        await tester.tap(find.byType(GoToNumberIcon), warnIfMissed: false);
+        await tester.tap(find.ancestor(of: find.byType(GoToNumberIcon), matching: find.byType(InkWell)).first);
+        await tester.pumpAndSettle();
+      },
+    );
+  }, skip: skipOnOtherPlatforms);
+
+  testWidgets('szczegóły pieśni: modal z wpisanym numerem', (tester) async {
+    final viewModel = songs();
+    await goldenScreen(
+      tester,
+      '13b-dialog-przejdz-wpisany-numer',
+      (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
+      afterPump: (tester) async {
+        await tester.tap(find.ancestor(of: find.byType(GoToNumberIcon), matching: find.byType(InkWell)).first);
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField), '4');
         await tester.pumpAndSettle();
       },
     );

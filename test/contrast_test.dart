@@ -57,7 +57,10 @@ void main() {
       // Stany nieaktywne: mają być widoczne, ale odróżnialne od aktywnych.
       (what: 'NIEAKTYWNA strzałka paska pieśni', foreground: app.textTertiary, background: surface, min: 3.0),
       (what: 'NIEAKTYWNA zakładka nawigacji', foreground: app.textTertiary, background: surface, min: 3.0),
-      (what: 'ZABLOKOWANY przycisk „Przejdź” w dialogu', foreground: app.textTertiary, background: sheet, min: 3.0),
+      (what: 'ZABLOKOWANY przycisk „Przejdź” w dialogu (na tle linii)',
+        foreground: app.textTertiary,
+        background: Color.alphaBlend(app.line, sheet),
+        min: 3.0),
     ];
   }
 

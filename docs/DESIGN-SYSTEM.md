@@ -170,7 +170,7 @@ a linia wiodąca biegnie od końca ostatniego wiersza do numeru. Wiersz rośnie 
 tytuł w jednej linii.
 
 **Pole wyszukiwania** — 44 dp, pastylka, **widoczne zawsze**. Lupa 15 dp, podpowiedź
-„Numer albo tytuł", przy treści krzyżyk czyszczenia (cel 48 dp). Fokus: obwódka 2 dp w akcencie.
+„Szukaj", przy treści krzyżyk czyszczenia (cel 48 dp). Fokus: obwódka 2 dp w akcencie.
 Jedno pole obsługuje numer i tytuł, szukanie bez diakrytyków, trafienie podświetlone w tytule.
 
 **Pasek górny** — 48 dp, hairline zamiast cienia. Na liście: tytuł ekranu (Newsreader 20) plus
@@ -184,7 +184,8 @@ tekstu, waga 600. Nieaktywna: tekst trzeci.
 **Dialog** — promień 12 dp, wnętrze 24 dp. Tytuł 19, treść 15. Dwie akcje **rozsunięte do
 krawędzi**: wycofanie przy lewej, potwierdzenie przy prawej, każda na własnym kolorze ściszonym
 do 12% — **nigdy jako wypełniony przycisk**. Akcja niszcząca w kolorze niszczącym, „Anuluj"
-w tekście drugim, przestaje być niebieskie. Akcja zablokowana traci tło i idzie tekstem trzecim.
+w tekście drugim, przestaje być niebieskie. Akcja zablokowana zostaje widoczna jako kształt — neutralne tło w kolorze linii i tekst trzeci —
+żeby nie wyglądała na zniknięty przycisk.
 Ustalone przy wdrożeniu kroku 5, zastępuje wcześniejsze „dwie akcje po prawej".
 
 **Arkusz** — uchwyt 34 × 3 dp, pozycje 52 dp, sekcja niszcząca odcięta hairline'em.
@@ -233,7 +234,7 @@ Liczone z tokenów, kolory półprzezroczyste po nałożeniu na tło. Pilnuje te
 | wiersz wciśnięty wobec tła | 1,09:1 | 1,11:1 | — |
 | **nieaktywna strzałka paska pieśni** | 4,90:1 | 5,40:1 | 3 |
 | **nieaktywna zakładka nawigacji** | 4,90:1 | 5,40:1 | 3 |
-| **zablokowany przycisk „Przejdź”** | 4,90:1 | 5,40:1 | 3 |
+| **zablokowany przycisk „Przejdź”** (na tle linii) | 3,95:1 | 4,04:1 | 3 |
 
 Linie, kropki i tło wciśniętego wiersza to celowo słaby kontrast: nie niosą treści ani stanu,
 a ich zadaniem jest nie przeszkadzać. Wszystko, co coś znaczy, siedzi nad swoim progiem.
