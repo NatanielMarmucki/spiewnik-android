@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
+import 'package:spiewnik/theme/app_text_theme.dart';
 
 /// Motywy zbudowane z tokenów z docs/DESIGN-SYSTEM.md (sekcje 1 i 2).
 ///
@@ -52,10 +53,13 @@ const ColorScheme _lightScheme = ColorScheme(
 );
 
 ThemeData _buildTheme(ColorScheme scheme, AppColors appColors) {
+  final textTheme = buildAppTextTheme(scheme);
   return ThemeData(
     useMaterial3: true,
     colorScheme: scheme,
     scaffoldBackgroundColor: scheme.surface,
+    fontFamily: AppFonts.ui,
+    textTheme: textTheme,
     extensions: [appColors],
     appBarTheme: AppBarTheme(
       backgroundColor: scheme.surface,
@@ -63,6 +67,7 @@ ThemeData _buildTheme(ColorScheme scheme, AppColors appColors) {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
+      titleTextStyle: textTheme.titleLarge,
     ),
     cardTheme: CardThemeData(
       color: scheme.surfaceContainer,
@@ -71,16 +76,19 @@ ThemeData _buildTheme(ColorScheme scheme, AppColors appColors) {
     dialogTheme: DialogThemeData(
       backgroundColor: scheme.surfaceContainerHigh,
       surfaceTintColor: Colors.transparent,
+      titleTextStyle: textTheme.headlineSmall,
+      contentTextStyle: textTheme.bodyMedium,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: scheme.surfaceContainerHigh,
+      contentTextStyle: textTheme.bodyMedium,
     ),
     dividerTheme: DividerThemeData(color: appColors.line, space: 1.0, thickness: 1.0),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: scheme.surfaceContainer,
-      hintStyle: TextStyle(color: appColors.textTertiary),
+      hintStyle: textTheme.bodyMedium?.copyWith(color: appColors.textTertiary),
       prefixIconColor: appColors.textSecondary,
       suffixIconColor: appColors.textSecondary,
       border: OutlineInputBorder(
@@ -108,15 +116,19 @@ ThemeData _buildTheme(ColorScheme scheme, AppColors appColors) {
       style: ElevatedButton.styleFrom(
         foregroundColor: appColors.onAccent,
         backgroundColor: appColors.accent,
+        textStyle: textTheme.labelLarge,
         shape: const StadiumBorder(),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: appColors.accent,
+        textStyle: textTheme.labelLarge,
       ),
     ),
     listTileTheme: ListTileThemeData(
+      titleTextStyle: textTheme.titleMedium,
+      subtitleTextStyle: textTheme.bodyMedium,
       iconColor: appColors.textSecondary,
     ),
     sliderTheme: SliderThemeData(
