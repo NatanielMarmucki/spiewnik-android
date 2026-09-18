@@ -4,6 +4,9 @@
 - iOS: `/Users/natanielmarmucki/Spiewnik/AUDIT.md` (w prośbie nazwany `AUDIT-ios.md`). Opisuje stan HEAD `37f0a8e`, wersję `11.2024`, Core Data.
 - Android: `docs/AUDIT.md` (w prośbie nazwany `AUDIT-flutter.md`). Opisuje kopię roboczą `1.2.1+5`, ObjectBox.
 
+**Stan: przegląd przed wydaniem 12.0.0** (wrzesień 2026). Wiersze oznaczone „od 12.0.0” opisują
+stan po migracji, redesignie i domknięciu parytetu. Sekcja 5 zbiera to, co zostaje na stałe.
+
 Dokument pokazuje wyłącznie różnice i zgodności. Nie ocenia, która wersja jest właściwa. Oznaczenie **NIEPOTWIERDZONE** jest przeniesione z audytów. Numery linii są w audytach źródłowych.
 
 Oznaczenia w kolumnie „Rozbieżność”:
@@ -17,15 +20,15 @@ Oznaczenia w kolumnie „Rozbieżność”:
 
 | Funkcja | iOS | Android | Rozbieżność |
 |---|---|---|---|
-| **Nawigacja główna** | `TabView`, 3 zakładki: „Śpiewnik”, „Ulubione”, „Moje pieśni” | `ConvexAppBar` (`TabStyle.reactCircle`), 2 zakładki: „Śpiewnik”, „Ulubione” | **B/R.** Brak zakładki „Moje pieśni” na Androidzie. Inny komponent paska. |
-| Układ na tablet | Osobne widoki `*SplitView` (`NavigationSplitView`: lista + szczegóły) dla `.pad` | Brak rozróżnienia, ten sam układ na każdym ekranie | **R** |
-| Wejście do ustawień | Zębatka tylko w zakładce „Śpiewnik”; ustawienia otwierają się jako arkusz (`.sheet`) | Ikona `Icons.settings` w `AppBar`, dostępna z obu zakładek; `Navigator.push` | **R** |
-| Tytuł paska na liście | „Śpiewnik” / „Ulubione” / „Moje pieśni” zależnie od zakładki | Zawsze `'Śpiewnik'` | **R** |
+| **Nawigacja główna** | `TabView`, 3 zakładki: „Śpiewnik”, „Ulubione”, „Moje pieśni” | Od 12.0.0 te same 3 zakładki we własnym `AppNavigationBar` (ikona 17 dp, kreska 2 dp w akcencie, wysokość minimalna); `ConvexAppBar` usunięty | **—** co do zakładek, **R** wizualnie |
+| Układ na tablet | Osobne widoki `*SplitView` (`NavigationSplitView`: lista + szczegóły) dla `.pad` | Bez zmian: ten sam układ na każdym ekranie, treść ograniczona do 34 × S szerokości, więc na tablecie nie rozlewa się na całą szerokość | **R** — **zaległość**, patrz „Różnice, które zostają na stałe” |
+| Wejście do ustawień | Zębatka tylko w zakładce „Śpiewnik”; ustawienia otwierają się jako arkusz (`.sheet`) | Zębatka w pasku górnym, dostępna ze wszystkich trzech zakładek; `Navigator.push` | **R** — świadoma decyzja: ustawienia są ekranem, nie arkuszem, i nie chowają się pod jedną zakładką |
+| Tytuł paska na liście | „Śpiewnik” / „Ulubione” / „Moje pieśni” zależnie od zakładki | Zawsze „Śpiewnik” | **R** — świadoma decyzja: od 12.0.0 nazwę zakładki niesie podpis w dolnej nawigacji, więc pasek nie powtarza jej drugi raz |
 | **Lista pieśni: sortowanie** | Jawne: `number` rosnąco (`NSSortDescriptor`) | Od 12.0.0 jawne: `number` rosnąco w zapytaniu repozytorium | **—** |
 | Lista pieśni: wygląd wiersza | `"<number>. "` (headline) + tytuł, 1 linia, serce przy ulubionych | Od 12.0.0 wspólny wiersz: tytuł (Newsreader 17), linia wiodąca z kropek, numer na prawej krawędzi, serce 11 dp przy tytule | **R** (wizualnie) |
 | Ulubione: zawijanie długiego tytułu | 1 linia | Do 12.0.0 tytuł zawijał się do wielu linii (wiersz na `Card`, bez `maxLines`); od 12.0.0 jedna linia z wielokropkiem, jak na pozostałych listach | **—** świadoma zmiana z systemu wizualnego |
-| Fallback pustego tytułu | `"Brak tytułu"` (lista główna, szczegóły) / `"Brak tytuł"` (ulubione, moje pieśni) | Brak. `title` jest typu `String` non-null. | **R** |
-| Szybkie przewijanie z etykietą numeru | Brak | Usunięte w 12.0.0 razem z paczką `draggable_scrollbar`; zastępuje je stała wyszukiwarka | **—** |
+| Fallback pustego tytułu | `"Brak tytułu"` (lista główna, szczegóły) / `"Brak tytuł"` (ulubione, moje pieśni) | Niepotrzebny: `title` jest non-null, pieśni z assetu zawsze mają tytuł, a formularz własnej pieśni nie pozwala zapisać pustego („Podaj tytuł pieśni”) | **—** problem nie istnieje po stronie Androida |
+ Jest: własny `SongScrollBar` — uchwyt przy prawej krawędzi, etykieta z numerem pieśni przy przeciąganiu, tylko na pełnej liście. Wróciło po tym, jak wypadło razem z `draggable_scrollbar` | **B** — świadome ulepszenie, przy 2000 pozycjach wyszukiwarka nie zastępuje przewijania |
 | **Wyszukiwanie: pola** | `content` (po oczyszczeniu) + podciąg `number` | `content` (po oczyszczeniu) + podciąg `number` | **—** |
 | Wyszukiwanie: tytuł | Nieprzeszukiwany: filtr sprawdza tylko treść i numer | Od 12.0.0 przeszukiwany razem z treścią i numerem, trafienie podświetlone akcentem w tytule | **R** — świadome ulepszenie z systemu wizualnego |
 | Wyszukiwanie: białe znaki po usunięciu ignorowanych znaków | Usunięcie znaku wewnątrz tekstu zostawia podwójną spację (przycinane są tylko końce), więc „boży zmiłuj” nie pasuje do „Baranku Boży, x zmiłuj się”, a „boży  zmiłuj” tak | **Naprawione w 12.0.0:** po usunięciu ignorowanych znaków ciągi białych znaków zwijają się do jednej spacji, tak samo w treści i w zapytaniu — pasuje „boży zmiłuj” i „boży  zmiłuj” | **R** — naprawiony błąd, iOS zostaje z wadą |
@@ -35,15 +38,15 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Treść pieśni: renderowanie | Jeden `Text`, bez parsowania | Od 12.0.0 renderer zdejmuje znaczniki z toku tekstu: inicjał w pierwszej zwrotce, cyfra z linią w kolejnych, wersalik „REFREN” z wcięciem, znaki powtórzenia w akcencie, odstęp zamiast pustych wierszy | **R** — świadome ulepszenie z systemu wizualnego |
 | Stan pusty listy | Tekst w środku ekranu | Od 12.0.0 ikona, nagłówek i zdanie mówiące co zrobić; przy braku wyników przycisk „Wyczyść wyszukiwanie” | **R** |
 | Wyszukiwanie: wyzwalanie | Zależne od ustawienia: po zatwierdzeniu (`onCommit`) albo dynamicznie z debounce **0,5 s** | Zawsze dynamicznie, debounce **250 ms** | **R** |
-| Wyszukiwanie: przycisk „Anuluj” | Jest (chowa klawiaturę, czyści) | Brak; jest ikona `Icons.cancel` (czyści, przewija na górę) | **R** |
+| Wyszukiwanie: przycisk „Anuluj” | Jest (chowa klawiaturę, czyści) | Krzyżyk w polu (czyści, przewija na górę, cel 48 dp), podpowiedź „Szukaj” | **R** — świadoma decyzja z systemu wizualnego: pole jest widoczne zawsze, więc nie ma z czego „wychodzić” |
 | Wyszukiwanie w ulubionych | Brak | Brak | **—** |
 | Wyszukiwanie we własnych pieśniach | Pole widoczne, **nie filtruje** | Brak funkcji | **B** (i martwa funkcja po stronie iOS) |
 | Własne pieśni: sortowanie listy | `title` rosnąco (`NSSortDescriptor` bez porównania uwzględniającego lokalizację): kolejność punktów kodowych Unicode, polskie znaki diakrytyczne za „Z”, wielkie litery przed małymi | Od 12.0.0: `title` rosnąco według polskiego alfabetu (Ł po L, Ż po Ź), bez rozróżniania wielkości liter; te same tytuły po `id` rosnąco | **R** — świadome ulepszenie, nie odtworzenie zachowania iOS |
 | **Szczegóły: tytuł paska** | `"<number>. <title>"` | `'${song.number}. ${song.title}'` | **—** |
-| Szczegóły: wyświetlanie treści | Jeden `Text`, bez parsowania | Jeden `Text`, bez parsowania | **—** |
-| **Przejście do numeru: wejście** | `UIAlertController`, klawiatura `.numberPad`, brak limitu długości | `AlertDialog`, `digitsOnly`, maks. 4 znaki | **R** |
+| Szczegóły: wyświetlanie treści | Jeden `Text`, bez parsowania | Od 12.0.0 renderer `SongContent` (patrz wiersz „Treść pieśni: renderowanie”), tekst od góry ekranu | **R** — świadome ulepszenie |
+| **Przejście do numeru: wejście** | `UIAlertController`, klawiatura `.numberPad`, brak limitu długości | Dialog z systemu wizualnego: klawiatura numeryczna, tylko cyfry, podpowiedź z zakresem `1-N`, tytuł trafionej pieśni pod polem, Enter działa jak „Przejdź” | **R** — świadome ulepszenie |
 | Przejście do numeru: zakres | 1…2000 (zakodowane) | Od 12.0.0: 1…liczba pieśni w bazie, bez zakodowanej wartości | **—** zachowanie takie samo przy pełnym śpiewniku |
-| Przejście do numeru: błąd | Alert „Podano niepoprawny numer” / „W śpiewniku znajdują się 2000 pieśni.”; po OK dialog wejściowy otwiera się ponownie | Dialog „Uwaga”: „Podano niepoprawny numer. W śpiewniku znajduje się N pieśni.” (N z bazy) lub „Pieśń o podanym numerze nie została znaleziona”; bez ponownego otwarcia | **R** |
+| Przejście do numeru: błąd | Alert „Podano niepoprawny numer” / „W śpiewniku znajdują się 2000 pieśni.”; po OK dialog wejściowy otwiera się ponownie | Od 12.0.0 **nie ma błędu do pokazania**: „Przejdź” jest zablokowane, dopóki numer nie trafia w pieśń, a pod polem stoi powód („Nie ma pieśni o tym numerze”, „Podaj numer od 1 do N”) | **R** — świadome ulepszenie: zamiast alertu po fakcie, podpowiedź w trakcie pisania |
 | Przejście do numeru: mechanizm | Podmiana `song` w tym samym widoku; `currentIndex` **nie** jest aktualizowany | `Navigator.pushReplacement` na nowy `SongDetailView` | **R** |
 | **Swipe poprzednia/następna** | `DragGesture(minimumDistance: 50)`, rozstrzygane na końcu gestu; `width > 0` → poprzednia, pozostałe → następna | `onPanUpdate` przy każdym zdarzeniu z `\|dx\| > 10` (NIEPOTWIERDZONE: wielokrotne wyzwolenie) | **R** |
 | Swipe: po przejściu do numeru | Liczy od pierwotnie otwartej pieśni | Liczy od wyświetlanej pieśni | **R** |
@@ -51,12 +54,12 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Ulubione: sortowanie listy | Jawne: `number` rosnąco | Od 12.0.0 jawne: `number` rosnąco | **—** |
 | Ulubione: komunikat pustej listy | „Lista ulubionych pieśni jest pusta” | Stan pusty z systemu wizualnego: ikona, nagłówek i zdanie mówiące co zrobić | **R** |
 | **Udostępnianie** | Systemowy `UIActivityViewController`, tylko treść; **tylko iPhone** | Od 12.0.0 systemowy arkusz (`share_plus`) z numerem, tytułem i treścią, na obu platformach; wywoływany z arkusza opcji pod trzema kropkami | **—** (kotwica na iPadzie ustawiona, więc działa też na tablecie) |
-| **Własne pieśni: dodawanie / edycja / usuwanie** | Jest (usuwanie tylko iPhone) | Brak | **B** |
+| **Własne pieśni: dodawanie / edycja / usuwanie** | Jest (usuwanie tylko iPhone) | Jest, na obu platformach: dodawanie i edycja w formularzu z walidacją, usuwanie z podglądu (arkusz opcji) i gestem z listy, oba z potwierdzeniem | **—** |
 | Skanowanie tekstu aparatem (Live Text) | Jest, warunkowo; zastępuje całą treść | Brak | **B** |
-| **Rozmiar czcionki** | Klucz `isSize`; domyślnie 16 (iPhone) / 24 (iPad); zakres 10…30 (iPhone) / 24…44 (iPad), krok 2 | Klucz `fontSize`; domyślnie 16.0; zakres 10…30, krok 2 | **R** (iPad) |
-| **Interlinia** | Klucz `isLineSpacing`; **dodatkowe punkty** (`lineSpacing`); domyślnie 0; zakres 0…10, krok 1 | Klucz `lineHeight`; **mnożnik** (`TextStyle.height`); domyślnie 1.5; zakres 1.0…3.0, krok 0.2 | **R** (inna jednostka i semantyka) |
-| Reset ustawień | `isLineSpacing = 0`, `isSize = 16` (także na iPadzie) | `fontSize = 16.0`, `lineHeight = 1.5` | **R** |
-| Podgląd tekstu w ustawieniach | Jest (ten sam fragment „Alleluja, chwalcie Pana…”) | Jest (ten sam fragment) | **—** |
+| **Rozmiar czcionki** | Klucz `isSize`; domyślnie 16 (iPhone) / 24 (iPad); zakres 10…30 (iPhone) / 24…44 (iPad), krok 2 | Klucz `fontSize`; od 12.0.0 domyślnie **19**, zakres 10…30. Wartości zapisane przez użytkownika zostają, spoza zakresu są przycinane | **R** — nowa domyślna z systemu wizualnego dotyczy tylko nowych instalacji |
+| **Interlinia** | Klucz `isLineSpacing`; **dodatkowe punkty** (`lineSpacing`); domyślnie 0; zakres 0…10, krok 1 | Klucz `lineHeight`; **mnożnik**; od 12.0.0 domyślnie **1,62**, zakres **1,4…1,8** (wcześniej 1,0…3,0). Zapisane wartości spoza zakresu przycinane, nie resetowane | **R** (inna jednostka i semantyka) — świadome zawężenie: skrajne wartości psuły łamanie tekstu |
+| Reset ustawień | `isLineSpacing = 0`, `isSize = 16` (także na iPadzie) | „Przywróć domyślny rozmiar i interlinię”: `fontSize = 19`, `lineHeight = 1,62`. **Nie rusza** motywu ani blokady ekranu — te mają własny model | **R** |
+| Podgląd tekstu w ustawieniach | Jest (ten sam fragment „Alleluja, chwalcie Pana…”) | Jest, ten sam fragment, renderowany tym samym rendererem co pieśń i **pod obydwoma suwakami**, bez stałej wysokości (wcześniej 180 dp ucinało największą czcionkę) | **—** |
 | Przełącznik „Dynamiczna wyszukiwarka” | Jest (`isSearchDynamic`) | Brak | **B** |
 | **Tryb nocny** | Systemowy, brak przełącznika | Od 12.0.0 przełącznik w ustawieniach: „Jak w systemie” (domyślnie, jak dotąd), „Jasny”, „Ciemny”; klucz `themeMode` | **R** — świadome ulepszenie z systemu wizualnego; **R** (kolorystyka) |
 | **Blokada wygaszania ekranu** | Brak | Zawsze włączona na ekranach szczegółów pieśni i własnej pieśni (`wakelock_plus`), od 12.0.0 z przełącznikiem „Nie gaś ekranu przy pieśni” w ustawieniach (klucz `keepScreenOn`, domyślnie włączony, czyli bez zmiany dla dotychczasowych użytkowników); wyłączenie działa od razu, także przy otwartej pieśni. **Zamyka A3.** **Naprawione w 12.0.0:** wcześniej po `pushReplacement` (przejście do numeru, przeciągnięcie na następną lub poprzednią pieśń) blokada się wyłączała, bo `dispose` starego ekranu wywoływał `disable` po `enable` nowego. Teraz `ScreenWakeLock` liczy otwarte ekrany: `enable` przy przejściu z 0 na 1, `disable` z 1 na 0; testy w `test/song_detail_view_wakelock_test.dart` | **B** |
@@ -71,10 +74,10 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Prośba o ocenę: progi | `[20, 50, 90, 140, 200, 270, 300, 390, 490, 640, 840, 1140, 1440, 1940]` | Od 12.0.0 te same progi | **—** |
 | Prośba o ocenę: limit per wersja | Tak (`lastVersionPromptedForReviewKey`) | Od 12.0.0 tak, klucz `reviewAskedVersion` (wersja z numerem builda). Klucz nowy, więc pierwsza prośba w 12.0.0 pada niezależnie od historii | **—** |
 | Prośba o ocenę: inkrementacja licznika | +2 na uruchomienie (`init` + `onAppear`) | +1 na uruchomienie, raz, poza `build` | **R** — iOS liczył podwójnie, więc jego progi wypadały dwa razy szybciej niż sugeruje liczba |
-| Aktualizacja tekstów u istniejących użytkowników | Mechanizm `update()` wywoływany przy zmianie wersji; w HEAD funkcje puste | Mechanizm `_updateStoreFromJson` przy zmianie wersji; niedziałający (rzutowanie Map → List) | **R** (mechanizm); po obu stronach obecnie brak skutecznych aktualizacji |
+| Aktualizacja tekstów u istniejących użytkowników | Mechanizm `update()` wywoływany przy zmianie wersji; w HEAD funkcje puste | **Naprawione:** `JsonManager.applySongsData` porównuje `dataVersion` z assetu z zapisanym (`songs_data_version`) i aktualizuje tytuły oraz treści, zachowując ulubione | **R** — Android ma działający mechanizm, iOS nie |
 | Zakupy w aplikacji | Kod StoreKit 1 i 2, **niepodpięty** | Brak | **B** (tylko martwy kod) |
-| Orientacja | Portrait, LandscapeLeft, LandscapeRight; `UIRequiresFullScreen = true` | Brak blokady | **R** |
-| Pasek statusu | `UIStatusBarHidden = true` | Domyślny | **R** |
+| Orientacja | Portrait, LandscapeLeft, LandscapeRight; `UIRequiresFullScreen = true` | Bez blokady po żadnej stronie (iOS dziedziczy wpis z `Info.plist`, Android nie ma `screenOrientation`) | **—** w praktyce: obie wersje obracają się tak samo |
+| Pasek statusu | `UIStatusBarHidden = true` (ukryty) | Widoczny na obu platformach: `UIStatusBarHidden` zostaje w `Info.plist`, ale Flutter i tak rysuje pasek statusu | **R** — **świadoma decyzja**: ukrywanie paska w aplikacji, z której korzysta się na nabożeństwie, zabierałoby zegarek i baterię bez powodu |
 | Splash | `Launch Screen.storyboard` (obraz `applogo`) | `flutter_native_splash` (biały / czarny, `playstore-transparent.png`) | **R** |
 
 ---
@@ -85,7 +88,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 
 | Funkcja | Uwagi z audytu |
 |---|---|
-| „Moje pieśni”: lista, dodawanie, podgląd, edycja, usuwanie | Usuwanie tylko na iPhonie; wyszukiwarka w tej zakładce nie filtruje |
+| ~~„Moje pieśni”: lista, dodawanie, podgląd, edycja, usuwanie~~ | **Dorobione w 12.0.0** na obu platformach. Po stronie iOS usuwanie działało tylko na iPhonie, a wyszukiwarka w tej zakładce nie filtrowała |
 | Skanowanie tekstu aparatem (Live Text) przy dodawaniu i edycji własnej pieśni | Warunkowo, gdy `captureTextFromCamera` jest dostępne |
 | ~~Systemowy arkusz udostępniania~~ | Tylko iPhone. **Dorobione w 12.0.0** na obu platformach |
 | Przełącznik „Dynamiczna wyszukiwarka” (tryb wyszukiwania po zatwierdzeniu) | — |
@@ -101,9 +104,9 @@ Oznaczenia w kolumnie „Rozbieżność”:
 |---|---|
 | Blokada wygaszania ekranu na ekranie szczegółów | Do 12.0.0 zawsze włączona, bez ustawienia; od 12.0.0 z przełącznikiem w ustawieniach |
 | Kopiowanie treści do schowka z SnackBarem | Do 12.0.0 w miejscu udostępniania; od 12.0.0 osobna pozycja „Kopiuj tekst” w arkuszu opcji, obok udostępniania |
-| Prośba o ocenę po pierwszym dodaniu ulubionej | Raz na uruchomienie |
-| Wejście do ustawień z każdej zakładki | — |
-| Komunikat „Pieśń o podanym numerze nie została znaleziona” | Osobny od „niepoprawny numer” |
+| ~~Prośba o ocenę po pierwszym dodaniu ulubionej~~ | **Usunięte w 12.0.0** — zostaje sam licznik uruchomień |
+| Wejście do ustawień z każdej zakładki | Od 12.0.0 z trzech zakładek |
+| Podpowiedź przy przejściu do numeru | Od 12.0.0 pod polem, w trakcie pisania, zamiast alertu po zatwierdzeniu |
 
 ---
 
@@ -142,7 +145,7 @@ Nazwy encji: iOS `Song` (tabela `ZSONG`), Android `Song` (UID encji `1:668007825
 | Różne tytuły | 3: nr `923` (iOS `'Gdy idziesz sam'` / Android `'Zjednani sercem i ustami'`), nr `1497` i `1498` (tytuły zamienione miejscami) |
 | Różne treści | 58 pozycji; pierwsze: `292`, `450`, `686`, `898`, `900`, `923`, `930`, `939`, `944`, `959` |
 | Konwencje zapisu treści | Zgodne: `"1. "`, `"Refren: "`, `\n\n` między akapitami, `[:…:]`, `/…/3x` |
-| Zawartość na urządzeniach użytkowników | iOS: może różnić się od repo (historyczne poprawki przez `update()`). Android: pozostaje taka, jak przy pierwszej instalacji (aktualizacja nie działa). |
+| Zawartość na urządzeniach użytkowników | iOS: może różnić się od repo (historyczne poprawki przez `update()`). Android: aktualizowana przy zmianie `dataVersion` w assecie, z zachowaniem ulubionych. |
 
 ### 3.4 Aktualizacja danych pieśni
 
@@ -153,7 +156,7 @@ Nazwy encji: iOS `Song` (tabela `ZSONG`), Android `Song` (UID encji `1:668007825
 | Zachowanie `favorite` | Zachowane | Zachowane (dopasowanie po `number`) |
 | Dodawanie nowych numerów | Brak | Tak |
 | Usuwanie numerów spoza źródła | Brak | Tak, razem ze statusem ulubionej |
-| Stan obecny | Funkcje puste w HEAD | Rzuca wyjątek, który jest łapany; wersja i tak zapisywana |
+| Stan obecny | Funkcje puste w HEAD | Działa: wersja zapisywana dopiero po udanym zapisie pieśni |
 
 ---
 
@@ -164,7 +167,7 @@ Nazwy encji: iOS `Song` (tabela `ZSONG`), Android `Song` (UID encji `1:668007825
 | Rodzaj danych | iOS: mechanizm | Android: mechanizm | Rozbieżność |
 |---|---|---|---|
 | Ulubione | Core Data (SQLite), ten sam plik co teksty | ObjectBox, ten sam obiekt co teksty | **R** (silnik); **—** (brak rozdzielenia od treści po obu stronach) |
-| Własne pieśni | Core Data, encja `MySong` | Nie istnieją | **B** |
+| Własne pieśni | Core Data, encja `MySong` | ObjectBox, encja `MySong` (`title`, `content`, `createdAt`, `updatedAt`) | **—** silniki się różnią, funkcja jest po obu stronach |
 | Historia / ostatnio otwierane | Brak | Brak | **—** |
 | Ustawienia wyświetlania | `UserDefaults.standard` | `SharedPreferences` (legacy API) | **R** |
 | Metadane (licznik, wersje) | `UserDefaults.standard` (w tym `@AppStorage`) | `SharedPreferences` | **R** |
@@ -183,28 +186,32 @@ Nazwy encji: iOS `Song` (tabela `ZSONG`), Android `Song` (UID encji `1:668007825
 | Kolejność / data dodania | Nie zapisywana | Nie zapisywana |
 | Moment zapisu | `save()` po przełączeniu + zapis kontekstu przy przejściu w tło | `box.put(song)` od razu |
 
-### 4.3 Własne pieśni (tylko iOS)
+### 4.3 Własne pieśni
 
 | Aspekt | iOS | Android |
 |---|---|---|
-| Encja | `MySong` | — |
-| Pola | `title` (`String`, optional), `content` (`String`, optional) | — |
-| Identyfikator | Brak własnego (tylko `Z_PK`) | — |
-| Daty | Brak | — |
-| Tabela na urządzeniu | `ZMYSONG` wg konwencji Core Data; brak w bundlu, kolumny i `Z_ENT` NIEPOTWIERDZONE | — |
+| Encja | `MySong` | `MySong` (ObjectBox) |
+| Pola | `title` (`String`, optional), `content` (`String`, optional) | `title`, `content` (oba non-null) |
+| Identyfikator | Brak własnego (tylko `Z_PK`) | `id` nadawane przez ObjectBox |
+| Daty | Brak | `createdAt` i `updatedAt`; migracja ze starej aplikacji nadaje rosnące czasy w kolejności odczytu z `ZMYSONG` |
+| Tabela na urządzeniu | `ZMYSONG` wg konwencji Core Data; brak w bundlu, kolumny i `Z_ENT` NIEPOTWIERDZONE | katalog `objectbox`, ta sama baza co pieśni |
+| Sortowanie listy | `title` rosnąco, kolejność punktów kodowych | `title` rosnąco według polskiego alfabetu, bez rozróżniania wielkości liter, remisy po `id` |
 
 ### 4.4 Klucze ustawień i metadanych
 
 | Znaczenie | iOS: klucz (`UserDefaults`) | iOS: typ, domyślna | Android: klucz w kodzie | Android: klucz fizyczny | Android: typ fizyczny, domyślna |
 |---|---|---|---|---|---|
-| Rozmiar czcionki | `isSize` | `CGFloat` (NSNumber); 16 iPhone / 24 iPad | `fontSize` | `flutter.fontSize` | `String` z prefiksem `VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu`; 16.0 |
-| Interlinia | `isLineSpacing` (punkty) | `CGFloat`; 0 | `lineHeight` (mnożnik) | `flutter.lineHeight` | `String` z prefiksem jw.; 1.5 |
+| Rozmiar czcionki | `isSize` | `CGFloat` (NSNumber); 16 iPhone / 24 iPad | `fontSize` | `flutter.fontSize` | `String` z prefiksem `VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu`; od 12.0.0 domyślnie 19.0 |
+| Interlinia | `isLineSpacing` (punkty) | `CGFloat`; 0 | `lineHeight` (mnożnik) | `flutter.lineHeight` | `String` z prefiksem jw.; od 12.0.0 domyślnie 1.62 |
 | Tryb wyszukiwarki | `isSearchDynamic` | `Bool`; `false` | — | — | — |
 | Rozmiar ikon | `isSizeImg` (tylko odczyt; zapis trafia pod `isSize`) | `CGFloat`; 16 / 24 | — | — | — |
 | Nieużywany licznik | `counter` | `Int`; 0 | — | — | — |
 | Licznik uruchomień | `engagementCounterKey` | `Int`; 0 | `launch_count` | `flutter.launch_count` | `long`; 0 |
 | Ostatnia wersja (zmiana wersji) | `lastInstalledVersion` | `String`, format `M.RRRR` (np. `11.2024`); `""` | `last_run_app_version` | `flutter.last_run_app_version` | `String`, format `<version>+<build>` (np. `1.2.1+5`); `null` |
-| Wersja ostatniej prośby o ocenę | `lastVersionPromptedForReviewKey` | `String` | — | — | — |
+| Wersja ostatniej prośby o ocenę | `lastVersionPromptedForReviewKey` | `String` | `reviewAskedVersion` | `flutter.reviewAskedVersion` | `String`, format `<version>+<build>`; brak |
+
+Klucze dodane w 12.0.0: `themeMode` (`flutter.themeMode`, `String`: `system`/`light`/`dark`, domyślnie
+`system`), `keepScreenOn` (`flutter.keepScreenOn`, `bool`, domyślnie `true`), `reviewAskedVersion`.
 
 Plik fizyczny na Androidzie: `FlutterSharedPreferences`. Na iOS klucze leżą bez prefiksu w `UserDefaults.standard`. Z kodu pakietu `shared_preferences` (legacy) wynika, że Flutter na iOS zapisuje klucze z prefiksem `flutter.` w `NSUserDefaults`.
 
@@ -218,3 +225,45 @@ Plik fizyczny na Androidzie: `FlutterSharedPreferences`. Na iOS klucze leżą be
 | ObjectBox `SongEntity` | `id: UInt64`, `number: Int64`, `title`, `content`, `category: String`, `favorite: Bool` |
 | ObjectBox `MySongEntity` | `id: UInt64`, `title`, `content`, `createdDate: Date` |
 | Różnica względem Androida | Encja ObjectBox iOS ma dodatkowe pole `category`; nazwy encji `SongEntity` vs `Song`; typ `number` `Int64` vs `int` (Dart int 64-bit) |
+
+---
+
+## 5. Różnice, które zostają na stałe
+
+Przegląd całego dokumentu przed wydaniem 12.0.0. Wszystko, co wyżej nie jest oznaczone jako
+naprawione albo dorobione, mieści się w jednej z tych kategorii.
+
+### 5.1 Świadome decyzje — nie zamierzamy ich zmieniać
+
+| Różnica | Dlaczego zostaje |
+|---|---|
+| Wyszukiwanie obejmuje tytuł, iOS tylko treść i numer | Szukanie po tytule jest tym, czego użytkownik próbuje najpierw. Trafienie jest podświetlone w wierszu |
+| Brak diakrytyków w wyszukiwaniu (iOS ich nie normalizuje) | „zrodlo” ma znajdować „źródło”. Pisanie z ogonkami na telefonie kosztuje, a nic nie wnosi |
+| Białe znaki zwijane po usunięciu ignorowanych znaków | iOS zostaje z błędem, przez który „boży zmiłuj” nie znajdowało pieśni. Nie odtwarzamy cudzych wad |
+| Własne pieśni sortowane polskim alfabetem | Kolejność punktów kodowych wypychała polskie litery za „Z”. Dla listy po polsku to bezużyteczne |
+| Tytuł paska zawsze „Śpiewnik” | Nazwę zakładki niesie podpis w dolnej nawigacji; pasek nie powtarza jej drugi raz |
+| Ustawienia jako ekran, dostępne z każdej zakładki | iOS chował je pod jedną zakładką i otwierał jako arkusz. Ekran jest przewidywalny i mieści więcej |
+| Brak przycisku „Anuluj” przy wyszukiwarce | Pole jest widoczne zawsze, więc nie ma z czego wychodzić; czyści krzyżyk w polu |
+| Pasek statusu widoczny (iOS go ukrywał) | Aplikacji używa się na nabożeństwie — zegarek i bateria są tam potrzebne bardziej niż dwie dodatkowe linijki tekstu |
+| Interlinia zawężona do 1,4–1,8 | Skrajne wartości ze starego zakresu psuły łamanie i rozbijały zwrotki |
+| Nowe domyślne 19 / 1,62 | Dotyczą tylko nowych instalacji; zapisane ustawienia są przycinane, nie resetowane |
+| Przełącznik motywu (iOS ma tylko systemowy) | Kościół bywa ciemny, telefon nie zawsze przełącza się sam |
+| Szybkie przewijanie z etykietą numeru (iOS nie ma) | Przy 2000 pozycjach wyszukiwarka nie zastępuje przewijania |
+| Blokada wygaszania ekranu (iOS nie ma) | Pieśń śpiewa się dłużej niż trwa wygaszanie ekranu. Od 12.0.0 z przełącznikiem |
+| Kopiowanie treści do schowka (iOS nie ma) | Kosztuje jedną pozycję w arkuszu, a bywa wygodniejsze niż udostępnianie |
+
+### 5.2 Zaległości — możliwe do zrobienia, świadomie odłożone
+
+| Różnica | Stan |
+|---|---|
+| Układ dwukolumnowy na tablecie | Nie zaczęte. Aplikacja działa na tablecie, ale nie korzysta z szerokości. Osobna praca, nie na wydanie 12.0.0 |
+| Skanowanie tekstu aparatem przy dodawaniu własnej pieśni | Nie zaczęte. Wymaga uprawnienia do aparatu i osobnego ekranu |
+| Alert z changelogiem po aktualizacji | **Do decyzji przed wydaniem, patrz niżej** |
+| Aktualizacja tekstów pieśni po stronie iOS | Dotyczy starej aplikacji, która znika razem z tym wydaniem. Bezprzedmiotowe |
+
+### 5.3 Różnice, które znikają razem ze starą aplikacją
+
+Kod zakupów w aplikacji (StoreKit, niepodpięty), przełącznik „Dynamiczna wyszukiwarka”, osobne
+zakresy czcionki dla iPada, podwójne liczenie uruchomień, martwa wyszukiwarka w zakładce „Moje
+pieśni”, `isSizeImg` zapisywane pod cudzym kluczem. Nie odtwarzamy ich, bo to albo martwy kod,
+albo błędy.
