@@ -197,3 +197,24 @@ git checkout -- android && rm -f android/app/src/main/res/values/styles.xml
 
 Jeśli zmiana w `Info.plist` była zamierzona w tym samym commicie, nie przywracaj całego pliku, tylko ustaw
 `UIStatusBarHidden` z powrotem na `true`.
+
+### Manifest prywatności iOS nie pokrywa bibliotek bez własnego manifestu
+
+App Store Connect odrzuca build, w którym kod używa API z wymaganym powodem (UserDefaults, daty plików,
+wolne miejsce na dysku i inne), a żaden manifest go nie deklaruje. Wtyczki przez Swift Package Manager wnoszą
+własne `PrivacyInfo.xcprivacy`, ale nie wszystkie deklarują to, czego używają: `package_info_plus` czyta daty
+bundla aplikacji, a ObjectBox (CocoaPods) nie ma manifestu wcale. Te powody deklaruje
+`ios/Runner/PrivacyInfo.xcprivacy`.
+
+Po dodaniu lub podbiciu wtyczki iOS zbuduj aplikację i sprawdź, czego używają binaria bez manifestu:
+
+```sh
+flutter build ios --release --no-codesign
+find build/ios/iphoneos/Runner.app -name PrivacyInfo.xcprivacy   # które biblioteki mają manifest
+xcrun nm -u -j build/ios/iphoneos/Runner.app/Frameworks/ObjectBox.framework/ObjectBox \
+  | grep -E '^_(f?stat|fstatat|lstat|statv?fs|getattrlist|mach_absolute_time)'
+strings -a build/ios/iphoneos/Runner.app/Runner \
+  | grep -xE 'fileModificationDate|fileCreationDate|creationDate|systemUptime|standardUserDefaults'
+```
+
+Wtyczki przez SPM są linkowane statycznie do `Runner`, więc ich wywołania widać w jego binarium.
