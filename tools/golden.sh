@@ -50,6 +50,11 @@ docker run --rm \
   "${IMAGE}" \
   bash -c "flutter pub get >/dev/null && tools/fetch_objectbox_lib.sh >/dev/null && ${command[*]}"
 
+# Kontener robi `flutter pub get` na tym samym katalogu, więc .dart_tool/package_config.json
+# zostaje ze ścieżkami z Linuksa i `flutter test` na hoście przestaje się kompilować.
+echo "Przywracam konfigurację pakietów hosta..."
+flutter pub get >/dev/null
+
 if [[ "${update}" == true ]]; then
   echo "Gotowe. Przejrzyj zmiany w test/golden/goldens/ przed commitem."
 fi
