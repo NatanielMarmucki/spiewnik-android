@@ -274,7 +274,7 @@ Zamiast changelogu przy każdej aktualizacji (jak w iOS) powstanie **jeden ekran
 Powód: dla użytkownika starej aplikacji iOS wydanie 12.0.0 zmienia wszystko, co widzi, i przenosi
 jego dane — to warte słowa wyjaśnienia. Przy zwykłej aktualizacji Androida nie ma czego tłumaczyć.
 
-Implementacja osobnym PR-em po domknięciu parytetu. Warunki:
+Zrobione w issue #37 (`lib/post_migration_welcome.dart`, `lib/view/welcome_view.dart`). Warunki:
 
 - pokazywany **raz**, tylko użytkownikom przychodzącym ze starej aplikacji iOS — czyli gdy
   `coreDataMigrationDone` zostało ustawione **w tej sesji**, a nie kiedyś wcześniej;
@@ -282,3 +282,6 @@ Implementacja osobnym PR-em po domknięciu parytetu. Warunki:
 - **jedno wyjście**, bez przycisków „Wesprzyj” i „Zgłoś błąd”;
 - zbudowany na tokenach z `docs/DESIGN-SYSTEM.md`;
 - własna flaga w `SharedPreferences`, żeby nie wracał przy kolejnym starcie.
+- doprecyzowane przy wdrożeniu: migracja musiała **coś przenieść** (ulubione, własne pieśni albo
+  rozmiar czcionki) i **nie** mogła skończyć się błędem — wtedy użytkownik widzi komunikat w
+  ustawieniach, a chwalenie się nowym wyglądem byłoby nie na miejscu.
