@@ -146,7 +146,7 @@ void main() {
       final marks = blocks.single.inlines.whereType<RepeatMark>().toList();
 
       expect(marks.map((mark) => mark.text), ['[:', ':]']);
-      expect(blocks.single.text, '1. Zwykły '.replaceFirst('1. ', '') + 'powtarzany tekst i samotny :] znak');
+      expect(blocks.single.text, 'Zwykły powtarzany tekst i samotny :] znak');
     });
   });
 
