@@ -124,7 +124,7 @@ GitHub Actions, `.github/workflows/`:
 |---|---|---|
 | `ci.yml`, zadanie „Analyze and test” | każdy pull request i push do `main` | `flutter analyze --no-fatal-infos` i `flutter test` na Ubuntu, razem z testami golden |
 | `ci.yml`, zadanie „Build the Android app” | jw., równolegle | `flutter build apk --debug --target-platform android-arm64` |
-| `ios-build.yml` | **tylko ręcznie** (zakładka Actions → „iOS build” → „Run workflow”) | `flutter build ios --simulator --no-codesign` na macOS |
+| `ios-build.yml` | każdy pull request oraz ręcznie (Actions → „iOS build” → „Run workflow”) | `flutter build ios --simulator --no-codesign` na macOS |
 
 Oba zadania `ci.yml` idą równolegle, więc wynik testów jest po około dwóch minutach, niezależnie od dłuższego buildu
 Androida. Build debug powstaje tylko dla `android-arm64`: to wystarczy, żeby wykryć błędy kompilacji i linkowania,
@@ -138,8 +138,8 @@ CI uruchamia `flutter analyze --no-fatal-infos`: bez tej flagi analiza kończy s
 także poziomu „info”. Uwagi „info” (m.in. `print` i przestarzałe `canLaunch`) są znane i znikną przy porządkach
 w widokach; błędy i ostrzeżenia przerywają przebieg.
 
-Workflow iOS jest ręczny, bo minuty na runnerze macOS liczą się razy dziesięć. Warto go uruchomić przed wydaniem
-oraz po zmianach w `ios/`, we wtyczkach albo w wersji Fluttera.
+Workflow iOS chodzi na pull requestach. Minuty na runnerze macOS liczą się razy dziesięć, ale repozytorium jest
+publiczne, więc są darmowe. Zostaje też ręczne uruchamianie, przydatne przed wydaniem.
 
 To samo lokalnie:
 

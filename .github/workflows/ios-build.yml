@@ -1,9 +1,14 @@
 name: iOS build
 
-# Manual only: macOS runner minutes are billed at ten times the rate, so this never runs by itself.
-# Run it before a release, or after changes to ios/, plugins or the Flutter version.
+# Runs on pull requests and on demand. macOS runner minutes are billed at ten times the rate,
+# but the repository is public, so the minutes are free.
 on:
+  pull_request:
   workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
