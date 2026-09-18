@@ -163,6 +163,19 @@ flutter build ios --simulator --no-codesign   # tylko na macOS
 
 ## Znane pułapki
 
+### W Xcode 27 okno symulatora to DeviceHub
+
+`Simulator.app` już nie istnieje — `open -a Simulator` kończy się „no such file", co wygląda na zepsutą
+instalację, a nie jest. Okno symulatora otwiera:
+
+```sh
+open "/Applications/Xcode.app/Contents/Applications/DeviceHub.app"
+```
+
+Bez okna i tak działa całe `xcrun simctl` (`boot`, `install`, `launch`, `io <udid> screenshot`,
+`ui <udid> appearance dark|light`), więc zrzuty i instalacje robi się bez GUI. Czego `simctl` **nie**
+potrafi, to stuknąć w ekran — do klikania potrzebne jest okno DeviceHuba.
+
 ### `flutter_native_splash` nadpisuje `UIStatusBarHidden` i zasoby Androida
 
 `dart run flutter_native_splash:create` poza ekranem startowym zmienia pliki, których nie powinien ruszać:
