@@ -49,6 +49,9 @@ Widget dialogAccentButton(BuildContext context, {required String label, required
     onPressed: onPressed,
     style: TextButton.styleFrom(
       foregroundColor: context.appColors.accent,
+      // Domyślny kolor wyłączonego przycisku (onSurface 38%) daje w jasnym motywie 2,31:1.
+      // Tekst trzeci trzyma 4,9:1 i wciąż różni się od akcentu.
+      disabledForegroundColor: context.appColors.textTertiary,
       minimumSize: const Size(0.0, 48.0),
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
     ),
@@ -69,6 +72,8 @@ Widget dialogDestructiveButton(
     style: TextButton.styleFrom(
       foregroundColor: destructive,
       backgroundColor: destructive.withValues(alpha: 0.12),
+      disabledForegroundColor: context.appColors.textTertiary,
+      disabledBackgroundColor: Colors.transparent,
       minimumSize: const Size(0.0, 48.0),
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),

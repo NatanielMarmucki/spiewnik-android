@@ -90,7 +90,9 @@ class _Arrow extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final enabled = number != null && onTap != null;
-    final color = enabled ? appColors.textSecondary : appColors.line;
+    // Nieaktywna strzałka ma zostać widoczna (3:1), stąd tekst trzeci zamiast koloru linii,
+    // który dawał 1,24:1. Że jest nieaktywna, widać po braku numeru obok.
+    final color = enabled ? appColors.textSecondary : appColors.textTertiary;
     final numberText = Text(
       number == null ? '' : '$number',
       style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color),

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/model/song_model.dart';
+import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
 import 'package:spiewnik/view/widgets/song_bottom_bar.dart';
@@ -165,6 +166,17 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('5. Pieśń 5'), findsOneWidget, reason: 'nic się nie dzieje');
+    });
+
+    testWidgets('nieaktywna strzałka zostaje widoczna, w kolorze tekstu trzeciego', (tester) async {
+      await openSong(tester, 1); // pierwsza pieśń: nie ma poprzedniej
+
+      final appColors = Theme.of(tester.element(find.byType(SongBottomBar))).extension<AppColors>()!;
+      final arrow = tester.widget<Icon>(find.byIcon(Icons.chevron_left));
+      final active = tester.widget<Icon>(find.byIcon(Icons.chevron_right));
+
+      expect(arrow.color, appColors.textTertiary, reason: 'kolor linii dawał 1,24:1');
+      expect(active.color, appColors.textSecondary, reason: 'aktywna wciąż mocniejsza');
     });
 
     testWidgets('środek paska otwiera przejście do numeru', (tester) async {

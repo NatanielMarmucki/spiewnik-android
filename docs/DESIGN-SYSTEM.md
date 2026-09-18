@@ -200,6 +200,41 @@ na żywo.
 - Każda ikona-akcja ma `Semantics(label:)` **po polsku**
 - Wszystko działa przy systemowym powiększeniu czcionki ×1,3 i ×2,0
 
+### Kontrast zmierzony przy wdrożeniu (krok 5d)
+
+Liczone z tokenów, kolory półprzezroczyste po nałożeniu na tło. Pilnuje tego
+`test/contrast_test.dart`, więc zmiana tokenu oblewa test zamiast cicho psuć kontrast.
+
+| Para | Jasny | Ciemny | Próg |
+|---|---|---|---|
+| tekst główny na tle | 15,85:1 | 15,19:1 | 4,5 |
+| tekst drugi na tle | 6,43:1 | 6,88:1 | 4,5 |
+| tekst trzeci na tle | 4,90:1 | 5,40:1 | 3 |
+| akcent na tle (numer bieżącej pieśni) | 6,09:1 | 9,39:1 | 4,5 |
+| tekst na akcencie (przycisk-pastylka) | 6,58:1 | 9,39:1 | 4,5 |
+| kolor niszczący na tle | 6,80:1 | 7,60:1 | 4,5 |
+| kolor niszczący na własnym tle 12% | 5,13:1 | 5,13:1 | 4,5 |
+| serce ulubionej na tle | 7,26:1 | 7,88:1 | 3 |
+| tekst główny w arkuszu i dialogu | 14,51:1 | 12,71:1 | 4,5 |
+| tekst drugi w arkuszu | 5,89:1 | 5,76:1 | 4,5 |
+| tekst w polu wyszukiwania | 17,12:1 | 13,73:1 | 4,5 |
+| podpowiedź w polu wyszukiwania | 5,30:1 | 4,88:1 | 3 |
+| hairline na tle | 1,24:1 | 1,34:1 | — |
+| kropki indeksu na tle | 1,61:1 | 1,92:1 | — |
+| wiersz wciśnięty wobec tła | 1,09:1 | 1,11:1 | — |
+| **nieaktywna strzałka paska pieśni** | 4,90:1 | 5,40:1 | 3 |
+| **nieaktywna zakładka nawigacji** | 4,90:1 | 5,40:1 | 3 |
+| **zablokowany przycisk „Przejdź”** | 4,90:1 | 5,40:1 | 3 |
+
+Linie, kropki i tło wciśniętego wiersza to celowo słaby kontrast: nie niosą treści ani stanu,
+a ich zadaniem jest nie przeszkadzać. Wszystko, co coś znaczy, siedzi nad swoim progiem.
+
+**Stany nieaktywne** przeszły dwie poprawki przy pomiarze: strzałka na krańcu śpiewnika szła
+w kolorze linii (1,24:1 — praktycznie niewidoczna), a zablokowany przycisk „Przejdź” brał
+domyślny kolor Materiala `onSurface` 38% (2,31:1 w jasnym motywie). Oba idą teraz tekstem
+trzecim; że są nieaktywne, widać po braku numeru obok strzałki i po tym, że aktywne akcje
+są w akcencie albo w tekście drugim.
+
 ---
 
 ## 7. Reguły, które muszą zostać w kodzie

@@ -89,6 +89,25 @@ void main() {
     expect(styleOf(tester, 'Anuluj')?.foregroundColor?.resolve({}), appColors.textSecondary);
   });
 
+  testWidgets('zablokowana akcja zostaje czytelna, w kolorze tekstu trzeciego', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: lightTheme,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: DialogActions(
+              children: [dialogAccentButton(context, label: 'Przejdź', onPressed: null)],
+            ),
+          ),
+        ),
+      ),
+    );
+    final appColors = Theme.of(tester.element(find.text('Przejdź'))).extension<AppColors>()!;
+
+    final style = styleOf(tester, 'Przejdź');
+    expect(style?.foregroundColor?.resolve({WidgetState.disabled}), appColors.textTertiary);
+  });
+
   testWidgets('przyciski dialogu mają cel co najmniej 48 dp', (tester) async {
     await openConfirmation(tester);
 
