@@ -91,7 +91,11 @@ void main() {
     final shown = int.parse(numbers.single!);
     final firstVisible = firstVisibleItemIndex(controller);
     expect(firstVisible, isNotNull);
-    expect(shown, firstVisible! + 1, reason: 'etykieta zgadza się z pierwszym widocznym wierszem');
+    expect(
+      shown,
+      firstVisible! + 1,
+      reason: 'etykieta zgadza się z pierwszym widocznym wierszem, bez opóźnienia o klatkę',
+    );
   });
 
   testWidgets('etykieta znika po puszczeniu uchwytu', (tester) async {
@@ -185,6 +189,19 @@ void main() {
           .toList();
       expect(decoration.first.color, appColors.indexDots, reason: 'uchwyt w spoczynku');
     }
+  });
+
+  testWidgets('wiersz ucięty do kilku pikseli nie liczy się jako widoczny', (tester) async {
+    await pumpList(tester);
+    // Ustawiamy się tuż pod granicą wiersza 10: z poprzedniego zostaje ułamek piksela.
+    controller.jumpTo(96.0 + 48.0 * 9 - 1.0);
+    await tester.pumpAndSettle();
+
+    expect(
+      firstVisibleItemIndex(controller),
+      10,
+      reason: 'liczy się wiersz, który użytkownik czyta u góry, nie jego poprzednik',
+    );
   });
 
   group('odczyt pierwszego widocznego wiersza', () {

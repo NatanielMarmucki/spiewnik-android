@@ -152,6 +152,12 @@ class _SongScrollBarState extends State<SongScrollBar> {
       return const SizedBox.shrink();
     }
 
+    // Po każdym przerysowaniu w trakcie przeciągania dopytujemy listę jeszcze raz: pojedynczy
+    // odczyt po skoku potrafi być o klatkę do tyłu i etykieta pokazywała numer o jeden mniejszy.
+    if (_dragging) {
+      _updateLabel();
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final trackHeight = constraints.maxHeight;
@@ -299,12 +305,14 @@ int? firstVisibleItemIndex(ScrollController controller) {
     }
     final scrollOffset = sliver.constraints.scrollOffset;
     // firstChild bywa wierszem z zapasu nad ekranem, więc szukamy pierwszego, który sięga widoku.
+    // Próg: wiersz ucięty do kilku pikseli jest dla oka niewidoczny, a etykieta pokazywałaby wtedy
+    // numer o jeden mniejszy niż ten, który użytkownik czyta u góry.
     for (RenderBox? child = sliver.firstChild; child != null; child = sliver.childAfter(child)) {
       final childOffset = sliver.childScrollOffset(child);
       if (childOffset == null) {
         continue;
       }
-      if (childOffset + child.size.height > scrollOffset) {
+      if (childOffset + child.size.height > scrollOffset + _visibleThreshold) {
         return sliver.indexOf(child);
       }
     }
@@ -314,6 +322,9 @@ int? firstVisibleItemIndex(ScrollController controller) {
     return null;
   }
 }
+
+/// Ile wiersza musi zostać pod górną krawędzią, żeby uznać go za widoczny.
+const double _visibleThreshold = 8.0;
 
 RenderSliverMultiBoxAdaptor? _findSliverAdaptor(RenderObject root) {
   if (root is RenderSliverMultiBoxAdaptor) {

@@ -13,6 +13,7 @@ import 'package:spiewnik/view/settings_view.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
 import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 import 'package:spiewnik/view/song_list_view.dart';
+import 'package:spiewnik/view/widgets/song_scroll_bar.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
@@ -62,6 +63,30 @@ void main() {
     await goldenScreen(tester, '01-lista-piesni', (context) {
       return Scaffold(appBar: AppBar(title: const Text('Śpiewnik')), body: SongListView(viewModel: songs()));
     });
+  }, skip: skipOnOtherPlatforms);
+
+  testWidgets('lista pieśni: szybkie przewijanie', (tester) async {
+    // Uchwyt pokazuje się dopiero przy liście dłuższej niż dwa ekrany, więc tu jest ich więcej.
+    final viewModel = SongViewModel(FakeSongRepository(manySongs()));
+    await goldenScreen(
+      tester,
+      '20-lista-szybkie-przewijanie',
+      (context) => Scaffold(
+        appBar: AppBar(title: const Text('Śpiewnik')),
+        body: SongListView(viewModel: viewModel),
+      ),
+      afterPump: (tester) async {
+        final bar = tester.getRect(find.byType(SongScrollBar));
+        final start = Offset(
+          bar.right - SongScrollBar.hitWidth / 2,
+          bar.top + SongScrollBar.thumbHeight / 2,
+        );
+        final gesture = await tester.startGesture(start);
+        await gesture.moveTo(Offset(start.dx, bar.top + bar.height * 0.45));
+        await tester.pumpAndSettle();
+        addTearDown(() async => gesture.up());
+      },
+    );
   }, skip: skipOnOtherPlatforms);
 
   testWidgets('lista pieśni: wynik wyszukiwania', (tester) async {
