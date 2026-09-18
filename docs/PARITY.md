@@ -21,7 +21,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Układ na tablet | Osobne widoki `*SplitView` (`NavigationSplitView`: lista + szczegóły) dla `.pad` | Brak rozróżnienia, ten sam układ na każdym ekranie | **R** |
 | Wejście do ustawień | Zębatka tylko w zakładce „Śpiewnik”; ustawienia otwierają się jako arkusz (`.sheet`) | Ikona `Icons.settings` w `AppBar`, dostępna z obu zakładek; `Navigator.push` | **R** |
 | Tytuł paska na liście | „Śpiewnik” / „Ulubione” / „Moje pieśni” zależnie od zakładki | Zawsze `'Śpiewnik'` | **R** |
-| **Lista pieśni: sortowanie** | Jawne: `number` rosnąco (`NSSortDescriptor`) | Brak jawnego: `box.getAll()`, kolejność wg `id` ObjectBox (NIEPOTWIERDZONE, czy gwarantowana) | **R** |
+| **Lista pieśni: sortowanie** | Jawne: `number` rosnąco (`NSSortDescriptor`) | Od 12.0.0 jawne: `number` rosnąco w zapytaniu repozytorium | **—** |
 | Lista pieśni: wygląd wiersza | `"<number>. "` (headline) + tytuł, 1 linia, serce przy ulubionych | `CircleAvatar` z numerem + pogrubiony tytuł, 1 linia, serce przy ulubionych | **R** (wizualnie) |
 | Fallback pustego tytułu | `"Brak tytułu"` (lista główna, szczegóły) / `"Brak tytuł"` (ulubione, moje pieśni) | Brak. `title` jest typu `String` non-null. | **R** |
 | Szybkie przewijanie z etykietą numeru | Brak | `DraggableScrollbar.semicircle`; etykieta tylko przy pełnej liście, od 12.0.0 długość brana z bazy zamiast zakodowanego 2000 | **B** |
@@ -45,7 +45,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | **Swipe poprzednia/następna** | `DragGesture(minimumDistance: 50)`, rozstrzygane na końcu gestu; `width > 0` → poprzednia, pozostałe → następna | `onPanUpdate` przy każdym zdarzeniu z `\|dx\| > 10` (NIEPOTWIERDZONE: wielokrotne wyzwolenie) | **R** |
 | Swipe: po przejściu do numeru | Liczy od pierwotnie otwartej pieśni | Liczy od wyświetlanej pieśni | **R** |
 | **Ulubione: przełączanie** | Tylko z ekranu szczegółów | Tylko z ekranu szczegółów | **—** |
-| Ulubione: sortowanie listy | Jawne: `number` rosnąco | Brak jawnego (`query(...).find()`) | **R** |
+| Ulubione: sortowanie listy | Jawne: `number` rosnąco | Od 12.0.0 jawne: `number` rosnąco | **—** |
 | Ulubione: komunikat pustej listy | „Lista ulubionych pieśni jest pusta” | `'Brak ulubionych pieśni'` | **R** (tekst) |
 | **Udostępnianie** | Systemowy `UIActivityViewController`, tylko treść; **tylko iPhone** | Ikona `Icons.share`, ale **kopiuje do schowka** i pokazuje SnackBar „Treść skopiowana do schowka” | **R** |
 | **Własne pieśni: dodawanie / edycja / usuwanie** | Jest (usuwanie tylko iPhone) | Brak | **B** |

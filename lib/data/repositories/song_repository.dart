@@ -3,10 +3,10 @@ import 'package:spiewnik/objectbox.g.dart';
 
 /// The songbook loaded from the asset. The only way for view models to reach the database.
 abstract class SongRepository {
-  /// All songs, in the order they are stored in. There is no explicit sorting yet
-  /// (see "Lista pieśni: sortowanie" in docs/PARITY.md).
+  /// All songs, ordered by number, ascending.
   List<Song> all();
 
+  /// Favorites, ordered by number, ascending.
   List<Song> favorites();
 
   /// How many songs the songbook has.
@@ -23,14 +23,16 @@ class ObjectBoxSongRepository implements SongRepository {
   ObjectBoxSongRepository(this._store);
 
   @override
-  List<Song> all() => _store.box<Song>().getAll();
+  List<Song> all() => _find(_store.box<Song>().query()..order(Song_.number));
 
   @override
   int count() => _store.box<Song>().count();
 
   @override
-  List<Song> favorites() {
-    final query = _store.box<Song>().query(Song_.favorite.equals(true)).build();
+  List<Song> favorites() => _find(_store.box<Song>().query(Song_.favorite.equals(true))..order(Song_.number));
+
+  List<Song> _find(QueryBuilder<Song> builder) {
+    final query = builder.build();
     try {
       return query.find();
     } finally {

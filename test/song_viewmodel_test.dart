@@ -35,15 +35,15 @@ void main() {
 
       final viewModel = open();
 
-      expect(numbers(viewModel.allSongsNotifier.value), [2, 1, 3]);
+      expect(numbers(viewModel.allSongsNotifier.value), [1, 2, 3]);
       expect(numbers(viewModel.favoriteSongsNotifier.value), [1]);
-      expect(numbers(viewModel.filteredSongsNotifier.value), [2, 1, 3]);
+      expect(numbers(viewModel.filteredSongsNotifier.value), [1, 2, 3]);
     });
 
-    test('keeps the order the songs were stored in; there is no explicit sorting', () {
+    test('sorts by number, ascending, whatever the storing order was', () {
       putSongs([song(30), song(10), song(20)]);
 
-      expect(numbers(open().allSongsNotifier.value), [30, 10, 20]);
+      expect(numbers(open().allSongsNotifier.value), [10, 20, 30]);
     });
 
     test('has empty lists when there are no songs', () {
