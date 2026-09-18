@@ -139,9 +139,9 @@ void main() {
     await LegacySettingsMigration(logger: logger).run(isIOS: true);
 
     final model = FontSizeModel();
-    await Future<void>.delayed(Duration.zero);
+    await model.loaded;
 
     expect(model.fontSize, 26.0);
-    expect(model.lineHeight, 1.5);
+    expect(model.lineHeight, FontSizeModel.defaultLineHeight); // interlinii stara aplikacja nie migruje
   });
 }

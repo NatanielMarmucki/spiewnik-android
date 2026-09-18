@@ -50,8 +50,8 @@ class SettingsView extends StatelessWidget {
                           Expanded(
                             child: Slider(
                               value: fontSizeModel.fontSize,
-                              min: 10.0,
-                              max: 30.0,
+                              min: FontSizeModel.minFontSize,
+                              max: FontSizeModel.maxFontSize,
                               divisions: 10,
                               label: "${fontSizeModel.fontSize.round()}",
                               onChanged: (value) {
@@ -70,10 +70,10 @@ class SettingsView extends StatelessWidget {
                           Expanded(
                             child: Slider(
                               value: fontSizeModel.lineHeight,
-                              min: 1.0,
-                              max: 3.0,
-                              divisions: 10,
-                              label: fontSizeModel.lineHeight.toStringAsFixed(1),
+                              min: FontSizeModel.minLineHeight,
+                              max: FontSizeModel.maxLineHeight,
+                              divisions: 8, // krok 0,05 w zakresie 1,4-1,8
+                              label: fontSizeModel.lineHeight.toStringAsFixed(2),
                               onChanged: (value) {
                                 fontSizeModel.setLineHeight(value);
                               },
