@@ -21,6 +21,9 @@ class SongViewModel {
     _filterSongs();
   }
 
+  /// Tekst z wyszukiwarki. Widok pyta o niego, żeby wiedzieć, czy pokazuje pełną listę.
+  String get searchText => _searchText;
+
   set searchText(String value) {
     _searchText = value;
     _filterSongs();
