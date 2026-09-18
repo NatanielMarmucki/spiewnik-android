@@ -50,7 +50,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | **Ulubione: przełączanie** | Tylko z ekranu szczegółów | Tylko z ekranu szczegółów | **—** |
 | Ulubione: sortowanie listy | Jawne: `number` rosnąco | Od 12.0.0 jawne: `number` rosnąco | **—** |
 | Ulubione: komunikat pustej listy | „Lista ulubionych pieśni jest pusta” | Stan pusty z systemu wizualnego: ikona, nagłówek i zdanie mówiące co zrobić | **R** |
-| **Udostępnianie** | Systemowy `UIActivityViewController`, tylko treść; **tylko iPhone** | Ikona `Icons.share`, ale **kopiuje do schowka** i pokazuje SnackBar „Treść skopiowana do schowka” | **R** |
+| **Udostępnianie** | Systemowy `UIActivityViewController`, tylko treść; **tylko iPhone** | Od 12.0.0 systemowy arkusz (`share_plus`) z numerem, tytułem i treścią, na obu platformach; wywoływany z arkusza opcji pod trzema kropkami | **—** (kotwica na iPadzie ustawiona, więc działa też na tablecie) |
 | **Własne pieśni: dodawanie / edycja / usuwanie** | Jest (usuwanie tylko iPhone) | Brak | **B** |
 | Skanowanie tekstu aparatem (Live Text) | Jest, warunkowo; zastępuje całą treść | Brak | **B** |
 | **Rozmiar czcionki** | Klucz `isSize`; domyślnie 16 (iPhone) / 24 (iPad); zakres 10…30 (iPhone) / 24…44 (iPad), krok 2 | Klucz `fontSize`; domyślnie 16.0; zakres 10…30, krok 2 | **R** (iPad) |
@@ -87,7 +87,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 |---|---|
 | „Moje pieśni”: lista, dodawanie, podgląd, edycja, usuwanie | Usuwanie tylko na iPhonie; wyszukiwarka w tej zakładce nie filtruje |
 | Skanowanie tekstu aparatem (Live Text) przy dodawaniu i edycji własnej pieśni | Warunkowo, gdy `captureTextFromCamera` jest dostępne |
-| Systemowy arkusz udostępniania | Tylko iPhone |
+| ~~Systemowy arkusz udostępniania~~ | Tylko iPhone. **Dorobione w 12.0.0** na obu platformach |
 | Przełącznik „Dynamiczna wyszukiwarka” (tryb wyszukiwania po zatwierdzeniu) | — |
 | Układ dwukolumnowy (`NavigationSplitView`) na iPadzie | — |
 | Alert „Nowa wersja” z changelogiem | — |
@@ -100,7 +100,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Funkcja | Uwagi z audytu |
 |---|---|
 | Blokada wygaszania ekranu na ekranie szczegółów | Zawsze włączona, bez ustawienia |
-| Kopiowanie treści do schowka z SnackBarem | W miejscu udostępniania |
+| Kopiowanie treści do schowka z SnackBarem | Do 12.0.0 w miejscu udostępniania; od 12.0.0 osobna pozycja „Kopiuj tekst” w arkuszu opcji, obok udostępniania |
 | Prośba o ocenę po pierwszym dodaniu ulubionej | Raz na uruchomienie |
 | Wejście do ustawień z każdej zakładki | — |
 | Komunikat „Pieśń o podanym numerze nie została znaleziona” | Osobny od „niepoprawny numer” |

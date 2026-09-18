@@ -10,6 +10,7 @@ import 'package:spiewnik/view/song_detail_view.dart';
 import 'package:spiewnik/view/widgets/song_bottom_bar.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
+import 'package:spiewnik/view/widgets/song_options_sheet.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
 import 'support/fakes/fake_song_repository.dart';
@@ -192,6 +193,86 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpAndSettle();
       expect(ScreenWakeLock.holders, 0, reason: 'po wyjściu licznik schodzi do zera');
+    });
+  });
+
+  group('arkusz opcji', () {
+    late FakeShare share;
+
+    setUp(() => share = FakeShare()..install());
+    tearDown(() => share.uninstall());
+
+    Future<void> openSheet(WidgetTester tester) async {
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('pasek ma serce i trzy kropki, a ikony udostępniania już nie', (tester) async {
+      await openSong(tester, 1);
+
+      expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+      expect(find.byIcon(Icons.more_vert), findsOneWidget);
+      expect(find.byIcon(Icons.share), findsNothing, reason: 'udostępnianie przeniosło się do arkusza');
+    });
+
+    testWidgets('pokazuje trzy pozycje, a przy rozmiarze tekstu bieżącą wartość', (tester) async {
+      await openSong(tester, 1);
+
+      await openSheet(tester);
+
+      expect(find.text('Udostępnij pieśń'), findsOneWidget);
+      expect(find.text('Rozmiar tekstu'), findsOneWidget);
+      expect(find.text('Kopiuj tekst'), findsOneWidget);
+      expect(
+        find.text('${FontSizeModel.defaultFontSize.round()}'),
+        findsOneWidget,
+        reason: 'wartość rozmiaru stoi przy pozycji',
+      );
+    });
+
+    testWidgets('udostępnianie wysyła numer, tytuł i treść', (tester) async {
+      await openSong(tester, 4);
+
+      await openSheet(tester);
+      await tester.tap(find.text('Udostępnij pieśń'));
+      await tester.pumpAndSettle();
+
+      expect(share.shares, hasLength(1));
+      expect(share.shares.single['text'], '4. Pieśń 4\n\ntreść 4');
+      expect(share.shares.single['subject'], '4. Pieśń 4');
+      expect(find.text('Udostępnij pieśń'), findsNothing, reason: 'arkusz zamyka się przed akcją');
+    });
+
+    testWidgets('kopiowanie wkłada treść do schowka i potwierdza', (tester) async {
+      String? copied;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'Clipboard.setData') {
+          copied = (call.arguments as Map)['text'] as String?;
+        }
+        return null;
+      });
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+      await openSong(tester, 4);
+
+      await openSheet(tester);
+      await tester.tap(find.text('Kopiuj tekst'));
+      await tester.pumpAndSettle();
+
+      expect(copied, 'treść 4');
+      expect(find.text('Treść skopiowana do schowka'), findsOneWidget);
+    });
+
+    testWidgets('pozycje arkusza mają wysokość co najmniej 52 dp', (tester) async {
+      await openSong(tester, 1);
+
+      await openSheet(tester);
+
+      for (final label in ['Udostępnij pieśń', 'Rozmiar tekstu', 'Kopiuj tekst']) {
+        final row = find.ancestor(of: find.text(label), matching: find.byType(InkWell)).first;
+        expect(tester.getSize(row).height, greaterThanOrEqualTo(SongOptionsSheet.minItemHeight));
+      }
     });
   });
 

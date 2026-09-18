@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
+import 'package:spiewnik/view/settings_view.dart';
 import 'package:spiewnik/view/widgets/go_to_song_dialog.dart';
 import 'package:spiewnik/view/widgets/song_bottom_bar.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
+import 'package:spiewnik/view/widgets/song_options_sheet.dart';
 
 class SongDetailView extends StatefulWidget {
   final Song song;
@@ -20,6 +25,9 @@ class SongDetailView extends StatefulWidget {
 
 class SongDetailViewState extends State<SongDetailView> {
   late Song song;
+
+  /// Kotwica arkusza udostępniania na iPadzie, gdzie jest to dymek przy przycisku.
+  final GlobalKey _optionsButtonKey = GlobalKey();
 
   @override
   void initState() {
@@ -47,35 +55,24 @@ class SongDetailViewState extends State<SongDetailView> {
               ),
             ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    widget.viewModel.toggleFavoriteStatus(song);
-                  });
-                },
-                child: Icon(
-                  song.favorite ? Icons.favorite : Icons.favorite_border,
-                  size: 24.0,
-                  color: song.favorite ? context.appColors.favorite : null,
-                ),
+            IconButton(
+              tooltip: song.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych',
+              onPressed: () {
+                setState(() {
+                  widget.viewModel.toggleFavoriteStatus(song);
+                });
+              },
+              icon: Icon(
+                song.favorite ? Icons.favorite : Icons.favorite_border,
+                size: 24.0,
+                color: song.favorite ? context.appColors.favorite : null,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: InkWell(
-                onTap: () {
-                  Clipboard.setData(ClipboardData(text: song.content));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Treść skopiowana do schowka')),
-                  );
-                },
-                child: const Icon(
-                  Icons.share,
-                  size: 24.0,
-                ),
-              ),
+            IconButton(
+              key: _optionsButtonKey,
+              tooltip: 'Opcje pieśni',
+              onPressed: _showOptions,
+              icon: const Icon(Icons.more_vert, size: 24.0),
             ),
           ],
         ),
@@ -99,6 +96,69 @@ class SongDetailViewState extends State<SongDetailView> {
         onGoToNumber: _showSearchDialog,
       ),
     );
+  }
+
+  /// Arkusz opcji spod trzech kropek. Pozycje zamykają arkusz **przed** swoją akcją,
+  /// żeby systemowy arkusz udostępniania nie otwierał się na naszym.
+  Future<void> _showOptions() async {
+    final fontSizeModel = context.read<FontSizeModel>();
+
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: false,
+      builder: (sheetContext) => SongOptionsSheet(
+        options: [
+          SongOption(
+            icon: Icons.ios_share,
+            label: 'Udostępnij pieśń',
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _share();
+            },
+          ),
+          SongOption(
+            icon: Icons.text_fields,
+            label: 'Rozmiar tekstu',
+            value: '${fontSizeModel.fontSize.round()}',
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _openSettings();
+            },
+          ),
+          SongOption(
+            icon: Icons.content_copy,
+            label: 'Kopiuj tekst',
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _copyText();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _share() async {
+    final box = _optionsButtonKey.currentContext?.findRenderObject() as RenderBox?;
+    await SharePlus.instance.share(
+      ShareParams(
+        text: '${song.number}. ${song.title}\n\n${song.content}',
+        subject: '${song.number}. ${song.title}',
+        // Wymagane na iPadzie: arkusz systemowy jest dymkiem zaczepionym o przycisk.
+        sharePositionOrigin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
+      ),
+    );
+  }
+
+  void _copyText() {
+    Clipboard.setData(ClipboardData(text: song.content));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Treść skopiowana do schowka')),
+    );
+  }
+
+  void _openSettings() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsView()));
   }
 
   Future<void> _showSearchDialog() async {

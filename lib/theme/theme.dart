@@ -80,6 +80,16 @@ ThemeData _buildTheme(ColorScheme scheme, AppColors appColors) {
       contentTextStyle: textTheme.bodyMedium,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
     ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: scheme.surfaceContainerHigh,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      // Ten sam promień 12 dp co dialog; dół zostaje prosty, bo arkusz siedzi przy krawędzi.
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
+      ),
+      showDragHandle: false,
+    ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: scheme.surfaceContainerHigh,
       contentTextStyle: textTheme.bodyMedium,
