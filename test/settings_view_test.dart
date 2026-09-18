@@ -96,6 +96,15 @@ void main() {
     );
   });
 
+  testWidgets('reset stoi nad przełącznikiem blokady ekranu', (tester) async {
+    await pumpSettings(tester);
+
+    final reset = tester.getCenter(find.text('Przywróć domyślny rozmiar i interlinię')).dy;
+    final wakeLock = tester.getCenter(find.text('Nie gaś ekranu przy pieśni')).dy;
+
+    expect(reset, lessThan(wakeLock), reason: 'reset zostaje przy tym, czego dotyczy');
+  });
+
   group('nie gaś ekranu', () {
     testWidgets('domyślnie włączone, a wyłączenie zdejmuje blokadę od razu', (tester) async {
       await pumpSettings(tester);

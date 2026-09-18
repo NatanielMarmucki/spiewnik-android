@@ -117,12 +117,6 @@ class _ReadingSection extends StatelessWidget {
             ),
           ),
         ),
-        SettingsSwitch(
-          label: 'Nie gaś ekranu przy pieśni',
-          description: 'Ekran zostaje włączony, dopóki masz otwartą pieśń.',
-          value: appSettings.keepScreenOn,
-          onChanged: appSettings.setKeepScreenOn,
-        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(22.0, 8.0, 22.0, 4.0),
           child: Align(
@@ -134,6 +128,12 @@ class _ReadingSection extends StatelessWidget {
               child: const Text('Przywróć domyślny rozmiar i interlinię'),
             ),
           ),
+        ),
+        SettingsSwitch(
+          label: 'Nie gaś ekranu przy pieśni',
+          description: 'Ekran zostaje włączony, dopóki masz otwartą pieśń.',
+          value: appSettings.keepScreenOn,
+          onChanged: appSettings.setKeepScreenOn,
         ),
       ],
     );
