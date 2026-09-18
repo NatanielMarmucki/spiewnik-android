@@ -35,3 +35,6 @@ doc/api/
 lib/libobjectbox.dylib
 lib/libobjectbox.so
 lib/objectbox.dll
+
+# Wyniki nieudanych testów golden (obrazy do porównania)
+test/golden/failures/
