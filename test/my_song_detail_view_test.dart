@@ -55,7 +55,9 @@ void main() {
 
     expect(find.byType(MySongDetailView), findsOneWidget);
     expect(find.descendant(of: find.byType(AppBar), matching: find.text('Moja pieśń')), findsOneWidget);
-    expect(find.text('1. Pierwsza zwrotka\n\n2. Druga zwrotka'), findsOneWidget);
+    // Renderer zdejmuje numery zwrotek z toku tekstu i dzieli treść na bloki.
+    expect(find.textContaining('Pierwsza zwrotka'), findsOneWidget);
+    expect(find.textContaining('Druga zwrotka'), findsOneWidget);
   });
 
   testWidgets('shows the content with the font size and line height from settings', (tester) async {
@@ -64,7 +66,7 @@ void main() {
 
     await openSong(tester, 'Moja pieśń');
 
-    final style = tester.widget<Text>(find.text('Treść pieśni')).style!;
+    final style = tester.widget<Text>(find.textContaining('Treść pieśni')).style!;
     expect(style.fontSize, 22.0);
     expect(style.height, 1.75);
   });

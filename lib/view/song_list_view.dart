@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
+import 'package:spiewnik/theme/app_colors.dart';
+import 'package:spiewnik/view/widgets/empty_state.dart';
+import 'package:spiewnik/view/widgets/song_list_tile.dart';
 import 'song_detail_view.dart';
 import 'package:spiewnik/model/song_model.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
-import 'package:spiewnik/theme/app_colors.dart';
 
 @immutable
 class SongListView extends StatefulWidget {
@@ -43,36 +44,39 @@ class SongListViewState extends State<SongListView> {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          // Wyszukiwarka jest widoczna zawsze (docs/DESIGN-SYSTEM.md, sekcja 5).
+          padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
           child: ValueListenableBuilder<TextEditingValue>(
             valueListenable: _controller,
             builder: (context, value, child) {
-              return TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: 'Szukaj',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: value.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.cancel),
-                          onPressed: _clearSearch,
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: Theme.of(context).inputDecorationTheme.fillColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                    borderSide: Theme.of(context)
-                            .inputDecorationTheme
-                            .border
-                            ?.borderSide ??
-                        BorderSide.none,
+              return ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 44.0),
+                child: TextField(
+                  controller: _controller,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  decoration: InputDecoration(
+                    hintText: 'Numer albo tytuł',
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    prefixIcon: Icon(Icons.search, size: 15.0, color: appColors.textSecondary),
+                    prefixIconConstraints: const BoxConstraints(minWidth: 44.0, minHeight: 44.0),
+                    suffixIcon: value.text.isEmpty
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.close, size: 15.0),
+                            // Cel dotknięcia 48 dp, mimo małej ikony.
+                            constraints: const BoxConstraints(minWidth: 48.0, minHeight: 48.0),
+                            tooltip: 'Wyczyść wyszukiwanie',
+                            onPressed: _clearSearch,
+                          ),
                   ),
+                  onChanged: _onSearchChanged,
                 ),
-                onChanged: _onSearchChanged,
               );
             },
           ),
@@ -81,90 +85,37 @@ class SongListViewState extends State<SongListView> {
           child: ValueListenableBuilder<List<Song>>(
             valueListenable: widget.viewModel.filteredSongsNotifier,
             builder: (context, songs, _) {
-              return DraggableScrollbar.semicircle(
+              if (songs.isEmpty) {
+                return EmptyState(
+                  icon: Icons.search_off,
+                  title: 'Brak wyników',
+                  message: 'Żadna pieśń nie pasuje do „${_controller.text.trim()}”. '
+                      'Spróbuj innego słowa albo wpisz numer pieśni.',
+                  actionLabel: 'Wyczyść wyszukiwanie',
+                  onAction: _clearSearch,
+                );
+              }
+              // itemExtent null: wiersz rośnie razem z systemowym powiększeniem czcionki.
+              return ListView.builder(
                 controller: _scrollController,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                labelTextBuilder: (double offset) {
-                  // The label shows the song number, which only matches the position in a full list.
-                  if (songs.length != widget.viewModel.songCount) {
-                    return const Text('');
-                  }
-                  final int currentIndex = (offset ~/ 70);
-                  return Text('${currentIndex + 1}');
+                itemCount: songs.length,
+                itemBuilder: (context, index) {
+                  final song = songs[index];
+                  return SongListTile(
+                    title: song.title,
+                    number: song.number,
+                    isFavorite: song.favorite,
+                    highlight: widget.viewModel.titleMatch(song),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SongDetailView(song: song, viewModel: widget.viewModel),
+                        ),
+                      );
+                    },
+                  );
                 },
-
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: songs.length,
-                  itemExtent: 70.0,
-                  itemBuilder: (context, index) {
-                    final song = songs[index];
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardTheme.color,
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 0,
-                            top: 0,
-                            bottom: 0,
-                            child: Container(
-                              width: 15.0,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(15.0),
-                                  bottomLeft: Radius.circular(15.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.center,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Material(
-                                // ListTile paints ink splashes on the nearest Material. Without this one, the colored
-                                // decoration of the row hides them, which newer Flutter versions assert in debug mode.
-                                type: MaterialType.transparency,
-                                child: ListTile(
-                                  contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
-                                  leading: CircleAvatar(
-                                    backgroundColor: context.appColors.accent,
-                                    child: Text(
-                                      song.number.toString(),
-                                      style: TextStyle(color: context.appColors.onAccent),
-                                    ),
-                                  ),
-                                  title:
-                                  Text(song.title, style:
-                                  const TextStyle(fontWeight:
-                                  FontWeight.bold), maxLines:
-                                  1, overflow:
-                                  TextOverflow.ellipsis),
-                                  trailing:
-                                  Column(mainAxisAlignment:
-                                  MainAxisAlignment.center, children:
-                                  [if (song.favorite)
-                                    Icon(Icons.favorite, color: context.appColors.favorite)]),
-                                  onTap:
-                                      () {Navigator.push(context, MaterialPageRoute(builder:
-                                      (context) => SongDetailView(song:
-                                  song, viewModel:
-                                      widget.viewModel)));},
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
               );
             },
           ),

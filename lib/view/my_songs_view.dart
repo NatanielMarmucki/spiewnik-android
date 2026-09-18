@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:spiewnik/model/my_song_model.dart';
 import 'package:spiewnik/view/delete_my_song_dialog.dart';
 import 'package:spiewnik/view/my_song_detail_view.dart';
+import 'package:spiewnik/view/widgets/empty_state.dart';
+import 'package:spiewnik/view/widgets/song_list_tile.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
-import 'package:spiewnik/theme/app_colors.dart';
 
 class MySongsView extends StatelessWidget {
   final MySongViewModel viewModel;
@@ -19,16 +20,14 @@ class MySongsView extends StatelessWidget {
             valueListenable: viewModel.mySongsNotifier,
             builder: (context, mySongs, _) {
               if (mySongs.isEmpty) {
-                return Center(
-                  child: Text(
-                    'Brak własnych pieśni',
-                    style: TextStyle(fontSize: 18, color: context.appColors.textSecondary),
-                  ),
+                return const EmptyState(
+                  icon: Icons.edit_note,
+                  title: 'Brak własnych pieśni',
+                  message: 'Dodaj własny tekst plusem w pasku u góry. Zostanie tylko na tym urządzeniu.',
                 );
               }
               return ListView.builder(
                 itemCount: mySongs.length,
-                itemExtent: 70.0,
                 itemBuilder: (context, index) {
                   final song = mySongs[index];
                   return Dismissible(
@@ -37,72 +36,22 @@ class MySongsView extends StatelessWidget {
                     confirmDismiss: (_) => confirmMySongDeletion(context, song),
                     onDismissed: (_) => viewModel.deleteSong(song),
                     background: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
-                      padding: const EdgeInsets.only(right: 20.0),
+                      padding: const EdgeInsets.only(right: 16.0),
                       alignment: Alignment.centerRight,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.error,
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
+                      color: Theme.of(context).colorScheme.error,
                       child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
                     ),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardTheme.color,
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 0,
-                            top: 0,
-                            bottom: 0,
-                            child: Container(
-                              width: 15.0,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(15.0),
-                                  bottomLeft: Radius.circular(15.0),
-                                ),
-                              ),
-                            ),
+                    child: SongListTile(
+                      title: song.title,
+                      badge: 'MOJA',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MySongDetailView(song: song, viewModel: viewModel),
                           ),
-                          Align(
-                            alignment: Alignment.center,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Material(
-                                // ListTile paints ink splashes on the nearest Material. Without this one, the colored
-                                // decoration of the row hides them, which newer Flutter versions assert in debug mode.
-                                type: MaterialType.transparency,
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
-                                  leading: CircleAvatar(
-                                    backgroundColor: context.appColors.accent,
-                                    child: Icon(Icons.edit_note, color: context.appColors.onAccent),
-                                  ),
-                                  title: Text(
-                                    song.title,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MySongDetailView(song: song, viewModel: viewModel),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   );
                 },

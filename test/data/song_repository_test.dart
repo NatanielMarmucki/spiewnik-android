@@ -18,16 +18,16 @@ void main() {
 
   void runContract(String name, SongRepository Function(List<Song>) open) {
     group(name, () {
-      test('lists songs in the order they were stored in', () {
+      test('lists songs by number, ascending, whatever the storing order was', () {
         final repository = open([buildSong(30), buildSong(10), buildSong(20)]);
 
-        expect(repository.all().map((song) => song.number), [30, 10, 20]);
+        expect(repository.all().map((song) => song.number), [10, 20, 30]);
       });
 
-      test('lists only favorites, in the stored order', () {
+      test('lists only favorites, also by number', () {
         final repository = open([buildSong(3, favorite: true), buildSong(1), buildSong(2, favorite: true)]);
 
-        expect(repository.favorites().map((song) => song.number), [3, 2]);
+        expect(repository.favorites().map((song) => song.number), [2, 3]);
       });
 
       test('finds a song by number and returns null for a missing one', () {

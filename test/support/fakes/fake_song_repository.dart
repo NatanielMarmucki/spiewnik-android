@@ -16,13 +16,13 @@ class FakeSongRepository implements SongRepository {
   }
 
   @override
-  List<Song> all() => List.of(songs);
+  List<Song> all() => List.of(songs)..sort((a, b) => a.number.compareTo(b.number));
 
   @override
   int count() => songs.length;
 
   @override
-  List<Song> favorites() => songs.where((song) => song.favorite).toList();
+  List<Song> favorites() => all().where((song) => song.favorite).toList();
 
   @override
   Song? byNumber(int number) => songs.where((song) => song.number == number).firstOrNull;

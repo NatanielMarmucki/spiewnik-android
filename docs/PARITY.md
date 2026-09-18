@@ -21,16 +21,19 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Układ na tablet | Osobne widoki `*SplitView` (`NavigationSplitView`: lista + szczegóły) dla `.pad` | Brak rozróżnienia, ten sam układ na każdym ekranie | **R** |
 | Wejście do ustawień | Zębatka tylko w zakładce „Śpiewnik”; ustawienia otwierają się jako arkusz (`.sheet`) | Ikona `Icons.settings` w `AppBar`, dostępna z obu zakładek; `Navigator.push` | **R** |
 | Tytuł paska na liście | „Śpiewnik” / „Ulubione” / „Moje pieśni” zależnie od zakładki | Zawsze `'Śpiewnik'` | **R** |
-| **Lista pieśni: sortowanie** | Jawne: `number` rosnąco (`NSSortDescriptor`) | Brak jawnego: `box.getAll()`, kolejność wg `id` ObjectBox (NIEPOTWIERDZONE, czy gwarantowana) | **R** |
-| Lista pieśni: wygląd wiersza | `"<number>. "` (headline) + tytuł, 1 linia, serce przy ulubionych | `CircleAvatar` z numerem + pogrubiony tytuł, 1 linia, serce przy ulubionych | **R** (wizualnie) |
+| **Lista pieśni: sortowanie** | Jawne: `number` rosnąco (`NSSortDescriptor`) | Od 12.0.0 jawne: `number` rosnąco w zapytaniu repozytorium | **—** |
+| Lista pieśni: wygląd wiersza | `"<number>. "` (headline) + tytuł, 1 linia, serce przy ulubionych | Od 12.0.0 wspólny wiersz: tytuł (Newsreader 17), linia wiodąca z kropek, numer na prawej krawędzi, serce 11 dp przy tytule | **R** (wizualnie) |
+| Ulubione: zawijanie długiego tytułu | 1 linia | Do 12.0.0 tytuł zawijał się do wielu linii (wiersz na `Card`, bez `maxLines`); od 12.0.0 jedna linia z wielokropkiem, jak na pozostałych listach | **—** świadoma zmiana z systemu wizualnego |
 | Fallback pustego tytułu | `"Brak tytułu"` (lista główna, szczegóły) / `"Brak tytuł"` (ulubione, moje pieśni) | Brak. `title` jest typu `String` non-null. | **R** |
-| Szybkie przewijanie z etykietą numeru | Brak | `DraggableScrollbar.semicircle`; etykieta tylko przy pełnej liście, od 12.0.0 długość brana z bazy zamiast zakodowanego 2000 | **B** |
+| Szybkie przewijanie z etykietą numeru | Brak | Usunięte w 12.0.0 razem z paczką `draggable_scrollbar`; zastępuje je stała wyszukiwarka | **—** |
 | **Wyszukiwanie: pola** | `content` (po oczyszczeniu) + podciąg `number` | `content` (po oczyszczeniu) + podciąg `number` | **—** |
-| Wyszukiwanie: tytuł | Nieprzeszukiwany: filtr sprawdza tylko treść i numer | Nieprzeszukiwany: to samo | **—** wspólne zachowanie, **do decyzji**: propozycja dodania tytułu do przeszukiwanych pól, do rozstrzygnięcia przy grupie A |
+| Wyszukiwanie: tytuł | Nieprzeszukiwany: filtr sprawdza tylko treść i numer | Od 12.0.0 przeszukiwany razem z treścią i numerem, trafienie podświetlone akcentem w tytule | **R** — świadome ulepszenie z systemu wizualnego |
 | Wyszukiwanie: białe znaki po usunięciu ignorowanych znaków | Usunięcie znaku wewnątrz tekstu zostawia podwójną spację (przycinane są tylko końce), więc „boży zmiłuj” nie pasuje do „Baranku Boży, x zmiłuj się”, a „boży  zmiłuj” tak | To samo zachowanie | **—** wspólne zachowanie, **błąd, nie decyzja projektowa**. Do naprawy przy grupie A: normalizacja białych znaków po usunięciu ignorowanych znaków |
 | Wyszukiwanie: usuwane znaki z treści | `1 2 3 4 5 6 7 8 9 , . ; : ' [ ] ( ) ! ? - ” — „ x` | `"123456789,.;:'[]()!?-”—„x"` (ten sam zestaw) | **—** |
 | Wyszukiwanie: obróbka zapytania | Tylko `lowercased()` | Tylko `toLowerCase()` | **—** |
 | Wyszukiwanie: polskie znaki | Brak normalizacji diakrytyków | Od 12.0.0: polskie litery zamieniane na litery bazowe w treści i w zapytaniu (`removePolishDiacritics`), więc „zrodlo” znajduje „źródło” i odwrotnie | **R** — świadome ulepszenie, nie odtworzenie zachowania iOS (stara wersja Androida też tego nie miała) |
+| Treść pieśni: renderowanie | Jeden `Text`, bez parsowania | Od 12.0.0 renderer zdejmuje znaczniki z toku tekstu: inicjał w pierwszej zwrotce, cyfra z linią w kolejnych, wersalik „REFREN” z wcięciem, znaki powtórzenia w akcencie, odstęp zamiast pustych wierszy | **R** — świadome ulepszenie z systemu wizualnego |
+| Stan pusty listy | Tekst w środku ekranu | Od 12.0.0 ikona, nagłówek i zdanie mówiące co zrobić; przy braku wyników przycisk „Wyczyść wyszukiwanie” | **R** |
 | Wyszukiwanie: wyzwalanie | Zależne od ustawienia: po zatwierdzeniu (`onCommit`) albo dynamicznie z debounce **0,5 s** | Zawsze dynamicznie, debounce **250 ms** | **R** |
 | Wyszukiwanie: przycisk „Anuluj” | Jest (chowa klawiaturę, czyści) | Brak; jest ikona `Icons.cancel` (czyści, przewija na górę) | **R** |
 | Wyszukiwanie w ulubionych | Brak | Brak | **—** |
@@ -45,8 +48,8 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | **Swipe poprzednia/następna** | `DragGesture(minimumDistance: 50)`, rozstrzygane na końcu gestu; `width > 0` → poprzednia, pozostałe → następna | `onPanUpdate` przy każdym zdarzeniu z `\|dx\| > 10` (NIEPOTWIERDZONE: wielokrotne wyzwolenie) | **R** |
 | Swipe: po przejściu do numeru | Liczy od pierwotnie otwartej pieśni | Liczy od wyświetlanej pieśni | **R** |
 | **Ulubione: przełączanie** | Tylko z ekranu szczegółów | Tylko z ekranu szczegółów | **—** |
-| Ulubione: sortowanie listy | Jawne: `number` rosnąco | Brak jawnego (`query(...).find()`) | **R** |
-| Ulubione: komunikat pustej listy | „Lista ulubionych pieśni jest pusta” | `'Brak ulubionych pieśni'` | **R** (tekst) |
+| Ulubione: sortowanie listy | Jawne: `number` rosnąco | Od 12.0.0 jawne: `number` rosnąco | **—** |
+| Ulubione: komunikat pustej listy | „Lista ulubionych pieśni jest pusta” | Stan pusty z systemu wizualnego: ikona, nagłówek i zdanie mówiące co zrobić | **R** |
 | **Udostępnianie** | Systemowy `UIActivityViewController`, tylko treść; **tylko iPhone** | Ikona `Icons.share`, ale **kopiuje do schowka** i pokazuje SnackBar „Treść skopiowana do schowka” | **R** |
 | **Własne pieśni: dodawanie / edycja / usuwanie** | Jest (usuwanie tylko iPhone) | Brak | **B** |
 | Skanowanie tekstu aparatem (Live Text) | Jest, warunkowo; zastępuje całą treść | Brak | **B** |
@@ -98,7 +101,6 @@ Oznaczenia w kolumnie „Rozbieżność”:
 |---|---|
 | Blokada wygaszania ekranu na ekranie szczegółów | Zawsze włączona, bez ustawienia |
 | Kopiowanie treści do schowka z SnackBarem | W miejscu udostępniania |
-| Przeciągany pasek przewijania z etykietą numeru | Tylko przy pełnej liście |
 | Prośba o ocenę po pierwszym dodaniu ulubionej | Raz na uruchomienie |
 | Wejście do ustawień z każdej zakładki | — |
 | Komunikat „Pieśń o podanym numerze nie została znaleziona” | Osobny od „niepoprawny numer” |
