@@ -209,6 +209,16 @@ Ustalone przy wdrożeniu kroku 5, zastępuje wcześniejsze „dwie akcje po praw
 mówiące co zrobić, opcjonalnie jedno wyjście jako przycisk-pastylka 48 dp. Trzy wystąpienia:
 brak wyników, brak ulubionych, brak własnych pieśni. Nigdy duża ilustracja.
 
+**Ekran powitalny po migracji** — pokazywany raz użytkownikowi, którego dane przeniosła migracja
+ze starej aplikacji iOS (issue #37). Pełny ekran bez paska, jedno wyjście: przycisk-pastylka
+„Zaczynajmy” na całą szerokość kolumny, min. 48 dp, przy dolnej krawędzi. Nagłówek **Newsreader
+300, 30 / 1,15** — jedyny rozmiar spoza skali interfejsu, dopowiedziany przy wdrożeniu, bo tytuł
+ekranu (20) na pustym ekranie ginie. Reszta ze skali: treść 15 / 1,5, podtytuł „Co się zmieniło:”
+jak przycisk tekstowy (15 / 1,2, Grotesk 600), punkty listy w akcencie. Marginesy 24 dp, odstępy
+16 / 32 / 12 / 8 z sekcji 4, kolumna najwyżej 34 × 19 dp jak tekst pieśni przy domyślnym S. Treść
+przewija się, gdy przy powiększeniu się nie mieści. Jednoliterowe słowa („i”, „w”, „z”) są
+przyklejone do następnego twardą spacją, żeby nie zostawały na końcu wiersza.
+
 **Suwak** — tor 3 dp, uchwyt 20 dp w celu 48 dp, poświata 6 dp przy dotknięciu. Wartość zawsze
 wypisana liczbą obok nazwy. Pod suwakiem rozmiaru tekstu stoi próbka pieśni zmieniająca się
 na żywo.

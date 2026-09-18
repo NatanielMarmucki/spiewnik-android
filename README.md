@@ -105,6 +105,11 @@ xcrun simctl spawn "$SIM" log show --last 5m --style compact --predicate 'proces
 - `flutter.fontSize` równe `isSize` (przycięte do 10–30);
 - log: „marked 3 favorites, added 2 user songs”, a przy drugim uruchomieniu „already done, skipping”;
 - w aplikacji: te same ulubione, własne pieśni z pełną treścią, po drugim uruchomieniu bez duplikatów;
+- przy pierwszym uruchomieniu ekran powitalny „Śpiewnik w nowej odsłonie”, `flutter.postMigrationWelcomeShown` = `true`
+  i w logu „Welcome screen: showing it once”; przy drugim od razu lista pieśni. Ekran nie wraca także wtedy, gdy
+  aplikację zamknięto bez dotknięcia „Zaczynajmy” — flaga zapisuje się, zanim ekran się pokaże;
+- po odinstalowaniu i czystej instalacji tego samego buildu ekranu powitalnego **nie ma** (log: „no database of the
+  old iOS app”, brak `flutter.postMigrationWelcomeShown`);
 - `Model.sqlite`, `-wal` i `-shm` identyczne z kopią.
 
 ## Testy golden (wygląd ekranów)

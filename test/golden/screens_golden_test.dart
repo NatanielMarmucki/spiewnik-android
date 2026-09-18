@@ -13,6 +13,7 @@ import 'package:spiewnik/view/settings_view.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
 import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 import 'package:spiewnik/view/song_list_view.dart';
+import 'package:spiewnik/view/welcome_view.dart';
 import 'package:spiewnik/view/widgets/song_scroll_bar.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
@@ -301,6 +302,25 @@ void main() {
       '19-ustawienia-x2',
       (context) => const SettingsView(),
       textScale: 2.0,
+    );
+  }, skip: skipOnOtherPlatforms);
+
+  // Ekran powitalny po migracji ze starej aplikacji iOS (issue #37).
+  testWidgets('ekran powitalny', (tester) async {
+    await goldenScreen(tester, '21-powitanie', (context) => WelcomeView(onContinue: () {}));
+  }, skip: skipOnOtherPlatforms);
+
+  testWidgets('ekran powitalny: powiększenie x2', (tester) async {
+    await goldenScreen(tester, '22-powitanie-x2', (context) => WelcomeView(onContinue: () {}), textScale: 2.0);
+  }, skip: skipOnOtherPlatforms);
+
+  testWidgets('ekran powitalny: powiększenie x2, przewinięty do przycisku', (tester) async {
+    await goldenScreen(
+      tester,
+      '22b-powitanie-x2-przycisk',
+      (context) => WelcomeView(onContinue: () {}),
+      textScale: 2.0,
+      afterPump: (tester) => tester.ensureVisible(find.text(WelcomeView.continueLabel)),
     );
   }, skip: skipOnOtherPlatforms);
 }
