@@ -11,6 +11,7 @@ import 'package:spiewnik/view/favorite_songs_view.dart';
 import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
 import 'package:spiewnik/view/settings_view.dart';
+import 'package:spiewnik/view/welcome_view.dart';
 import 'package:spiewnik/view/widgets/app_navigation_bar.dart';
 import 'package:spiewnik/data/repositories/my_song_repository.dart';
 import 'package:spiewnik/data/repositories/song_repository.dart';
@@ -18,6 +19,7 @@ import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/model/app_settings_model.dart';
 import 'package:spiewnik/model/font_size_model.dart';
+import 'package:spiewnik/post_migration_welcome.dart';
 import 'package:spiewnik/review_service.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
@@ -86,9 +88,14 @@ void main() async {
 
   await initializeApp(jsonLoader);
   // After the songs are loaded, so favorites from the old iOS app can be matched by number.
-  await CoreDataMigration.runOnStartup(store: objectBoxStore, logger: logger);
+  final coreDataResult = await CoreDataMigration.runOnStartup(store: objectBoxStore, logger: logger);
   // Before runApp, so FontSizeModel loads the migrated font size.
-  await LegacySettingsMigration(logger: logger).run();
+  final migratedFontSize = await LegacySettingsMigration(logger: logger).run();
+  // From what the migrations returned in this session, not from their flags: see PostMigrationWelcome.
+  final showWelcome = await PostMigrationWelcome(logger: logger).shouldShow(
+    coreDataResult: coreDataResult,
+    migratedFontSize: migratedFontSize,
+  );
 
   runApp(
     MultiProvider(
@@ -98,7 +105,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AppSettingsModel()),
         Provider(create: (_) => SettingsViewModel()),
       ],
-      child: MyApp(store: objectBoxStore),
+      child: MyApp(store: objectBoxStore, showWelcome: showWelcome),
     ),
   );
 
@@ -110,9 +117,13 @@ void main() async {
 class MyApp extends StatelessWidget {
   final Store store;
 
+  /// Shows the one-time welcome screen after the migration from the old iOS app first.
+  final bool showWelcome;
+
   const MyApp({
     super.key,
     required this.store,
+    this.showWelcome = false,
   });
 
   @override
@@ -123,7 +134,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       darkTheme: darkTheme,
       themeMode: context.watch<AppSettingsModel>().themeMode,
-      home: HomeScreen(store: store),
+      home: WelcomeGate(showWelcome: showWelcome, buildHome: (context) => HomeScreen(store: store)),
     );
   }
 }
