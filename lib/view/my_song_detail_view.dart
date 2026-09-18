@@ -61,13 +61,12 @@ class MySongDetailViewState extends State<MySongDetailView> {
     Navigator.pop(context);
   }
 
-  Widget _buildAction({required IconData icon, required VoidCallback onTap}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: InkWell(
-        onTap: onTap,
-        child: Icon(icon, size: 24.0),
-      ),
+  /// Akcja paska: etykieta po polsku dla czytnika ekranu i cel dotknięcia z IconButtona.
+  Widget _buildAction({required IconData icon, required String label, required VoidCallback onTap}) {
+    return IconButton(
+      icon: Icon(icon, size: 24.0),
+      tooltip: label,
+      onPressed: onTap,
     );
   }
 
@@ -85,10 +84,14 @@ class MySongDetailViewState extends State<MySongDetailView> {
         ),
         actions: [
           Builder(
-            builder: (buttonContext) => _buildAction(icon: Icons.share, onTap: () => _share(buttonContext)),
+            builder: (buttonContext) => _buildAction(
+              icon: Icons.share,
+              label: 'Udostępnij pieśń',
+              onTap: () => _share(buttonContext),
+            ),
           ),
-          _buildAction(icon: Icons.edit, onTap: _edit),
-          _buildAction(icon: Icons.delete, onTap: _delete),
+          _buildAction(icon: Icons.edit, label: 'Edytuj pieśń', onTap: _edit),
+          _buildAction(icon: Icons.delete, label: 'Usuń pieśń', onTap: _delete),
         ],
       ),
       body: SongContent(content: widget.song.content),

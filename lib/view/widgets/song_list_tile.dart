@@ -72,6 +72,15 @@ class _SongListTileState extends State<SongListTile> {
     return Semantics(
       button: widget.onTap != null,
       selected: widget.isSelected,
+      // Jeden węzeł na wiersz: numer, tytuł i „ulubiona” czytane razem, zamiast osobnych ikon.
+      container: true,
+      excludeSemantics: true,
+      label: [
+        if (widget.number != null) '${widget.number}',
+        widget.title,
+        if (widget.badge != null) widget.badge!,
+        if (widget.isFavorite) 'ulubiona',
+      ].join(', '),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque, // cały wiersz jest celem dotknięcia
         onTap: widget.onTap,
