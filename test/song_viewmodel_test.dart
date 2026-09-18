@@ -157,29 +157,17 @@ void main() {
       expect(numbers(viewModel.filteredSongsNotifier.value), [1]);
     });
 
-    test('asks for a review the first time a favorite is added, and never again', () async {
+    test('nie prosi o ocenę: to już nie jest sprawa tego view modelu', () async {
       putSongs([song(1), song(2)]);
       final viewModel = open();
 
       viewModel.toggleFavoriteStatus(viewModel.allSongsNotifier.value.first);
       await Future<void>.delayed(Duration.zero);
-      expect(inAppReview.calls, ['isAvailable', 'requestReview']);
 
-      viewModel.toggleFavoriteStatus(viewModel.allSongsNotifier.value.last);
-      await Future<void>.delayed(Duration.zero);
-
-      expect(inAppReview.calls, ['isAvailable', 'requestReview']);
-    });
-
-    test('does not ask for a review when a favorite is removed', () async {
-      putSongs([song(1, favorite: true)]);
-      final viewModel = open();
-
-      viewModel.toggleFavoriteStatus(viewModel.allSongsNotifier.value.single);
-      await Future<void>.delayed(Duration.zero);
-
+      // Prośba o ocenę wisi na progach uruchomień w ReviewService, nie na ulubionych.
       expect(inAppReview.calls, isEmpty);
     });
+
   });
 
   group('search', () {
@@ -225,12 +213,19 @@ void main() {
       expect(numbers(viewModel.filteredSongsNotifier.value), [1]);
     });
 
-    test('removes the letter x from the content, which leaves a double space behind', () {
+    test('usunięcie znaku w środku treści nie psuje wyszukiwania', () {
+      // „Baranku Boży, x zmiłuj się" po usunięciu przecinka i x zostawiało podwójną spację,
+      // więc naturalne zapytanie nie pasowało, a nienaturalne pasowało (docs/PARITY.md).
+      viewModel.searchText = 'boży zmiłuj';
+      expect(numbers(viewModel.filteredSongsNotifier.value), [2]);
+    });
+
+    test('nadmiarowe spacje w zapytaniu też pasują', () {
       viewModel.searchText = 'boży  zmiłuj';
       expect(numbers(viewModel.filteredSongsNotifier.value), [2]);
 
-      viewModel.searchText = 'boży zmiłuj';
-      expect(viewModel.filteredSongsNotifier.value, isEmpty);
+      viewModel.searchText = '  boży   zmiłuj  ';
+      expect(numbers(viewModel.filteredSongsNotifier.value), [2]);
     });
 
     test('searching does not change the full list or the favorites list', () {

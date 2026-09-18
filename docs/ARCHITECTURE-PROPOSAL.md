@@ -1,5 +1,10 @@
 # Propozycja uporządkowania struktury — Śpiewnik (Flutter)
 
+> **Stan realizacji (wrzesień 2026):** punkty **1–4 zamknięte** (repozytoria, CLAUDE.md, martwy kod,
+> logika nawigacji w view modelu) oraz **7 zamknięty** (`ReviewService` zamiast `ReviewModel`
+> i `LaunchCounter`, licznik uruchomień poza `build`). Punkty **5 i 6 czekają na okazję** — robimy je
+> przy pracy, która i tak dotyka tych miejsc, nie osobno. Dalsze punkty bez zmian.
+
 Data: 2026-09-17. Stan: gałąź `feature/ios-data-migration`, HEAD `0a4ad4a`
 (w trakcie tej analizy równoległa sesja zacommitowała komunikat o nieudanej migracji; opis uwzględnia ten commit).
 Dokument powstał tylko na podstawie czytania kodu, `flutter test` (**88 testów, wszystkie przechodzą**,

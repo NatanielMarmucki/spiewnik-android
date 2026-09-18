@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'objectbox.g.dart';
@@ -16,9 +18,8 @@ import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/model/app_settings_model.dart';
 import 'package:spiewnik/model/font_size_model.dart';
+import 'package:spiewnik/review_service.dart';
 import 'package:spiewnik/theme/theme.dart';
-import 'package:spiewnik/model/review_model.dart';
-import 'package:spiewnik/launch_counter.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -100,21 +101,22 @@ void main() async {
       child: MyApp(store: objectBoxStore),
     ),
   );
+
+  // Poza `build`: prośba o ocenę to skutek uboczny uruchomienia, nie część rysowania ekranu
+  // (punkt 7 z ARCHITECTURE-PROPOSAL.md). Bez `await`, żeby nie opóźniać pierwszej klatki.
+  unawaited(ReviewService(logger: logger).onLaunch());
 }
 
 class MyApp extends StatelessWidget {
   final Store store;
-  final ReviewModel reviewModel = ReviewModel();
-  final LaunchCounter launchCounter = LaunchCounter();
 
-  MyApp({
+  const MyApp({
     super.key,
     required this.store,
   });
 
   @override
   Widget build(BuildContext context) {
-    _checkForReviewRequest();
     return MaterialApp(
       title: 'Śpiewnik',
       theme: lightTheme,
@@ -123,13 +125,6 @@ class MyApp extends StatelessWidget {
       themeMode: context.watch<AppSettingsModel>().themeMode,
       home: HomeScreen(store: store),
     );
-  }
-
-  void _checkForReviewRequest() async {
-    int launchCount = await launchCounter.incrementLaunchCount();
-    if (launchCounter.checkThreshold(launchCount)) {
-      await reviewModel.requestReview();
-    }
   }
 }
 

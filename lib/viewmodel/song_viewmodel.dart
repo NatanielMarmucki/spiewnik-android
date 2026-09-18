@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:spiewnik/model/polish_collation.dart';
 import 'package:spiewnik/data/repositories/song_repository.dart';
 import 'package:spiewnik/model/song_model.dart';
-import 'package:spiewnik/model/review_model.dart';
 import 'package:flutter/material.dart';
 
 class SongViewModel {
@@ -10,9 +9,6 @@ class SongViewModel {
   final ValueNotifier<List<Song>> allSongsNotifier = ValueNotifier([]);
   final ValueNotifier<List<Song>> favoriteSongsNotifier = ValueNotifier([]);
   final ValueNotifier<List<Song>> filteredSongsNotifier = ValueNotifier([]);
-  bool _firstAddition = true;
-  final reviewModel = ReviewModel();
-
   String _searchText = '';
 
   SongViewModel(this.repository) {
@@ -30,12 +26,12 @@ class SongViewModel {
   }
 
   void _loadAllSongs() {
-    allSongsNotifier.value = getAllSongs();
+    allSongsNotifier.value = _getAllSongs();
     _filterSongs();
   }
 
   void _loadFavoriteSongs() {
-    favoriteSongsNotifier.value = getFavoriteSongs();
+    favoriteSongsNotifier.value = _getFavoriteSongs();
   }
 
   /// How many songs the songbook has. Used by the "go to number" dialog and the scrollbar label.
@@ -55,21 +51,19 @@ class SongViewModel {
         : GoToSongResult(GoToSongOutcome.found, song);
   }
 
-  List<Song> getAllSongs() => repository.all();
+  // Prywatne z rozmysłem: odczyt z repozytorium idzie tylko przez notyfikatory, bo widok
+  // wołający je wprost ominąłby odświeżanie list.
+  List<Song> _getAllSongs() => repository.all();
 
-  List<Song> getFavoriteSongs() => repository.favorites();
+  List<Song> _getFavoriteSongs() => repository.favorites();
 
   Song? findSongByNumber(int number) => repository.byNumber(number);
 
-  void toggleFavoriteStatus(Song song) async {
+  void toggleFavoriteStatus(Song song) {
     repository.setFavorite(song, !song.favorite);
+    // Dwie listy, bo ulubiona zmienia i wiersz na liście głównej, i skład listy ulubionych.
     _loadAllSongs();
     _loadFavoriteSongs();
-
-    if (song.favorite && _firstAddition) {
-      _firstAddition = false;
-      await reviewModel.requestReview();
-    }
   }
 
   void _filterSongs() {
@@ -79,7 +73,7 @@ class SongViewModel {
     }
 
     // Diacritics are removed from both sides, so "zrodlo" finds "źródło" and "źródło" finds "zrodlo".
-    final lowercaseSearchText = removePolishDiacritics(_searchText.toLowerCase());
+    final lowercaseSearchText = _normalizeWhitespace(removePolishDiacritics(_searchText.toLowerCase()));
     filteredSongsNotifier.value = allSongsNotifier.value.where((song) {
       final lowercaseContent = removePolishDiacritics(song.content.toLowerCase());
       final cleanedContent = _removeNumber(lowercaseContent);
@@ -107,9 +101,17 @@ class SongViewModel {
 
   String _removeNumber(String str) {
     const charactersToRemove = "123456789,.;:'[]()!?-”—„x";
-    final filteredCharacters = str.split('').where((char) => !charactersToRemove.contains(char)).join().trim();
-    return filteredCharacters;
+    final filteredCharacters = str.split('').where((char) => !charactersToRemove.contains(char)).join();
+    return _normalizeWhitespace(filteredCharacters);
   }
+
+  /// Zwija ciągi białych znaków do jednej spacji.
+  ///
+  /// Usuwanie ignorowanych znaków zostawia dziury w środku tekstu: „Baranku Boży, x zmiłuj się"
+  /// stawało się „Baranku Boży  zmiłuj się" z podwójną spacją, więc zapytanie „boży zmiłuj" nie
+  /// pasowało, a „boży  zmiłuj" pasowało. Obie strony są teraz normalizowane tak samo, więc działa
+  /// jedno i drugie.
+  static String _normalizeWhitespace(String text) => text.replaceAll(RegExp(r'\s+'), ' ').trim();
 
   Song? findNextSong(int currentNumber) {
     return findSongByNumber(currentNumber + 1);
