@@ -63,7 +63,8 @@ void main() {
           textScale: scale,
         );
 
-        expect(find.text('Alleluja, chwalcie Pana'), findsOneWidget);
+        // Przy powiększeniu tytuł zawija się na kilka wierszy, więc szukamy fragmentu.
+        expect(find.textContaining('Alleluja'), findsOneWidget);
         expect(find.byType(TextField), findsOneWidget);
         expect(tester.takeException(), isNull);
       });

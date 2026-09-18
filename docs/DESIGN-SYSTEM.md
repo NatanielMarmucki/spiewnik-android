@@ -164,6 +164,11 @@ z kropek, numer na prawej krawędzi (Newsreader 15, tabelarycznie). Serce ulubio
 `MOJA` zamiast numeru. Stany: spoczynek, wciśnięty (powierzchnia), wybrany (numer w akcencie).
 Cały wiersz jest celem dotknięcia.
 
+Tytuł jest widoczny **w całości**: nie skraca się wielokropkiem, tylko zawija do kolejnych wierszy,
+a linia wiodąca biegnie od końca ostatniego wiersza do numeru. Wiersz rośnie wtedy w pionie —
+48 dp to minimum, nie wysokość stała. Ustalone przy wdrożeniu kroku 5, zastępuje wcześniejszy
+tytuł w jednej linii.
+
 **Pole wyszukiwania** — 44 dp, pastylka, **widoczne zawsze**. Lupa 15 dp, podpowiedź
 „Numer albo tytuł", przy treści krzyżyk czyszczenia (cel 48 dp). Fokus: obwódka 2 dp w akcencie.
 Jedno pole obsługuje numer i tytuł, szukanie bez diakrytyków, trafienie podświetlone w tytule.
