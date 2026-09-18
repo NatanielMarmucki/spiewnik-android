@@ -138,6 +138,21 @@ List<Song> sampleSongs() {
   ];
 }
 
+/// Dłuższa lista do zrzutu szybkiego przewijania: uchwyt pokazuje się dopiero, gdy jest co
+/// przewijać. Tytuły powtarzają się cyklicznie, numery rosną tak jak w śpiewniku.
+List<Song> manySongs({int count = 200}) {
+  final titles = sampleSongs().map((song) => song.title).toList();
+  return [
+    for (var i = 0; i < count; i++)
+      Song(
+        number: i + 1,
+        title: titles[i % titles.length],
+        content: 'treść ${i + 1}',
+        favorite: i % 37 == 0,
+      ),
+  ];
+}
+
 /// Własna pieśń do zrzutów.
 MySong sampleMySong() {
   final now = DateTime(2026, 9, 18, 12);

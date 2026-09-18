@@ -169,6 +169,21 @@ a linia wiodąca biegnie od końca ostatniego wiersza do numeru. Wiersz rośnie 
 48 dp to minimum, nie wysokość stała. Ustalone przy wdrożeniu kroku 5, zastępuje wcześniejszy
 tytuł w jednej linii.
 
+**Szybkie przewijanie listy** — uchwyt-pastylka **6 × 48 dp** przy prawej krawędzi listy pieśni,
+w kolorze kropek indeksu, w akcencie podczas przeciągania. Cel dotknięcia **48 × 48 dp**: rysunek
+jest wąski, żeby nie wchodzić na treść wiersza, ale palec trafia w pełne 48 dp. Przy przeciąganiu
+po lewej stronie uchwytu pojawia się **etykieta z numerem pieśni**: pastylka na powierzchni +2
+z hairline'em, Newsreader 17, cyfry tabelaryczne — ten sam zapis co numer w wierszu listy. Etykieta
+stoi nad linią wiodącą z kropek, nigdy nad tytułem ani sercem ulubionej.
+
+Uchwyt pokazuje się **tylko na pełnej liście** i tylko wtedy, gdy treści jest więcej niż dwa ekrany.
+Przy aktywnym wyszukiwaniu znika razem z etykietą: wyniki są krótkie, a numer pieśni i tak nie
+odpowiadałby pozycji na liście.
+
+Pozycję uchwytu liczy ułamek `maxScrollExtent`, a numer w etykiecie pochodzi z **pierwszego naprawdę
+widocznego wiersza**, nie z dzielenia offsetu przez wysokość wiersza — wiersze mają różną wysokość
+i rosną z czcionką (reguły 1 i 6 z sekcji 7).
+
 **Pole wyszukiwania** — 44 dp, pastylka, **widoczne zawsze**. Lupa 15 dp, podpowiedź
 „Szukaj", przy treści krzyżyk czyszczenia (cel 48 dp). Fokus: obwódka 2 dp w akcencie.
 Jedno pole obsługuje numer i tytuł, szukanie bez diakrytyków, trafienie podświetlone w tytule.

@@ -4,6 +4,7 @@ import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/widgets/empty_state.dart';
 import 'package:spiewnik/view/widgets/song_list_tile.dart';
+import 'package:spiewnik/view/widgets/song_scroll_bar.dart';
 import 'song_detail_view.dart';
 import 'package:spiewnik/model/song_model.dart';
 
@@ -96,26 +97,33 @@ class SongListViewState extends State<SongListView> {
                 );
               }
               // itemExtent null: wiersz rośnie razem z systemowym powiększeniem czcionki.
-              return ListView.builder(
+              return SongScrollBar(
                 controller: _scrollController,
-                itemCount: songs.length,
-                itemBuilder: (context, index) {
-                  final song = songs[index];
-                  return SongListTile(
-                    title: song.title,
-                    number: song.number,
-                    isFavorite: song.favorite,
-                    highlight: widget.viewModel.titleMatch(song),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SongDetailView(song: song, viewModel: widget.viewModel),
-                        ),
-                      );
-                    },
-                  );
-                },
+                // Uchwyt tylko na pełnej liście: przy wynikach wyszukiwania nie ma po czym jeździć,
+                // a etykieta z numerem i tak nie odpowiadałaby pozycji.
+                enabled: widget.viewModel.searchText.isEmpty,
+                labelForIndex: (index) => index < songs.length ? '${songs[index].number}' : null,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: songs.length,
+                  itemBuilder: (context, index) {
+                    final song = songs[index];
+                    return SongListTile(
+                      title: song.title,
+                      number: song.number,
+                      isFavorite: song.favorite,
+                      highlight: widget.viewModel.titleMatch(song),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SongDetailView(song: song, viewModel: widget.viewModel),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               );
             },
           ),

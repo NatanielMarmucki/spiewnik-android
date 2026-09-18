@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/song_list_view.dart';
+import 'package:spiewnik/view/widgets/song_scroll_bar.dart';
 import 'package:spiewnik/view/widgets/song_list_tile.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
@@ -101,5 +102,25 @@ void main() {
 
     expect(tiles(tester).firstWhere((tile) => tile.number == 2).isFavorite, isTrue);
     expect(tiles(tester).firstWhere((tile) => tile.number == 1).isFavorite, isFalse);
+  });
+
+  testWidgets('uchwyt szybkiego przewijania znika po wpisaniu wyszukiwania', (tester) async {
+    await pumpList(tester);
+
+    expect(
+      tester.widget<SongScrollBar>(find.byType(SongScrollBar)).enabled,
+      isTrue,
+      reason: 'pełna lista: jest po czym jeździć',
+    );
+
+    await tester.enterText(find.byType(TextField), 'Alleluja');
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<SongScrollBar>(find.byType(SongScrollBar)).enabled,
+      isFalse,
+      reason: 'przy wynikach wyszukiwania uchwyt nic nie wnosi',
+    );
   });
 }
