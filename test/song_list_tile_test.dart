@@ -27,6 +27,132 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 
+  /// Tytuł bywa rozbity na kilka `Text`ów, po jednym na wiersz — skleja je z powrotem.
+  String renderedTitle(WidgetTester tester) {
+    return tester
+        .widgetList<Text>(find.descendant(of: find.byType(SongListTile), matching: find.byType(Text)))
+        .map((text) => text.textSpan?.toPlainText() ?? text.data ?? '')
+        .join(' ')
+        .trim();
+  }
+
+  /// Sprawdza, że każdy wiersz tytułu zmieścił się w swoim pudełku, czyli nic nie zostało ucięte.
+  void expectNothingClipped(WidgetTester tester, {double scale = 1.0}) {
+    final texts = find.descendant(of: find.byType(SongListTile), matching: find.byType(Text));
+    for (var i = 0; i < tester.widgetList<Text>(texts).length; i++) {
+      final widget = tester.widget<Text>(texts.at(i));
+      final span = widget.textSpan;
+      if (span == null) {
+        continue;
+      }
+      final painter = TextPainter(
+        text: TextSpan(text: span.toPlainText(), style: widget.style),
+        textDirection: TextDirection.ltr,
+        textScaler: TextScaler.linear(scale),
+      )..layout();
+      expect(
+        tester.getSize(texts.at(i)).width + 0.5,
+        greaterThanOrEqualTo(painter.width),
+        reason: 'wiersz „${span.toPlainText()}” nie zmieścił się i zostałby ucięty',
+      );
+    }
+  }
+
+  group('długi tytuł', () {
+    const longTitle = 'Czego chcesz od nas Panie, za Twe hojne dary';
+
+    Future<void> pumpNarrow(WidgetTester tester, {String? highlight}) async {
+      tester.view.physicalSize = const Size(400 * 3, 900 * 3);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(tester.view.reset);
+      await pumpTile(
+        tester,
+        SongListTile(title: longTitle, number: 1234, highlight: highlight),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('jest widoczny w całości, bez wielokropka', (tester) async {
+      await pumpNarrow(tester);
+
+      expect(renderedTitle(tester), contains('hojne dary'), reason: 'koniec tytułu też widać');
+      expectNothingClipped(tester);
+      expect(find.text('1234'), findsOneWidget);
+    });
+
+    testWidgets('zawija się, więc wiersz jest wyższy niż przy krótkim tytule', (tester) async {
+      await pumpNarrow(tester);
+      final tall = tester.getSize(find.byType(SongListTile)).height;
+
+      await pumpTile(tester, const SongListTile(title: 'Krótki', number: 1));
+      final short = tester.getSize(find.byType(SongListTile)).height;
+
+      expect(tall, greaterThan(short));
+    });
+
+    testWidgets('tytuł przy lewej krawędzi, numer przy prawej, kropki między nimi', (tester) async {
+      await pumpNarrow(tester);
+
+      final row = tester.getRect(find.byType(SongListTile));
+      final title = tester.getRect(
+        find.descendant(of: find.byType(SongListTile), matching: find.byType(Text)).first,
+      );
+      final number = tester.getRect(find.text('1234'));
+      final dots = tester.getRect(find.byType(CustomPaint).last);
+
+      expect(title.left - row.left, lessThanOrEqualTo(16.0), reason: 'tytuł maksymalnie do lewej');
+      expect(row.right - number.right, lessThanOrEqualTo(16.0), reason: 'numer maksymalnie do prawej');
+      expect(dots.width, greaterThan(0.0));
+      expect(dots.left, greaterThan(title.left));
+      expect(dots.right, lessThanOrEqualTo(number.left));
+    });
+
+    testWidgets('kropki zaczynają się po ostatnim wierszu tytułu, nie po najdłuższym', (tester) async {
+      await pumpNarrow(tester);
+
+      final texts = find.descendant(of: find.byType(SongListTile), matching: find.byType(Text));
+      final lastLine = tester.getRect(texts.at(tester.widgetList<Text>(texts).length - 2));
+      final dots = tester.getRect(find.byType(CustomPaint).last);
+
+      expect(dots.left, greaterThanOrEqualTo(lastLine.right));
+      expect(
+        dots.center.dy,
+        closeTo(lastLine.center.dy, lastLine.height),
+        reason: 'kropki biegną w ostatnim wierszu, nie w pierwszym',
+      );
+    });
+
+    testWidgets('także przy powiększeniu ×2,0 nic się nie ucina', (tester) async {
+      tester.view.physicalSize = const Size(400 * 3, 900 * 3);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: lightTheme,
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2.0)),
+            child: const Scaffold(
+              body: Column(children: [SongListTile(title: 'Alleluja, chwalcie Pana', number: 1)]),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(renderedTitle(tester), contains('chwalcie Pana'));
+      // Wielokropek jest sprawą rysowania: w spanie tekst zostaje w całości, więc sprawdzamy,
+      // czy pudełko ostatniego wiersza pomieściło tekst, zamiast szukać znaku „…”.
+      expectNothingClipped(tester, scale: 2.0);
+    });
+
+    testWidgets('podświetlenie trafienia działa także w zawiniętym tytule', (tester) async {
+      await pumpNarrow(tester, highlight: 'Panie');
+
+      expect(renderedTitle(tester), contains('Panie'));
+      expect(tester.takeException(), isNull);
+    });
+  });
+
   testWidgets('wysokość jest minimalna, nie stała: rośnie z tekstem', (tester) async {
     await pumpTile(tester, const SongListTile(title: 'Krótki', number: 1));
     final small = tester.getSize(find.byType(SongListTile)).height;

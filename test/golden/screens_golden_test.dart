@@ -11,6 +11,7 @@ import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
 import 'package:spiewnik/view/settings_view.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
+import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 import 'package:spiewnik/view/song_list_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
@@ -196,29 +197,37 @@ void main() {
       afterPump: (tester) async {
         // warnIfMissed: ikona leży w InkWellu w pasku; ostrzeżenie o trafieniu jest mylące,
         // dialog otwiera się poprawnie.
-        await tester.tap(find.byIcon(Icons.search), warnIfMissed: false);
+        await tester.tap(find.ancestor(of: find.byType(GoToNumberIcon), matching: find.byType(InkWell)).first);
         await tester.pumpAndSettle();
       },
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('szczegóły pieśni: komunikat o numerze', (tester) async {
+  testWidgets('szczegóły pieśni: modal z wpisanym numerem', (tester) async {
     final viewModel = songs();
     await goldenScreen(
       tester,
-      '14-dialog-uwaga',
+      '13b-dialog-przejdz-wpisany-numer',
       (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
       afterPump: (tester) async {
-        // warnIfMissed: ikona leży w InkWellu w pasku; ostrzeżenie o trafieniu jest mylące,
-        // dialog otwiera się poprawnie.
-        await tester.tap(find.byIcon(Icons.search), warnIfMissed: false);
+        await tester.tap(find.ancestor(of: find.byType(GoToNumberIcon), matching: find.byType(InkWell)).first);
         await tester.pumpAndSettle();
-        if (find.text('Przejdź').evaluate().isEmpty) {
-          await tester.tap(find.byIcon(Icons.search), warnIfMissed: false);
-          await tester.pumpAndSettle();
-        }
-        // Puste pole to też niepoprawny numer, więc wystarczy zatwierdzić.
-        await tester.tap(find.text('Przejdź'));
+        await tester.enterText(find.byType(TextField), '4');
+        await tester.pumpAndSettle();
+      },
+    );
+  }, skip: skipOnOtherPlatforms);
+
+  testWidgets('szczegóły pieśni: arkusz opcji', (tester) async {
+    final viewModel = songs();
+    await goldenScreen(
+      tester,
+      '14-arkusz-opcji',
+      (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
+      afterPump: (tester) async {
+        // warnIfMissed: ikona leży w przycisku paska; ostrzeżenie o trafieniu jest mylące,
+        // arkusz otwiera się poprawnie.
+        await tester.tap(find.byIcon(Icons.more_vert), warnIfMissed: false);
         await tester.pumpAndSettle();
       },
     );
@@ -234,6 +243,39 @@ void main() {
       '16b-ustawienia-max',
       (context) => const SettingsView(),
       preferences: const {'fontSize': 30.0, 'lineHeight': 1.8},
+    );
+  }, skip: skipOnOtherPlatforms);
+
+  // Systemowe powiększenie ×2,0 (sekcja 6 dokumentu) na kluczowych ekranach.
+  testWidgets('lista pieśni: powiększenie x2', (tester) async {
+    final viewModel = songs();
+    await goldenScreen(
+      tester,
+      '17-lista-piesni-x2',
+      (context) => Scaffold(
+        appBar: AppBar(title: const Text('Śpiewnik')),
+        body: SongListView(viewModel: viewModel),
+      ),
+      textScale: 2.0,
+    );
+  }, skip: skipOnOtherPlatforms);
+
+  testWidgets('szczegóły pieśni: powiększenie x2', (tester) async {
+    final viewModel = songs();
+    await goldenScreen(
+      tester,
+      '18-szczegoly-piesni-x2',
+      (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
+      textScale: 2.0,
+    );
+  }, skip: skipOnOtherPlatforms);
+
+  testWidgets('ustawienia: powiększenie x2', (tester) async {
+    await goldenScreen(
+      tester,
+      '19-ustawienia-x2',
+      (context) => const SettingsView(),
+      textScale: 2.0,
     );
   }, skip: skipOnOtherPlatforms);
 }

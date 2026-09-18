@@ -40,6 +40,16 @@ else
   echo "Sprawdzam obrazy golden w kontenerze..."
 fi
 
+# Kontener robi `flutter pub get` na tym samym katalogu, więc .dart_tool/package_config.json
+# zostaje ze ścieżkami z Linuksa i `flutter test` na hoście przestaje się kompilować.
+# Trap, nie zwykła linijka na końcu: przy oblanych testach `set -e` ucina skrypt wcześniej
+# i host zostawał z konfiguracją z kontenera.
+restore_host_packages() {
+  echo "Przywracam konfigurację pakietów hosta..."
+  flutter pub get >/dev/null
+}
+trap restore_host_packages EXIT
+
 # Katalogi budowania hosta (macOS) nie nadają się dla Linuksa, więc kontener ma własne.
 docker run --rm \
   --platform linux/amd64 \
@@ -49,6 +59,7 @@ docker run --rm \
   -w /app \
   "${IMAGE}" \
   bash -c "flutter pub get >/dev/null && tools/fetch_objectbox_lib.sh >/dev/null && ${command[*]}"
+
 
 if [[ "${update}" == true ]]; then
   echo "Gotowe. Przejrzyj zmiany w test/golden/goldens/ przed commitem."

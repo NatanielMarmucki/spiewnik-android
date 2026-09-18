@@ -36,7 +36,8 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: iconSize, color: appColors.line),
+            // Ikona tylko ozdabia: całą treść niesie nagłówek i zdanie pod nim.
+            ExcludeSemantics(child: Icon(icon, size: iconSize, color: appColors.line)),
             const SizedBox(height: 16.0),
             Text(
               title,

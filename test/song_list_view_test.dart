@@ -42,7 +42,7 @@ void main() {
     await pumpList(tester);
 
     expect(find.byType(TextField), findsOneWidget);
-    expect(find.text('Numer albo tytuł'), findsOneWidget);
+    expect(find.text('Szukaj'), findsOneWidget);
     expect(tester.getSize(find.byType(TextField)).height, greaterThanOrEqualTo(44.0));
   });
 

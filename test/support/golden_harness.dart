@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spiewnik/model/app_settings_model.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/model/my_song_model.dart';
 import 'package:spiewnik/model/song_model.dart';
@@ -62,11 +63,15 @@ Future<void> goldenScreen(
   Widget Function(BuildContext context) build, {
   Future<void> Function(WidgetTester tester)? afterPump,
   Map<String, Object> preferences = const {'fontSize': 19.0, 'lineHeight': 1.62},
+  /// Systemowe powiększenie czcionki, osobne od rozmiaru tekstu pieśni.
+  double textScale = 1.0,
 }) async {
   for (final theme in [('light', lightTheme), ('dark', darkTheme)]) {
     SharedPreferences.setMockInitialValues(Map<String, Object>.from(preferences));
     final fontSizeModel = FontSizeModel();
     await fontSizeModel.loaded;
+    final appSettings = AppSettingsModel();
+    await appSettings.loaded;
 
     tester.view.physicalSize = Size(_screenSize.width * 3, _screenSize.height * 3);
     tester.view.devicePixelRatio = 3.0;
@@ -76,12 +81,19 @@ Future<void> goldenScreen(
       MultiProvider(
         providers: [
           ChangeNotifierProvider<FontSizeModel>.value(value: fontSizeModel),
+          ChangeNotifierProvider<AppSettingsModel>.value(value: appSettings),
           Provider<SettingsViewModel>(create: (_) => SettingsViewModel()),
         ],
         child: MaterialApp(
+          // Klucz na motyw: bez niego drugi przebieg trafia w to samo drzewo elementów,
+          // Navigator zachowuje stos tras i dialog otwarty w pierwszym motywie zostaje na ekranie.
+          key: ValueKey(theme.$1),
           theme: theme.$2,
           debugShowCheckedModeBanner: false,
-          home: Builder(builder: build),
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+            child: Builder(builder: build),
+          ),
         ),
       ),
     );

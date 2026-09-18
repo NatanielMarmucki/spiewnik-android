@@ -60,7 +60,7 @@ class SongListViewState extends State<SongListView> {
                   controller: _controller,
                   style: Theme.of(context).textTheme.bodyMedium,
                   decoration: InputDecoration(
-                    hintText: 'Numer albo tytuł',
+                    hintText: 'Szukaj',
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     prefixIcon: Icon(Icons.search, size: 15.0, color: appColors.textSecondary),

@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
+import 'package:spiewnik/view/settings_view.dart';
+import 'package:spiewnik/view/widgets/go_to_song_dialog.dart';
+import 'package:spiewnik/view/widgets/song_bottom_bar.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
+import 'package:spiewnik/view/widgets/song_options_sheet.dart';
 
 class SongDetailView extends StatefulWidget {
   final Song song;
@@ -18,6 +25,9 @@ class SongDetailView extends StatefulWidget {
 
 class SongDetailViewState extends State<SongDetailView> {
   late Song song;
+
+  /// Kotwica arkusza udostępniania na iPadzie, gdzie jest to dymek przy przycisku.
+  final GlobalKey _optionsButtonKey = GlobalKey();
 
   @override
   void initState() {
@@ -45,47 +55,24 @@ class SongDetailViewState extends State<SongDetailView> {
               ),
             ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    widget.viewModel.toggleFavoriteStatus(song);
-                  });
-                },
-                child: Icon(
-                  song.favorite ? Icons.favorite : Icons.favorite_border,
-                  size: 24.0,
-                  color: song.favorite ? context.appColors.favorite : null,
-                ),
+            IconButton(
+              tooltip: song.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych',
+              onPressed: () {
+                setState(() {
+                  widget.viewModel.toggleFavoriteStatus(song);
+                });
+              },
+              icon: Icon(
+                song.favorite ? Icons.favorite : Icons.favorite_border,
+                size: 24.0,
+                color: song.favorite ? context.appColors.favorite : null,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: InkWell(
-                onTap: () {
-                  Clipboard.setData(ClipboardData(text: song.content));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Treść skopiowana do schowka')),
-                  );
-                },
-                child: const Icon(
-                  Icons.share,
-                  size: 24.0,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: InkWell(
-                onTap: () {
-                  _showSearchDialog(context);
-                },
-                child: const Icon(
-                  Icons.search,
-                  size: 24.0,
-                ),
-              ),
+            IconButton(
+              key: _optionsButtonKey,
+              tooltip: 'Opcje pieśni',
+              onPressed: _showOptions,
+              icon: const Icon(Icons.more_vert, size: 24.0),
             ),
           ],
         ),
@@ -100,118 +87,85 @@ class SongDetailViewState extends State<SongDetailView> {
         },
         child: SongContent(content: song.content),
       ),
+      bottomNavigationBar: SongBottomBar(
+        previousNumber: widget.viewModel.findPreviousSong(song.number)?.number,
+        nextNumber: widget.viewModel.findNextSong(song.number)?.number,
+        onPrevious: _goToPreviousSong,
+        onNext: _goToNextSong,
+        onGoToNumber: _showSearchDialog,
+      ),
     );
   }
 
-  void _showSearchDialog(BuildContext context) {
-    final appColors = context.appColors;
-    final FocusNode focusNode = FocusNode();
+  /// Arkusz opcji spod trzech kropek. Pozycje zamykają arkusz **przed** swoją akcją,
+  /// żeby systemowy arkusz udostępniania nie otwierał się na naszym.
+  Future<void> _showOptions() async {
+    final fontSizeModel = context.read<FontSizeModel>();
 
-    showDialog(
+    await showModalBottomSheet<void>(
       context: context,
-      builder: (context) {
-        String input = '';
-        final TextEditingController controller = TextEditingController();
-
-        return AlertDialog(
-          title: const Text('Przejdź do pieśni'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Podaj numer pieśni, do której chcesz przejść.',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                focusNode: focusNode,
-                autofocus: true,
-                keyboardType: TextInputType.number,
-                controller: controller,
-                decoration: const InputDecoration(hintText: 'Numer pieśni'),
-                onChanged: (value) {
-                  input = value;
-                },
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(4),
-                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                ],
-              ),
-            ],
+      showDragHandle: false,
+      builder: (sheetContext) => SongOptionsSheet(
+        options: [
+          SongOption(
+            icon: Icons.ios_share,
+            label: 'Udostępnij pieśń',
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _share();
+            },
           ),
-          actionsPadding: EdgeInsets.zero,
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: appColors.textSecondary,
-                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-                  ),
-                  child: const Text('Anuluj'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _navigateToSong(context, input);
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: appColors.accent,
-                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-                  ),
-                  child: const Text('Przejdź'),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      focusNode.requestFocus();
-    });
-  }
-
-  void _showMessageDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Uwaga', textAlign: TextAlign.center),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+          SongOption(
+            icon: Icons.text_fields,
+            label: 'Rozmiar tekstu',
+            value: '${fontSizeModel.fontSize.round()}',
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _openSettings();
+            },
+          ),
+          SongOption(
+            icon: Icons.content_copy,
+            label: 'Kopiuj tekst',
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _copyText();
+            },
+          ),
+        ],
+      ),
     );
   }
 
-  void _navigateToSong(BuildContext context, String input) {
-    final result = widget.viewModel.goToNumber(input);
-    switch (result.outcome) {
-      case GoToSongOutcome.found:
-        _openSong(context, result.song!);
-      case GoToSongOutcome.notFound:
-        _showMessageDialog(context, 'Pieśń o podanym numerze nie została znaleziona');
-      case GoToSongOutcome.invalidNumber:
-        _showMessageDialog(
-          context,
-          'Podano niepoprawny numer. W śpiewniku znajduje się ${widget.viewModel.songCount} pieśni.',
-        );
+  Future<void> _share() async {
+    final box = _optionsButtonKey.currentContext?.findRenderObject() as RenderBox?;
+    await SharePlus.instance.share(
+      ShareParams(
+        text: '${song.number}. ${song.title}\n\n${song.content}',
+        subject: '${song.number}. ${song.title}',
+        // Wymagane na iPadzie: arkusz systemowy jest dymkiem zaczepionym o przycisk.
+        sharePositionOrigin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
+      ),
+    );
+  }
+
+  void _copyText() {
+    Clipboard.setData(ClipboardData(text: song.content));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Treść skopiowana do schowka')),
+    );
+  }
+
+  void _openSettings() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsView()));
+  }
+
+  Future<void> _showSearchDialog() async {
+    final song = await showGoToSongDialog(context, widget.viewModel);
+    if (!mounted || song == null) {
+      return;
     }
+    _openSong(context, song);
   }
 
   void _openSong(BuildContext context, Song song) {

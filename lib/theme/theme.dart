@@ -79,6 +79,19 @@ ThemeData _buildTheme(ColorScheme scheme, AppColors appColors) {
       titleTextStyle: textTheme.headlineSmall,
       contentTextStyle: textTheme.bodyMedium,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+      // Wnętrze 24 dp (sekcja 5 dokumentu). Tytuł i treść dostają swoje marginesy w dialogach:
+      // DialogThemeData nie ma dla nich pól.
+      actionsPadding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 24.0),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: scheme.surfaceContainerHigh,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      // Ten sam promień 12 dp co dialog; dół zostaje prosty, bo arkusz siedzi przy krawędzi.
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
+      ),
+      showDragHandle: false,
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: scheme.surfaceContainerHigh,

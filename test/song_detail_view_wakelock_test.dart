@@ -7,6 +7,7 @@ import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
+import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
 import 'support/platform_fakes.dart';
@@ -61,9 +62,10 @@ void main() {
     await openSong(tester, 1);
     expect(wakelock.toggles, [true]);
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '2');
+    await tester.pumpAndSettle(); // podgląd tytułu odblokowuje przycisk
     await tester.tap(find.text('Przejdź'));
     await tester.pumpAndSettle();
 
