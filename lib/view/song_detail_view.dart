@@ -88,7 +88,6 @@ class SongDetailViewState extends State<SongDetailView> {
         child: SongContent(content: song.content),
       ),
       bottomNavigationBar: SongBottomBar(
-        number: song.number,
         previousNumber: widget.viewModel.findPreviousSong(song.number)?.number,
         nextNumber: widget.viewModel.findNextSong(song.number)?.number,
         onPrevious: _goToPreviousSong,

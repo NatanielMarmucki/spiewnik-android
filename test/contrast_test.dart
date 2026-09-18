@@ -31,7 +31,7 @@ void main() {
       (what: 'tekst główny na tle', foreground: colors.onSurface, background: surface, min: 4.5),
       (what: 'tekst drugi na tle', foreground: app.textSecondary, background: surface, min: 4.5),
       (what: 'tekst trzeci na tle (zakładka nieaktywna)', foreground: app.textTertiary, background: surface, min: 3.0),
-      (what: 'akcent na tle (numer bieżącej pieśni)', foreground: app.accent, background: surface, min: 4.5),
+      (what: 'akcent na tle (trafienie wyszukiwania, wybrany wiersz)', foreground: app.accent, background: surface, min: 4.5),
       (what: 'tekst na akcencie (przycisk)', foreground: app.onAccent, background: app.accent, min: 4.5),
       (what: 'kolor niszczący na tle', foreground: app.destructive, background: surface, min: 4.5),
       (what: 'kolor niszczący na własnym tle 12% w dialogu',

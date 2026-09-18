@@ -179,8 +179,15 @@ void main() {
       expect(active.color, appColors.textSecondary, reason: 'aktywna wciąż mocniejsza');
     });
 
-    testWidgets('środek paska otwiera przejście do numeru', (tester) async {
-      await openSong(tester, 1);
+    testWidgets('środek paska to sama lupa, bez numeru bieżącej pieśni', (tester) async {
+      await openSong(tester, 4);
+
+      // Numer bieżącej pieśni stoi tylko w pasku górnym, obok tytułu.
+      expect(find.text('4. Pieśń 4'), findsOneWidget);
+      expect(
+        find.descendant(of: find.byType(SongBottomBar), matching: find.text('4')),
+        findsNothing,
+      );
 
       await tester.tap(find.byIcon(Icons.search));
       await tester.pumpAndSettle();

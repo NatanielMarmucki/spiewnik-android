@@ -116,7 +116,7 @@ void main() {
       expect(find.byTooltip('Opcje pieśni'), findsOneWidget);
       expect(find.bySemanticsLabel('Poprzednia pieśń'), findsOneWidget, reason: 'pierwsza pieśń: bez numeru');
       expect(find.bySemanticsLabel('Następna pieśń, numer 2'), findsOneWidget);
-      expect(find.bySemanticsLabel('Przejdź do pieśni, teraz numer 1'), findsOneWidget);
+      expect(find.bySemanticsLabel('Przejdź do pieśni'), findsOneWidget);
       handle.dispose();
     });
 

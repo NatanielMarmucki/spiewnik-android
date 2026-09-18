@@ -215,7 +215,7 @@ Liczone z tokenów, kolory półprzezroczyste po nałożeniu na tło. Pilnuje te
 | tekst główny na tle | 15,85:1 | 15,19:1 | 4,5 |
 | tekst drugi na tle | 6,43:1 | 6,88:1 | 4,5 |
 | tekst trzeci na tle | 4,90:1 | 5,40:1 | 3 |
-| akcent na tle (numer bieżącej pieśni) | 6,09:1 | 9,39:1 | 4,5 |
+| akcent na tle (trafienie wyszukiwania, wybrany wiersz) | 6,09:1 | 9,39:1 | 4,5 |
 | tekst na akcencie (przycisk-pastylka) | 6,58:1 | 9,39:1 | 4,5 |
 | kolor niszczący na tle | 6,80:1 | 7,60:1 | 4,5 |
 | kolor niszczący na własnym tle 12% | 5,13:1 | 5,13:1 | 4,5 |

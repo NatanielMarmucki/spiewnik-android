@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 
 /// Pasek pod treścią pieśni z docs/DESIGN-SYSTEM.md, sekcja 5: strzałka w lewo z numerem
-/// poprzedniej pieśni, numer bieżącej z lupką w środku jako najszerszy cel i strzałka w prawo
-/// z numerem następnej.
+/// poprzedniej pieśni, lupka przejścia do numeru w środku jako najszerszy cel i strzałka w prawo
+/// z numerem następnej. Numeru bieżącej pieśni tu nie ma — stoi w pasku górnym, obok tytułu.
 ///
 /// Strzałki stoją **zawsze w tym samym miejscu**, także na krańcach śpiewnika: wtedy są wygaszone
 /// i nieaktywne, żeby pasek nie skakał. Wysokość jest minimalna, więc rośnie z czcionką systemową.
 class SongBottomBar extends StatelessWidget {
-  /// Numer bieżącej pieśni.
-  final int number;
-
   /// Numer poprzedniej pieśni albo null, gdy nie ma dokąd wrócić.
   final int? previousNumber;
 
@@ -23,7 +20,6 @@ class SongBottomBar extends StatelessWidget {
 
   const SongBottomBar({
     super.key,
-    required this.number,
     required this.previousNumber,
     required this.nextNumber,
     required this.onPrevious,
@@ -55,7 +51,7 @@ class SongBottomBar extends StatelessWidget {
                 number: previousNumber,
                 onTap: onPrevious,
               ),
-              Expanded(child: _GoToNumber(number: number, onTap: onGoToNumber)),
+              Expanded(child: _GoToNumber(onTap: onGoToNumber)),
               _Arrow(
                 icon: Icons.chevron_right,
                 label: 'Następna pieśń',
@@ -128,10 +124,9 @@ class _Arrow extends StatelessWidget {
 }
 
 class _GoToNumber extends StatelessWidget {
-  final int number;
   final VoidCallback onTap;
 
-  const _GoToNumber({required this.number, required this.onTap});
+  const _GoToNumber({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +134,7 @@ class _GoToNumber extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: 'Przejdź do pieśni, teraz numer $number',
+      label: 'Przejdź do pieśni',
       onTap: onTap,
       container: true,
       excludeSemantics: true,
@@ -149,18 +144,8 @@ class _GoToNumber extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: SongBottomBar.minHeight),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.search, size: SongBottomBar.iconSize, color: appColors.textSecondary),
-                const SizedBox(width: 8.0),
-                Text(
-                  '$number',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: appColors.accent),
-                ),
-              ],
-            ),
+            // Sama lupa: numer bieżącej pieśni stoi już w pasku górnym, obok tytułu.
+            child: Icon(Icons.search, size: SongBottomBar.iconSize, color: appColors.textSecondary),
           ),
         ),
       ),
