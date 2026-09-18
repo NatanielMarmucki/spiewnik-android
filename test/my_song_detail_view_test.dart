@@ -3,10 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/model/font_size_model.dart';
+import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/my_song_detail_view.dart';
 import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
+import 'package:spiewnik/view/widgets/song_options_sheet.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 
 import 'support/fakes/fake_my_song_repository.dart';
@@ -46,6 +48,49 @@ void main() {
     await tester.tap(find.text(title));
     await tester.pumpAndSettle();
   }
+
+  /// Akcje pieśni siedzą w arkuszu pod trzema kropkami, tak jak w podglądzie pieśni ze śpiewnika.
+  Future<void> tapOption(WidgetTester tester, String label) async {
+    await tester.tap(find.byTooltip('Opcje pieśni'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(label));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('akcje pieśni siedzą w arkuszu, a w pasku zostają same trzy kropki', (tester) async {
+    viewModel.addSong(title: 'Moja pieśń', content: 'treść');
+    await pumpList(tester);
+    await openSong(tester, 'Moja pieśń');
+
+    expect(find.byIcon(Icons.share), findsNothing);
+    expect(find.byIcon(Icons.edit), findsNothing);
+    expect(find.byIcon(Icons.delete), findsNothing);
+    expect(find.byTooltip('Opcje pieśni'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Opcje pieśni'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Udostępnij pieśń'), findsOneWidget);
+    expect(find.text('Edytuj pieśń'), findsOneWidget);
+    expect(find.text('Usuń pieśń'), findsOneWidget);
+  });
+
+  testWidgets('usuwanie jest odcięte hairline\'em i w kolorze niszczącym', (tester) async {
+    viewModel.addSong(title: 'Moja pieśń', content: 'treść');
+    await pumpList(tester);
+    await openSong(tester, 'Moja pieśń');
+
+    await tester.tap(find.byTooltip('Opcje pieśni'));
+    await tester.pumpAndSettle();
+
+    final appColors = Theme.of(tester.element(find.text('Usuń pieśń'))).extension<AppColors>()!;
+    expect(tester.widget<Text>(find.text('Usuń pieśń')).style?.color, appColors.destructive);
+    expect(
+      find.descendant(of: find.byType(SongOptionsSheet), matching: find.byType(Divider)),
+      findsOneWidget,
+      reason: 'sekcja niszcząca odcięta od reszty',
+    );
+  });
 
   testWidgets('opens a user song from the list and shows its title and content', (tester) async {
     viewModel.addSong(title: 'Moja pieśń', content: '1. Pierwsza zwrotka\n\n2. Druga zwrotka');
@@ -88,8 +133,7 @@ void main() {
     await pumpList(tester);
     await openSong(tester, 'Moja pieśń');
 
-    await tester.tap(find.byIcon(Icons.share));
-    await tester.pumpAndSettle();
+    await tapOption(tester, 'Udostępnij pieśń');
 
     expect(share.shares, hasLength(1));
     expect(share.shares.single['text'], '1. Zwrotka do udostępnienia');
@@ -103,8 +147,7 @@ void main() {
       await pumpList(tester);
       await openSong(tester, 'Moja pieśń');
 
-      await tester.tap(find.byIcon(Icons.delete));
-      await tester.pumpAndSettle();
+      await tapOption(tester, 'Usuń pieśń');
       expect(find.text('Usunąć pieśń?'), findsOneWidget);
       expect(find.text('Pieśń „Moja pieśń” zostanie trwale usunięta.'), findsOneWidget);
       await tester.tap(find.text('Anuluj'));
@@ -119,8 +162,7 @@ void main() {
       await pumpList(tester);
       await openSong(tester, 'Moja pieśń');
 
-      await tester.tap(find.byIcon(Icons.delete));
-      await tester.pumpAndSettle();
+      await tapOption(tester, 'Usuń pieśń');
       await tester.tap(find.text('Usuń'));
       await tester.pumpAndSettle();
 
@@ -136,8 +178,7 @@ void main() {
     await pumpList(tester);
     await openSong(tester, 'Przed edycją');
 
-    await tester.tap(find.byIcon(Icons.edit));
-    await tester.pumpAndSettle();
+    await tapOption(tester, 'Edytuj pieśń');
     expect(find.byType(MySongFormView), findsOneWidget);
     await tester.enterText(find.widgetWithText(TextFormField, 'Tytuł'), 'Po edycji');
     await tester.enterText(find.widgetWithText(TextFormField, 'Treść'), 'Nowa treść');

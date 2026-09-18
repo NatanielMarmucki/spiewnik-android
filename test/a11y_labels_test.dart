@@ -145,9 +145,13 @@ void main() {
         (context) => MySongDetailView(song: viewModel.getMySongs().first, viewModel: viewModel),
       );
 
-      expect(find.byTooltip('Udostępnij pieśń'), findsOneWidget);
-      expect(find.byTooltip('Edytuj pieśń'), findsOneWidget);
-      expect(find.byTooltip('Usuń pieśń'), findsOneWidget);
+      expect(find.byTooltip('Opcje pieśni'), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      expect(find.bySemanticsLabel('Udostępnij pieśń'), findsOneWidget);
+      expect(find.bySemanticsLabel('Edytuj pieśń'), findsOneWidget);
+      expect(find.bySemanticsLabel('Usuń pieśń'), findsOneWidget);
       handle.dispose();
     });
 

@@ -6,6 +6,7 @@ import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
+import 'package:spiewnik/view/widgets/song_options_sheet.dart';
 
 class MySongDetailView extends StatefulWidget {
   final MySong song;
@@ -18,6 +19,9 @@ class MySongDetailView extends StatefulWidget {
 }
 
 class MySongDetailViewState extends State<MySongDetailView> {
+  /// Kotwica arkusza udostępniania na iPadzie, gdzie jest to dymek przy przycisku.
+  final GlobalKey _optionsButtonKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -30,8 +34,8 @@ class MySongDetailViewState extends State<MySongDetailView> {
     super.dispose();
   }
 
-  Future<void> _share(BuildContext buttonContext) async {
-    final box = buttonContext.findRenderObject() as RenderBox?;
+  Future<void> _share() async {
+    final box = _optionsButtonKey.currentContext?.findRenderObject() as RenderBox?;
     await SharePlus.instance.share(
       ShareParams(
         text: widget.song.content,
@@ -61,12 +65,42 @@ class MySongDetailViewState extends State<MySongDetailView> {
     Navigator.pop(context);
   }
 
-  /// Akcja paska: etykieta po polsku dla czytnika ekranu i cel dotknięcia z IconButtona.
-  Widget _buildAction({required IconData icon, required String label, required VoidCallback onTap}) {
-    return IconButton(
-      icon: Icon(icon, size: 24.0),
-      tooltip: label,
-      onPressed: onTap,
+  /// Arkusz opcji spod trzech kropek, tak samo jak w podglądzie pieśni ze śpiewnika.
+  /// Pozycje zamykają arkusz **przed** akcją, żeby systemowy arkusz udostępniania ani formularz
+  /// nie otwierały się na naszym.
+  Future<void> _showOptions() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: false,
+      builder: (sheetContext) => SongOptionsSheet(
+        options: [
+          SongOption(
+            icon: Icons.ios_share,
+            label: 'Udostępnij pieśń',
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _share();
+            },
+          ),
+          SongOption(
+            icon: Icons.edit,
+            label: 'Edytuj pieśń',
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _edit();
+            },
+          ),
+          SongOption(
+            icon: Icons.delete_outline,
+            label: 'Usuń pieśń',
+            destructive: true,
+            onTap: () {
+              Navigator.pop(sheetContext);
+              _delete();
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -83,15 +117,12 @@ class MySongDetailViewState extends State<MySongDetailView> {
           ),
         ),
         actions: [
-          Builder(
-            builder: (buttonContext) => _buildAction(
-              icon: Icons.share,
-              label: 'Udostępnij pieśń',
-              onTap: () => _share(buttonContext),
-            ),
+          IconButton(
+            key: _optionsButtonKey,
+            tooltip: 'Opcje pieśni',
+            onPressed: _showOptions,
+            icon: const Icon(Icons.more_vert, size: 24.0),
           ),
-          _buildAction(icon: Icons.edit, label: 'Edytuj pieśń', onTap: _edit),
-          _buildAction(icon: Icons.delete, label: 'Usuń pieśń', onTap: _delete),
         ],
       ),
       body: SongContent(content: widget.song.content),

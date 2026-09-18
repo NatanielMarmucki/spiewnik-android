@@ -155,8 +155,12 @@ void main() {
       (context) => MySongDetailView(song: viewModel.getMySongs().first, viewModel: viewModel),
     );
 
+    expectTarget(tester, find.byTooltip('Opcje pieśni'), 'trzy kropki');
+
+    await tester.tap(find.byTooltip('Opcje pieśni'));
+    await tester.pumpAndSettle();
     for (final label in ['Udostępnij pieśń', 'Edytuj pieśń', 'Usuń pieśń']) {
-      expectTarget(tester, find.byTooltip(label), label);
+      expectTarget(tester, tapRegionOf(find.text(label)), 'arkusz własnej pieśni: $label');
     }
   });
 

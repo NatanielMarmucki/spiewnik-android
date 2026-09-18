@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 
-/// Arkusz opcji z docs/DESIGN-SYSTEM.md, sekcja 5: uchwyt 34 × 3 dp, pozycje 52 dp.
+/// Arkusz opcji z docs/DESIGN-SYSTEM.md, sekcja 5: uchwyt 34 × 3 dp, pozycje 52 dp,
+/// sekcja niszcząca odcięta hairline'em.
 ///
 /// Wysokość pozycji jest **minimalna**, więc rośnie razem z czcionką systemową.
 class SongOptionsSheet extends StatelessWidget {
@@ -33,7 +34,13 @@ class SongOptionsSheet extends StatelessWidget {
               ),
             ),
           ),
-          for (final option in options) _Option(option: option),
+          for (var i = 0; i < options.length; i++) ...[
+            // Hairline odcina sekcję niszczącą od reszty, żeby usunięcie nie stało w jednym ciągu
+            // z udostępnianiem.
+            if (options[i].destructive && (i == 0 || !options[i - 1].destructive))
+              Divider(color: appColors.line, height: 1.0),
+            _Option(option: options[i]),
+          ],
           const SizedBox(height: 8.0),
         ],
       ),
@@ -46,9 +53,19 @@ class SongOption {
   final IconData icon;
   final String label;
   final String? value;
+
+  /// Akcja nieodwracalna: kolor niszczący i hairline odcinający ją od reszty.
+  final bool destructive;
+
   final VoidCallback onTap;
 
-  const SongOption({required this.icon, required this.label, this.value, required this.onTap});
+  const SongOption({
+    required this.icon,
+    required this.label,
+    this.value,
+    this.destructive = false,
+    required this.onTap,
+  });
 }
 
 class _Option extends StatelessWidget {
@@ -60,6 +77,7 @@ class _Option extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final textTheme = Theme.of(context).textTheme;
+    final color = option.destructive ? appColors.destructive : null;
 
     return Semantics(
       button: true,
@@ -75,9 +93,9 @@ class _Option extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
             child: Row(
               children: [
-                Icon(option.icon, size: 17.0, color: appColors.textSecondary),
+                Icon(option.icon, size: 17.0, color: color ?? appColors.textSecondary),
                 const SizedBox(width: 16.0),
-                Expanded(child: Text(option.label, style: textTheme.bodyMedium)),
+                Expanded(child: Text(option.label, style: textTheme.bodyMedium?.copyWith(color: color))),
                 if (option.value != null)
                   Text(option.value!, style: textTheme.bodyMedium?.copyWith(color: appColors.textSecondary)),
               ],
