@@ -14,6 +14,7 @@ import 'package:spiewnik/data/repositories/song_repository.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/model/font_size_model.dart';
+import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/model/review_model.dart';
 import 'package:spiewnik/launch_counter.dart';
@@ -207,8 +208,9 @@ class _HomeScreenState extends State<HomeScreen> {
           TabItem(icon: Icons.favorite, title: 'Ulubione'),
           TabItem(icon: Icons.edit_note, title: 'Moje pieśni'),
         ],
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        activeColor: Colors.white.withAlpha(153),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        color: context.appColors.textTertiary,
+        activeColor: context.appColors.accent,
         curveSize: 80,
         initialActiveIndex: _selectedIndex,
         onTap: (int index) {

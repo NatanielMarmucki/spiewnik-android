@@ -52,8 +52,20 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
+      # Na Linuksie razem z resztą testów idą testy golden: obrazy w repozytorium pochodzą
+      # właśnie stąd (tools/golden.sh). Na macOS są pomijane.
       - name: Test
         run: flutter test
+
+      # Przy nieudanym teście golden flutter zapisuje obraz oczekiwany, otrzymany i różnicę.
+      - name: Upload golden diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-failures
+          path: test/golden/failures/
+          if-no-files-found: ignore
+          retention-days: 14
 
   android:
     name: Build the Android app

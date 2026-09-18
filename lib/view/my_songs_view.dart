@@ -3,6 +3,7 @@ import 'package:spiewnik/model/my_song_model.dart';
 import 'package:spiewnik/view/delete_my_song_dialog.dart';
 import 'package:spiewnik/view/my_song_detail_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
+import 'package:spiewnik/theme/app_colors.dart';
 
 class MySongsView extends StatelessWidget {
   final MySongViewModel viewModel;
@@ -18,10 +19,10 @@ class MySongsView extends StatelessWidget {
             valueListenable: viewModel.mySongsNotifier,
             builder: (context, mySongs, _) {
               if (mySongs.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
                     'Brak własnych pieśni',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: TextStyle(fontSize: 18, color: context.appColors.textSecondary),
                   ),
                 );
               }
@@ -40,10 +41,10 @@ class MySongsView extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 20.0),
                       alignment: Alignment.centerRight,
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        color: Theme.of(context).colorScheme.error,
                         borderRadius: BorderRadius.circular(15.0),
                       ),
-                      child: const Icon(Icons.delete, color: Colors.white),
+                      child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
                     ),
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
@@ -79,8 +80,8 @@ class MySongsView extends StatelessWidget {
                                 child: ListTile(
                                   contentPadding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
                                   leading: CircleAvatar(
-                                    backgroundColor: Theme.of(context).colorScheme.primary,
-                                    child: const Icon(Icons.edit_note, color: Colors.white),
+                                    backgroundColor: context.appColors.accent,
+                                    child: Icon(Icons.edit_note, color: context.appColors.onAccent),
                                   ),
                                   title: Text(
                                     song.title,

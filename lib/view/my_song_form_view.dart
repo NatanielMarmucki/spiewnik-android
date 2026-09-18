@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/model/my_song_model.dart';
+import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/confirmation_dialog.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 
@@ -94,7 +95,14 @@ class MySongFormViewState extends State<MySongFormView> {
 
   @override
   Widget build(BuildContext context) {
-    final contentBorder = Theme.of(context).inputDecorationTheme.border;
+    // Wielolinijkowe pole to blok, nie pastylka: promień 12 dp z systemu wizualnego.
+    final contentBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: BorderSide(color: context.appColors.line),
+    );
+    final focusedContentBorder = contentBorder.copyWith(
+      borderSide: BorderSide(color: context.appColors.accent, width: 2.0),
+    );
 
     return PopScope(
       canPop: !_hasChanges,
@@ -137,9 +145,9 @@ class MySongFormViewState extends State<MySongFormView> {
                 decoration: InputDecoration(
                   labelText: 'Treść',
                   alignLabelWithHint: true,
-                  border: contentBorder is OutlineInputBorder
-                      ? contentBorder.copyWith(borderRadius: BorderRadius.circular(15.0))
-                      : null,
+                  border: contentBorder,
+                  enabledBorder: contentBorder,
+                  focusedBorder: focusedContentBorder,
                 ),
                 textCapitalization: TextCapitalization.sentences,
                 keyboardType: TextInputType.multiline,

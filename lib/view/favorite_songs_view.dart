@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'song_detail_view.dart';
 import 'package:spiewnik/model/song_model.dart';
+import 'package:spiewnik/theme/app_colors.dart';
 
 class FavoriteSongsView extends StatelessWidget {
   final SongViewModel viewModel;
@@ -17,10 +18,10 @@ class FavoriteSongsView extends StatelessWidget {
             valueListenable: viewModel.favoriteSongsNotifier,
             builder: (context, favoriteSongs, _) {
               if (favoriteSongs.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
                     'Brak ulubionych pieśni',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: TextStyle(fontSize: 18, color: context.appColors.textSecondary),
                   ),
                 );
               }
@@ -57,11 +58,10 @@ class FavoriteSongsView extends StatelessWidget {
                               contentPadding:
                               const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
                               leading: CircleAvatar(
-                                backgroundColor:
-                                Theme.of(context).colorScheme.primary,
+                                backgroundColor: context.appColors.accent,
                                 child: Text(
                                   song.number.toString(),
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(color: context.appColors.onAccent),
                                 ),
                               ),
                               title: Text(

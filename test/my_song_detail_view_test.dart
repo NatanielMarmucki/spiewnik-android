@@ -19,7 +19,7 @@ void main() {
   late FakeShare share;
 
   setUp(() {
-    SharedPreferences.setMockInitialValues({'fontSize': 22.0, 'lineHeight': 2.0});
+    SharedPreferences.setMockInitialValues({'fontSize': 22.0, 'lineHeight': 1.75});
     repository = FakeMySongRepository();
     viewModel = MySongViewModel(repository);
     wakelock = FakeWakelock()..install();
@@ -66,7 +66,7 @@ void main() {
 
     final style = tester.widget<Text>(find.text('Treść pieśni')).style!;
     expect(style.fontSize, 22.0);
-    expect(style.height, 2.0);
+    expect(style.height, 1.75);
   });
 
   testWidgets('keeps the screen on while the song is open and releases it after leaving', (tester) async {

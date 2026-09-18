@@ -35,3 +35,9 @@ doc/api/
 lib/libobjectbox.dylib
 lib/libobjectbox.so
 lib/objectbox.dll
+
+# Wyniki nieudanych testów golden (obrazy do porównania)
+test/golden/failures/
+
+# Zrzuty ekranu do porównań, trzymane tylko lokalnie
+screenshots/

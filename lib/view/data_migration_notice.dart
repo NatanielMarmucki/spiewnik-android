@@ -35,10 +35,10 @@ class DataMigrationNoticeState extends State<DataMigrationNotice> {
           padding: const EdgeInsets.only(top: 16.0),
           child: Column(
             children: [
-              const Text(
+              Text(
                 'Nie udało się przenieść ulubionych i własnych pieśni z poprzedniej wersji aplikacji.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: Colors.grey),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               TextButton(
                 onPressed: () => _sendDetails(error),

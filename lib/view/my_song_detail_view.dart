@@ -67,8 +67,6 @@ class MySongDetailViewState extends State<MySongDetailView> {
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: InkWell(
         onTap: onTap,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
         child: Icon(icon, size: 24.0),
       ),
     );
