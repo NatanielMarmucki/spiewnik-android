@@ -32,6 +32,8 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Wyszukiwanie: usuwane znaki z treści | `1 2 3 4 5 6 7 8 9 , . ; : ' [ ] ( ) ! ? - ” — „ x` | `"123456789,.;:'[]()!?-”—„x"` (ten sam zestaw) | **—** |
 | Wyszukiwanie: obróbka zapytania | Tylko `lowercased()` | Tylko `toLowerCase()` | **—** |
 | Wyszukiwanie: polskie znaki | Brak normalizacji diakrytyków | Od 12.0.0: polskie litery zamieniane na litery bazowe w treści i w zapytaniu (`removePolishDiacritics`), więc „zrodlo” znajduje „źródło” i odwrotnie | **R** — świadome ulepszenie, nie odtworzenie zachowania iOS (stara wersja Androida też tego nie miała) |
+| Treść pieśni: renderowanie | Jeden `Text`, bez parsowania | Od 12.0.0 renderer zdejmuje znaczniki z toku tekstu: inicjał w pierwszej zwrotce, cyfra z linią w kolejnych, wersalik „REFREN” z wcięciem, znaki powtórzenia w akcencie, odstęp zamiast pustych wierszy | **R** — świadome ulepszenie z systemu wizualnego |
+| Stan pusty listy | Tekst w środku ekranu | Od 12.0.0 ikona, nagłówek i zdanie mówiące co zrobić; przy braku wyników przycisk „Wyczyść wyszukiwanie” | **R** |
 | Wyszukiwanie: wyzwalanie | Zależne od ustawienia: po zatwierdzeniu (`onCommit`) albo dynamicznie z debounce **0,5 s** | Zawsze dynamicznie, debounce **250 ms** | **R** |
 | Wyszukiwanie: przycisk „Anuluj” | Jest (chowa klawiaturę, czyści) | Brak; jest ikona `Icons.cancel` (czyści, przewija na górę) | **R** |
 | Wyszukiwanie w ulubionych | Brak | Brak | **—** |
