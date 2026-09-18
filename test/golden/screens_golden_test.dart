@@ -202,23 +202,16 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('szczegóły pieśni: komunikat o numerze', (tester) async {
+  testWidgets('szczegóły pieśni: arkusz opcji', (tester) async {
     final viewModel = songs();
     await goldenScreen(
       tester,
-      '14-dialog-uwaga',
+      '14-arkusz-opcji',
       (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
       afterPump: (tester) async {
-        // warnIfMissed: ikona leży w InkWellu w pasku; ostrzeżenie o trafieniu jest mylące,
-        // dialog otwiera się poprawnie.
-        await tester.tap(find.byIcon(Icons.search), warnIfMissed: false);
-        await tester.pumpAndSettle();
-        if (find.text('Przejdź').evaluate().isEmpty) {
-          await tester.tap(find.byIcon(Icons.search), warnIfMissed: false);
-          await tester.pumpAndSettle();
-        }
-        // Puste pole to też niepoprawny numer, więc wystarczy zatwierdzić.
-        await tester.tap(find.text('Przejdź'));
+        // warnIfMissed: ikona leży w przycisku paska; ostrzeżenie o trafieniu jest mylące,
+        // arkusz otwiera się poprawnie.
+        await tester.tap(find.byIcon(Icons.more_vert), warnIfMissed: false);
         await tester.pumpAndSettle();
       },
     );

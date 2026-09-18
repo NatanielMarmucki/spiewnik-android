@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spiewnik/model/app_settings_model.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/model/my_song_model.dart';
 import 'package:spiewnik/model/song_model.dart';
@@ -67,6 +68,8 @@ Future<void> goldenScreen(
     SharedPreferences.setMockInitialValues(Map<String, Object>.from(preferences));
     final fontSizeModel = FontSizeModel();
     await fontSizeModel.loaded;
+    final appSettings = AppSettingsModel();
+    await appSettings.loaded;
 
     tester.view.physicalSize = Size(_screenSize.width * 3, _screenSize.height * 3);
     tester.view.devicePixelRatio = 3.0;
@@ -76,6 +79,7 @@ Future<void> goldenScreen(
       MultiProvider(
         providers: [
           ChangeNotifierProvider<FontSizeModel>.value(value: fontSizeModel),
+          ChangeNotifierProvider<AppSettingsModel>.value(value: appSettings),
           Provider<SettingsViewModel>(create: (_) => SettingsViewModel()),
         ],
         child: MaterialApp(
