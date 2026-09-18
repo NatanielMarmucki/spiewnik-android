@@ -121,6 +121,19 @@ i zawija się sama.
 Renderer przyjmuje opcjonalne `\n` wewnątrz bloku — gdyby dane kiedyś odzyskały łamania,
 ten sam ekran zacznie je pokazywać bez przeprojektowania.
 
+### Wymiary dopowiedziane przy wdrożeniu
+
+Dwie wartości, których projekt nie określał, a kod ich potrzebował:
+
+| Miara | Wartość | Dlaczego tak |
+|---|---|---|
+| linia obok cyfry zwrotki i wersalika „REFREN” | `1,5 × S`, stała | Linia wiodąca przez całą szerokość znaczy co innego — w wierszu listy prowadzi wzrok do numeru pieśni. Powielanie jej w tekście pieśni myli, więc tutaj jest tylko krótka kreska przy etykiecie |
+| odstęp między etykietą bloku a jego treścią | `1,26 × S ÷ 3`, czyli jedna trzecia odstępu międzyblokowego | Etykieta ma trzymać się swojej zwrotki; pełny odstęp blokowy odrywałby ją od tekstu |
+
+**Niesparowane znaki powtórzenia.** W danych zdarzają się literówki w rodzaju `[Czym prędzej
+pośpiesz Doń!:]`, gdzie otwarcie zgubiło dwukropek. Parser zostawia taki pojedynczy znak jako
+zwykły tekst, zamiast udawać powtórzenie.
+
 ---
 
 ## 4. Odstępy i kształty

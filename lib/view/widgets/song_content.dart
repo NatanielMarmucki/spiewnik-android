@@ -114,6 +114,7 @@ class _Verse extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _MarkerLine(
+          ruleWidth: scale.verseRuleWidth,
           label: Text(
             '${block.number}',
             style: scale.textStyle(color: context.appColors.textSecondary).copyWith(
@@ -142,6 +143,7 @@ class _Refrain extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _MarkerLine(
+          ruleWidth: scale.verseRuleWidth,
           label: Text('REFREN', style: Theme.of(context).textTheme.labelMedium),
         ),
         SizedBox(height: scale.blockGap / 3),
@@ -154,20 +156,25 @@ class _Refrain extends StatelessWidget {
   }
 }
 
-/// Etykieta bloku z hairline'em ciągnącym się do prawej krawędzi kolumny.
+/// Etykieta bloku z krótkim hairline'em obok.
+///
+/// Linia jest **krótka i stała** (1,5 × S): linia wiodąca przez całą szerokość znaczy w indeksie
+/// co innego, prowadzi wzrok do numeru pieśni, i powielanie jej w tekście pieśni myli.
 class _MarkerLine extends StatelessWidget {
   final Widget label;
+  final double ruleWidth;
 
-  const _MarkerLine({required this.label});
+  const _MarkerLine({required this.label, required this.ruleWidth});
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         label,
         const SizedBox(width: 8.0),
-        Expanded(child: Container(height: 1.0, color: context.appColors.line)),
+        Container(height: 1.0, width: ruleWidth, color: context.appColors.line),
       ],
     );
   }

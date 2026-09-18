@@ -29,6 +29,7 @@ class SongTextScale {
   static const double _initialRatio = 2.16;
   static const double _verseNumberRatio = 0.74;
   static const double _maxColumnWidthRatio = 34.0;
+  static const double _verseRuleRatio = 1.5;
 
   /// Rozmiar tekstu pieśni w dp.
   final double size;
@@ -55,6 +56,9 @@ class SongTextScale {
 
   /// Maksymalna szerokość kolumny tekstu.
   double get maxColumnWidth => _maxColumnWidthRatio * size;
+
+  /// Długość linii obok cyfry zwrotki i wersalika refrenu.
+  double get verseRuleWidth => _verseRuleRatio * size;
 
   /// Styl tekstu pieśni: Newsreader w rozmiarze [size] z interlinią [lineHeightMultiplier].
   TextStyle textStyle({Color? color}) {

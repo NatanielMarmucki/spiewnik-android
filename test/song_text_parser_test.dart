@@ -150,6 +150,35 @@ void main() {
     });
   });
 
+  group('jakość danych', () {
+    /// Bloki, w których znaki powtórzenia się nie równoważą. To literówki w treściach pieśni
+    /// (patrz issue o poprawce danych). Liczba ma nie rosnąć: przy edycji assetu łatwo dołożyć
+    /// kolejne, a parser pokaże je wtedy jako zwykły tekst, czyli po cichu.
+    const knownUnpairedBlocks = 14;
+
+    test('liczba bloków z niesparowanymi znakami nie rośnie', () {
+      final offenders = <String>[];
+
+      for (final song in songs.values) {
+        for (final block in RegExp(r'\n\s*\n+').allMatches(song.content).isEmpty
+            ? [song.content]
+            : song.content.split(RegExp(r'\n\s*\n+'))) {
+          final opens = RegExp(r'\[:').allMatches(block).length;
+          final closes = RegExp(r':\]').allMatches(block).length;
+          if (opens != closes) {
+            offenders.add('${song.number} ${song.title}');
+          }
+        }
+      }
+
+      expect(
+        offenders.length,
+        lessThanOrEqualTo(knownUnpairedBlocks),
+        reason: 'Nowe niesparowane znaki powtórzenia w danych: ${offenders.join(', ')}',
+      );
+    });
+  });
+
   group('zachowania szczegółowe', () {
     test('pojedyncze łamanie wiersza w bloku zostaje', () {
       final blocks = parser.parse('1. Pierwszy wers\ndrugi wers\n\n2. Kolejna zwrotka');
