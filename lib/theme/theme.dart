@@ -79,6 +79,9 @@ ThemeData _buildTheme(ColorScheme scheme, AppColors appColors) {
       titleTextStyle: textTheme.headlineSmall,
       contentTextStyle: textTheme.bodyMedium,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+      // Wnętrze 24 dp (sekcja 5 dokumentu). Tytuł i treść dostają swoje marginesy w dialogach:
+      // DialogThemeData nie ma dla nich pól.
+      actionsPadding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 24.0),
     ),
     bottomSheetTheme: BottomSheetThemeData(
       backgroundColor: scheme.surfaceContainerHigh,

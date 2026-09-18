@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/theme/app_colors.dart';
+import 'package:spiewnik/view/widgets/dialog_actions.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
 /// Modal „Przejdź do pieśni” z docs/DESIGN-SYSTEM.md, sekcja 5.
@@ -78,10 +79,11 @@ class _GoToSongDialogState extends State<_GoToSongDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
     final found = _result?.outcome == GoToSongOutcome.found;
 
     return AlertDialog(
+      titlePadding: kDialogTitlePadding,
+      contentPadding: kDialogContentPadding,
       title: const Text('Przejdź do pieśni'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -102,15 +104,11 @@ class _GoToSongDialogState extends State<_GoToSongDialog> {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          style: TextButton.styleFrom(foregroundColor: appColors.textSecondary),
-          child: const Text('Anuluj'),
-        ),
-        TextButton(
-          onPressed: found ? _submit : null,
-          style: TextButton.styleFrom(foregroundColor: appColors.accent),
-          child: const Text('Przejdź'),
+        DialogActions(
+          children: [
+            dialogQuietButton(context, label: 'Anuluj', onPressed: () => Navigator.pop(context)),
+            dialogAccentButton(context, label: 'Przejdź', onPressed: found ? _submit : null),
+          ],
         ),
       ],
     );

@@ -1,45 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:spiewnik/theme/app_colors.dart';
+import 'package:spiewnik/view/widgets/dialog_actions.dart';
 
 /// Asks the user to confirm a destructive action. Resolves to true only when confirmed.
 ///
-/// Shape, colors and text styles come from the theme; the destructive action uses the
-/// destructive token, "Anuluj" the secondary text color.
+/// Shape, padding, colors and text styles come from the theme (docs/DESIGN-SYSTEM.md, section 5):
+/// both actions sit on the right, "Anuluj" in the secondary text color, the destructive one in the
+/// destructive color on a 12% background — never as a filled button.
 Future<bool> showConfirmationDialog(
   BuildContext context, {
   required String title,
   required String message,
   required String confirmLabel,
 }) async {
-  final appColors = context.appColors;
-
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(title, textAlign: TextAlign.center),
+        titlePadding: kDialogTitlePadding,
+        contentPadding: kDialogContentPadding,
+        title: Text(title),
         content: Text(message),
-        actionsPadding: EdgeInsets.zero,
-        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          DialogActions(
             children: [
-              TextButton(
+              dialogQuietButton(
+                context,
+                label: 'Anuluj',
                 onPressed: () => Navigator.pop(context, false),
-                style: TextButton.styleFrom(
-                  foregroundColor: appColors.textSecondary,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-                ),
-                child: const Text('Anuluj'),
               ),
-              TextButton(
+              dialogDestructiveButton(
+                context,
+                label: confirmLabel,
                 onPressed: () => Navigator.pop(context, true),
-                style: TextButton.styleFrom(
-                  foregroundColor: appColors.destructive,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-                ),
-                child: Text(confirmLabel),
               ),
             ],
           ),
