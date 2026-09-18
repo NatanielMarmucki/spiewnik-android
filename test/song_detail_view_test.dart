@@ -6,6 +6,7 @@ import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
+import 'package:spiewnik/view/widgets/song_content.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
 import 'support/fakes/fake_song_repository.dart';
@@ -74,6 +75,28 @@ void main() {
     await goToNumber(tester, '3');
 
     expect(find.text('Pieśń o podanym numerze nie została znaleziona'), findsOneWidget);
+  });
+
+  testWidgets('przeciągnięcie w lewo otwiera następną pieśń, w prawo poprzednią', (tester) async {
+    await openSong(tester, 4);
+
+    await tester.drag(find.byType(SongContent), const Offset(-300, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('5. Pieśń 5'), findsOneWidget);
+
+    await tester.drag(find.byType(SongContent), const Offset(300, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('4. Pieśń 4'), findsOneWidget);
+  });
+
+  testWidgets('przy dziurze w numeracji przeciągnięcie nic nie robi', (tester) async {
+    // Numery to 1, 2, 4, 5: po dwójce nie ma trójki, więc nie ma dokąd przejść.
+    await openSong(tester, 2);
+
+    await tester.drag(find.byType(SongContent), const Offset(-300, 0));
+    await tester.pumpAndSettle();
+
+    expect(find.text('2. Pieśń 2'), findsOneWidget);
   });
 
   testWidgets('cancelling the dialog stays on the song', (tester) async {

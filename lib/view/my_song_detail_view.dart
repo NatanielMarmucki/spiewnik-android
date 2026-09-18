@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/model/my_song_model.dart';
 import 'package:spiewnik/view/delete_my_song_dialog.dart';
 import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
+import 'package:spiewnik/view/widgets/song_content.dart';
 
 class MySongDetailView extends StatefulWidget {
   final MySong song;
@@ -92,25 +91,7 @@ class MySongDetailViewState extends State<MySongDetailView> {
           _buildAction(icon: Icons.delete, onTap: _delete),
         ],
       ),
-      // TODO: Unify with SongDetailView, which renders song content the same way.
-      body: SizedBox.expand(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Consumer<FontSizeModel>(
-            builder: (context, fontSizeModel, child) {
-              return SingleChildScrollView(
-                child: Text(
-                  widget.song.content,
-                  style: TextStyle(
-                    fontSize: fontSizeModel.fontSize,
-                    height: fontSizeModel.lineHeight,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
+      body: SongContent(content: widget.song.content),
     );
   }
 }

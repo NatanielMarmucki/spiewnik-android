@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
-import 'package:provider/provider.dart';
-import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
+import 'package:spiewnik/view/widgets/song_content.dart';
 
 class SongDetailView extends StatefulWidget {
   final Song song;
@@ -91,32 +90,15 @@ class SongDetailViewState extends State<SongDetailView> {
           ],
         ),
       body: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onPanUpdate: (details) {
-            if (details.delta.dx < -10) {
-              _goToNextSong();
-            } else if (details.delta.dx > 10) {
-              _goToPreviousSong();
-            }
-          },
-        child: SizedBox.expand(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-              child: Consumer<FontSizeModel>(
-            builder: (context, fontSizeModel, child) {
-              return SingleChildScrollView(
-                child: Text(
-                  song.content,
-                  style: TextStyle(
-                    fontSize: fontSizeModel.fontSize,
-                    height: fontSizeModel.lineHeight,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        ),
+        behavior: HitTestBehavior.translucent,
+        onPanUpdate: (details) {
+          if (details.delta.dx < -10) {
+            _goToNextSong();
+          } else if (details.delta.dx > 10) {
+            _goToPreviousSong();
+          }
+        },
+        child: SongContent(content: song.content),
       ),
     );
   }
