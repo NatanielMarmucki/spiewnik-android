@@ -2,16 +2,34 @@ import Flutter
 import UIKit
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GeneratedPluginRegistrant.register(with: self)
-    if let registrar = registrar(forPlugin: "LegacyUserDefaults") {
-      LegacyUserDefaults.register(with: registrar.messenger())
-    }
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  /// Plugins and our own channel are registered here, not in didFinishLaunching.
+  ///
+  /// Under the UIScene lifecycle the engine belongs to the scene and does not exist yet when the
+  /// application finishes launching. Flutter calls this once the implicit engine is ready, which is
+  /// still before Dart's main() runs — and that ordering is what the font size migration depends
+  /// on: it calls com.natanielmarmucki.spiewnik/legacy_user_defaults before runApp.
+  func didInitializeImplicitFlutterEngine(_ engineBridge: any FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    AppDelegate.registerApplicationChannels(with: engineBridge.applicationRegistrar.messenger())
+  }
+
+  /// Channels the app itself owns, apart from the plugins.
+  ///
+  /// Split out so a test can register them on a spy messenger and check that they answer, without
+  /// an engine and without pulling in every plugin.
+  static func registerApplicationChannels(
+    with messenger: FlutterBinaryMessenger,
+    defaults: UserDefaults = .standard
+  ) {
+    LegacyUserDefaults.register(with: messenger, defaults: defaults)
   }
 }
 
