@@ -26,12 +26,12 @@ class SongViewModel {
   }
 
   void _loadAllSongs() {
-    allSongsNotifier.value = getAllSongs();
+    allSongsNotifier.value = _getAllSongs();
     _filterSongs();
   }
 
   void _loadFavoriteSongs() {
-    favoriteSongsNotifier.value = getFavoriteSongs();
+    favoriteSongsNotifier.value = _getFavoriteSongs();
   }
 
   /// How many songs the songbook has. Used by the "go to number" dialog and the scrollbar label.
@@ -51,9 +51,11 @@ class SongViewModel {
         : GoToSongResult(GoToSongOutcome.found, song);
   }
 
-  List<Song> getAllSongs() => repository.all();
+  // Prywatne z rozmysłem: odczyt z repozytorium idzie tylko przez notyfikatory, bo widok
+  // wołający je wprost ominąłby odświeżanie list.
+  List<Song> _getAllSongs() => repository.all();
 
-  List<Song> getFavoriteSongs() => repository.favorites();
+  List<Song> _getFavoriteSongs() => repository.favorites();
 
   Song? findSongByNumber(int number) => repository.byNumber(number);
 
