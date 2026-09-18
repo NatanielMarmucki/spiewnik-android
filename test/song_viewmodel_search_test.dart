@@ -48,6 +48,34 @@ void main() {
     });
   });
 
+  group('tytuł', () {
+    test('zapytanie pasujące tylko do tytułu też znajduje pieśń', () {
+      expect(search('Żniwo'), [3]);
+      expect(search('zniwo'), [3]);
+    });
+
+    test('podaje trafiony fragment tytułu z oryginalnymi literami', () {
+      viewModel.searchText = 'zrodlo';
+      final song = viewModel.filteredSongsNotifier.value.firstWhere((song) => song.number == 1);
+
+      expect(viewModel.titleMatch(song), 'Źródło');
+    });
+
+    test('bez trafienia w tytule zwraca null', () {
+      viewModel.searchText = 'ogonkow';
+      final song = viewModel.filteredSongsNotifier.value.single;
+
+      expect(song.number, 2);
+      expect(viewModel.titleMatch(song), isNull);
+    });
+
+    test('puste zapytanie nie podświetla niczego', () {
+      viewModel.searchText = '';
+
+      expect(viewModel.titleMatch(viewModel.filteredSongsNotifier.value.first), isNull);
+    });
+  });
+
   group('removePolishDiacritics', () {
     test('replaces every Polish letter with its base letter and keeps letter case', () {
       expect(removePolishDiacritics('ąćęłńóśźż ĄĆĘŁŃÓŚŹŻ'), 'acelnoszz ACELNOSZZ');

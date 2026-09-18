@@ -207,10 +207,10 @@ void main() {
       expect(numbers(viewModel.filteredSongsNotifier.value), [1]);
     });
 
-    test('does not match the title when the content does not contain the query', () {
+    test('matches the title as well as the content', () {
       viewModel.searchText = 'Inna';
 
-      expect(viewModel.filteredSongsNotifier.value, isEmpty);
+      expect(numbers(viewModel.filteredSongsNotifier.value), [11]);
     });
 
     test('matches a song number as text, so "1" also matches 11', () {

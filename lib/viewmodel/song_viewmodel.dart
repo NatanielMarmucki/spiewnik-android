@@ -81,9 +81,25 @@ class SongViewModel {
       final lowercaseContent = removePolishDiacritics(song.content.toLowerCase());
       final cleanedContent = _removeNumber(lowercaseContent);
 
-      return cleanedContent.contains(lowercaseSearchText) ||
+      return _titleMatch(song, _searchText) != null ||
+          cleanedContent.contains(lowercaseSearchText) ||
           song.number.toString().contains(_searchText);
     }).toList();
+  }
+
+  /// Fragment of [song] title matching [query], with the original letters, or null when it does
+  /// not match. Used by the list to highlight the hit (docs/DESIGN-SYSTEM.md, section 5).
+  String? titleMatch(Song song) => _searchText.isEmpty ? null : _titleMatch(song, _searchText);
+
+  String? _titleMatch(Song song, String query) {
+    final title = removePolishDiacritics(song.title.toLowerCase());
+    final needle = removePolishDiacritics(query.toLowerCase());
+    if (needle.isEmpty) {
+      return null;
+    }
+    final start = title.indexOf(needle);
+    // Diacritics are removed one letter for one letter, so the positions match the original title.
+    return start < 0 ? null : song.title.substring(start, start + needle.length);
   }
 
   String _removeNumber(String str) {
