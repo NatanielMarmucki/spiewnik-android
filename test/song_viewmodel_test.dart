@@ -157,29 +157,17 @@ void main() {
       expect(numbers(viewModel.filteredSongsNotifier.value), [1]);
     });
 
-    test('asks for a review the first time a favorite is added, and never again', () async {
+    test('nie prosi o ocenę: to już nie jest sprawa tego view modelu', () async {
       putSongs([song(1), song(2)]);
       final viewModel = open();
 
       viewModel.toggleFavoriteStatus(viewModel.allSongsNotifier.value.first);
       await Future<void>.delayed(Duration.zero);
-      expect(inAppReview.calls, ['isAvailable', 'requestReview']);
 
-      viewModel.toggleFavoriteStatus(viewModel.allSongsNotifier.value.last);
-      await Future<void>.delayed(Duration.zero);
-
-      expect(inAppReview.calls, ['isAvailable', 'requestReview']);
-    });
-
-    test('does not ask for a review when a favorite is removed', () async {
-      putSongs([song(1, favorite: true)]);
-      final viewModel = open();
-
-      viewModel.toggleFavoriteStatus(viewModel.allSongsNotifier.value.single);
-      await Future<void>.delayed(Duration.zero);
-
+      // Prośba o ocenę wisi na progach uruchomień w ReviewService, nie na ulubionych.
       expect(inAppReview.calls, isEmpty);
     });
+
   });
 
   group('search', () {

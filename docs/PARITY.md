@@ -67,10 +67,10 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | „Zgłoś błąd”: temat | `Zgłoszenie błędu w aplikacji Śpiewnik <wersja>` | `Zgłoszenie błędu w aplikacji Śpiewnik (<wersja>)` — z nawiasami, `packageInfo.version` bez builda | **R** |
 | „Zgłoś błąd”: obsługa błędu | Alerty „Błąd” / „Zgłoś błąd” z kopiowaniem adresu | Od 12.0.0 dialog „Nie udało się otworzyć” z adresem i przyciskiem „Kopiuj adres”, w kształcie dialogów z systemu wizualnego; to samo przy nieudanym otwarciu strony | **—** zachowanie odtworzone |
 | **Changelog po aktualizacji** | Alert „Nowa wersja <v>” z tekstem dla `9.2024`/`10.2024`/`11.2024`; przyciski „OK”, „Zgłoś błąd”, „Wesprzyj”; także przy pierwszej instalacji | Brak | **B** |
-| **Prośba o ocenę: wyzwalacz** | `scenePhase == .active` + licznik uruchomień | (a) licznik w `MyApp.build`; (b) pierwsze dodanie ulubionej w sesji | **R** |
-| Prośba o ocenę: progi | `[20, 50, 90, 140, 200, 270, 300, 390, 490, 640, 840, 1140, 1440, 1940]` | `[5, 10, 50, 100, 250, 500, 750, 1000]` | **R** |
-| Prośba o ocenę: limit per wersja | Tak (`lastVersionPromptedForReviewKey`) | Nie | **R** |
-| Prośba o ocenę: inkrementacja licznika | +2 na uruchomienie (`init` + `onAppear`) | +1 na każdy `MyApp.build` (NIEPOTWIERDZONE, jak często) | **R** |
+| **Prośba o ocenę: wyzwalacz** | `scenePhase == .active` + licznik uruchomień | Od 12.0.0 wyłącznie licznik uruchomień, raz na start, poza `build` (`ReviewService.onLaunch`). Wyzwalacz „pierwsza ulubiona w sesji” **usunięty** | **—** |
+| Prośba o ocenę: progi | `[20, 50, 90, 140, 200, 270, 300, 390, 490, 640, 840, 1140, 1440, 1940]` | Od 12.0.0 te same progi | **—** |
+| Prośba o ocenę: limit per wersja | Tak (`lastVersionPromptedForReviewKey`) | Od 12.0.0 tak, klucz `reviewAskedVersion` (wersja z numerem builda). Klucz nowy, więc pierwsza prośba w 12.0.0 pada niezależnie od historii | **—** |
+| Prośba o ocenę: inkrementacja licznika | +2 na uruchomienie (`init` + `onAppear`) | +1 na uruchomienie, raz, poza `build` | **R** — iOS liczył podwójnie, więc jego progi wypadały dwa razy szybciej niż sugeruje liczba |
 | Aktualizacja tekstów u istniejących użytkowników | Mechanizm `update()` wywoływany przy zmianie wersji; w HEAD funkcje puste | Mechanizm `_updateStoreFromJson` przy zmianie wersji; niedziałający (rzutowanie Map → List) | **R** (mechanizm); po obu stronach obecnie brak skutecznych aktualizacji |
 | Zakupy w aplikacji | Kod StoreKit 1 i 2, **niepodpięty** | Brak | **B** (tylko martwy kod) |
 | Orientacja | Portrait, LandscapeLeft, LandscapeRight; `UIRequiresFullScreen = true` | Brak blokady | **R** |
@@ -91,7 +91,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Przełącznik „Dynamiczna wyszukiwarka” (tryb wyszukiwania po zatwierdzeniu) | — |
 | Układ dwukolumnowy (`NavigationSplitView`) na iPadzie | — |
 | Alert „Nowa wersja” z changelogiem | — |
-| Limit prośby o ocenę raz na wersję | — |
+| ~~Limit prośby o ocenę raz na wersję~~ | **Dorobione w 12.0.0** |
 | Kod zakupów w aplikacji (StoreKit 1 + StoreKit 2, `Configuration.storekit`) | Niepodpięty, nieosiągalny z UI |
 | Osobne rozmiary domyślne i zakresy czcionki dla iPada | — |
 

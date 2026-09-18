@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:spiewnik/model/polish_collation.dart';
 import 'package:spiewnik/data/repositories/song_repository.dart';
 import 'package:spiewnik/model/song_model.dart';
-import 'package:spiewnik/model/review_model.dart';
 import 'package:flutter/material.dart';
 
 class SongViewModel {
@@ -10,9 +9,6 @@ class SongViewModel {
   final ValueNotifier<List<Song>> allSongsNotifier = ValueNotifier([]);
   final ValueNotifier<List<Song>> favoriteSongsNotifier = ValueNotifier([]);
   final ValueNotifier<List<Song>> filteredSongsNotifier = ValueNotifier([]);
-  bool _firstAddition = true;
-  final reviewModel = ReviewModel();
-
   String _searchText = '';
 
   SongViewModel(this.repository) {
@@ -61,15 +57,11 @@ class SongViewModel {
 
   Song? findSongByNumber(int number) => repository.byNumber(number);
 
-  void toggleFavoriteStatus(Song song) async {
+  void toggleFavoriteStatus(Song song) {
     repository.setFavorite(song, !song.favorite);
+    // Dwie listy, bo ulubiona zmienia i wiersz na liście głównej, i skład listy ulubionych.
     _loadAllSongs();
     _loadFavoriteSongs();
-
-    if (song.favorite && _firstAddition) {
-      _firstAddition = false;
-      await reviewModel.requestReview();
-    }
   }
 
   void _filterSongs() {
