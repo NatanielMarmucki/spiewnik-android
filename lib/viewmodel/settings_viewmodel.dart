@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spiewnik/json_manager.dart';
 import 'package:spiewnik/migration/core_data_migration.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -7,6 +8,13 @@ class SettingsViewModel {
   Future<String> getAppVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
+  }
+
+  /// App version and the version of the song data applied from the asset, shown in the settings
+  /// so a bug report can name both.
+  Future<({String appVersion, int dataVersion})> getVersions() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (appVersion: await getAppVersion(), dataVersion: prefs.getInt(JsonManager.dataVersionKey) ?? 0);
   }
 
   /// Error saved by the failed migration from the old iOS app, or null when it did not fail.

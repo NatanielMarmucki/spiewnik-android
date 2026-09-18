@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/migration/core_data_migration.dart';
+import 'package:spiewnik/model/app_settings_model.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/settings_view.dart';
@@ -38,6 +39,7 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => FontSizeModel()),
+          ChangeNotifierProvider(create: (_) => AppSettingsModel()),
           Provider(create: (_) => SettingsViewModel()),
         ],
         child: MaterialApp(theme: lightTheme, home: const SettingsView()),

@@ -58,8 +58,8 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Reset ustawień | `isLineSpacing = 0`, `isSize = 16` (także na iPadzie) | `fontSize = 16.0`, `lineHeight = 1.5` | **R** |
 | Podgląd tekstu w ustawieniach | Jest (ten sam fragment „Alleluja, chwalcie Pana…”) | Jest (ten sam fragment) | **—** |
 | Przełącznik „Dynamiczna wyszukiwarka” | Jest (`isSearchDynamic`) | Brak | **B** |
-| **Tryb nocny** | Systemowy, brak przełącznika | Systemowy (`ThemeMode.system`), brak przełącznika; własne motywy `lightTheme` / `darkTheme` | **—** (brak przełącznika po obu stronach); **R** (kolorystyka) |
-| **Blokada wygaszania ekranu** | Brak | Zawsze włączona na ekranach szczegółów pieśni i własnej pieśni (`wakelock_plus`), bez ustawienia (przełącznik planowany w A3). **Naprawione w 12.0.0:** wcześniej po `pushReplacement` (przejście do numeru, przeciągnięcie na następną lub poprzednią pieśń) blokada się wyłączała, bo `dispose` starego ekranu wywoływał `disable` po `enable` nowego. Teraz `ScreenWakeLock` liczy otwarte ekrany: `enable` przy przejściu z 0 na 1, `disable` z 1 na 0; testy w `test/song_detail_view_wakelock_test.dart` | **B** |
+| **Tryb nocny** | Systemowy, brak przełącznika | Od 12.0.0 przełącznik w ustawieniach: „Jak w systemie” (domyślnie, jak dotąd), „Jasny”, „Ciemny”; klucz `themeMode` | **R** — świadome ulepszenie z systemu wizualnego; **R** (kolorystyka) |
+| **Blokada wygaszania ekranu** | Brak | Zawsze włączona na ekranach szczegółów pieśni i własnej pieśni (`wakelock_plus`), od 12.0.0 z przełącznikiem „Nie gaś ekranu przy pieśni” w ustawieniach (klucz `keepScreenOn`, domyślnie włączony, czyli bez zmiany dla dotychczasowych użytkowników); wyłączenie działa od razu, także przy otwartej pieśni. **Zamyka A3.** **Naprawione w 12.0.0:** wcześniej po `pushReplacement` (przejście do numeru, przeciągnięcie na następną lub poprzednią pieśń) blokada się wyłączała, bo `dispose` starego ekranu wywoływał `disable` po `enable` nowego. Teraz `ScreenWakeLock` liczy otwarte ekrany: `enable` przy przejściu z 0 na 1, `disable` z 1 na 0; testy w `test/song_detail_view_wakelock_test.dart` | **B** |
 | Link „Kontakt” | `https://spiewnik.odoo.com/contactus` | `https://spiewnik.odoo.com/contactus` | **—** |
 | Link „O mnie” | `https://spiewnik.odoo.com/about-us` | `https://spiewnik.odoo.com/about-us` | **—** |
 | „Wesprzyj” | Link `https://suppi.pl/spiewnik` (+ niepodpięty kod zakupów) | Link `https://suppi.pl/spiewnik` | **—** w UI; **R** w kodzie |
@@ -99,7 +99,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 
 | Funkcja | Uwagi z audytu |
 |---|---|
-| Blokada wygaszania ekranu na ekranie szczegółów | Zawsze włączona, bez ustawienia |
+| Blokada wygaszania ekranu na ekranie szczegółów | Do 12.0.0 zawsze włączona, bez ustawienia; od 12.0.0 z przełącznikiem w ustawieniach |
 | Kopiowanie treści do schowka z SnackBarem | Do 12.0.0 w miejscu udostępniania; od 12.0.0 osobna pozycja „Kopiuj tekst” w arkuszu opcji, obok udostępniania |
 | Prośba o ocenę po pierwszym dodaniu ulubionej | Raz na uruchomienie |
 | Wejście do ustawień z każdej zakładki | — |

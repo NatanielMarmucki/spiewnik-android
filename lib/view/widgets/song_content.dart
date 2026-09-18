@@ -19,7 +19,13 @@ import 'package:spiewnik/theme/song_text_scale.dart';
 class SongContent extends StatelessWidget {
   final String content;
 
-  const SongContent({super.key, required this.content});
+  /// Wewnętrzny margines; domyślnie 22 dp po bokach i odstęp bloku u góry i u dołu.
+  final EdgeInsets? padding;
+
+  /// Czy treść ma własne przewijanie. Próbka w ustawieniach siedzi już w liście, więc nie.
+  final bool scrollable;
+
+  const SongContent({super.key, required this.content, this.padding, this.scrollable = true});
 
   static const SongTextParser _parser = SongTextParser();
 
@@ -28,22 +34,26 @@ class SongContent extends StatelessWidget {
     final fontSizeModel = context.watch<FontSizeModel>();
     final scale = fontSizeModel.songTextScale;
     final blocks = _parser.parse(content);
+    final insets =
+        padding ?? EdgeInsets.symmetric(horizontal: SongTextScale.sideMargin, vertical: scale.blockGap);
+
+    final column = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < blocks.length; i++) ...[
+          if (i > 0) SizedBox(height: scale.blockGap),
+          _Block(block: blocks[i], scale: scale),
+        ],
+      ],
+    );
 
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: scale.maxColumnWidth),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: SongTextScale.sideMargin, vertical: scale.blockGap),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var i = 0; i < blocks.length; i++) ...[
-                if (i > 0) SizedBox(height: scale.blockGap),
-                _Block(block: blocks[i], scale: scale),
-              ],
-            ],
-          ),
-        ),
+        child: scrollable
+            ? SingleChildScrollView(padding: insets, child: column)
+            : Padding(padding: insets, child: column),
       ),
     );
   }

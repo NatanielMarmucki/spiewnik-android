@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/main.dart';
+import 'package:spiewnik/model/app_settings_model.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/objectbox.g.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
@@ -28,6 +29,7 @@ void main() {
         providers: [
           Provider<Store>.value(value: testStore.store),
           ChangeNotifierProvider(create: (_) => FontSizeModel()),
+          ChangeNotifierProvider(create: (_) => AppSettingsModel()),
           Provider(create: (_) => SettingsViewModel()),
         ],
         child: MyApp(store: testStore.store),

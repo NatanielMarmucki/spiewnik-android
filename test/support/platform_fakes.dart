@@ -9,6 +9,9 @@ class FakeWakelock {
   /// Every requested state, in order: true for enable, false for disable.
   final List<bool> toggles = [];
 
+  /// The state last asked for, or null when nothing was requested yet.
+  bool? get enabled => toggles.isEmpty ? null : toggles.last;
+
   void install() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
       _toggleChannel,

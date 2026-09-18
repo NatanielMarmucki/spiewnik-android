@@ -14,6 +14,7 @@ import 'package:spiewnik/data/repositories/my_song_repository.dart';
 import 'package:spiewnik/data/repositories/song_repository.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
+import 'package:spiewnik/model/app_settings_model.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/model/review_model.dart';
@@ -93,6 +94,7 @@ void main() async {
       providers: [
         Provider<Store>.value(value: objectBoxStore),
         ChangeNotifierProvider(create: (_) => FontSizeModel()),
+        ChangeNotifierProvider(create: (_) => AppSettingsModel()),
         Provider(create: (_) => SettingsViewModel()),
       ],
       child: MyApp(store: objectBoxStore),
@@ -118,7 +120,7 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       debugShowCheckedModeBanner: false,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: context.watch<AppSettingsModel>().themeMode,
       home: HomeScreen(store: store),
     );
   }
