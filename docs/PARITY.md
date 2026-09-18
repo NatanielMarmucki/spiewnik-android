@@ -69,7 +69,7 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | „Zgłoś błąd”: adres | `mailto:n.marmucki@icloud.com` | Ten sam adres, w stałej `SettingsViewModel.contactEmail` — jedyne miejsce w kodzie | **—** świadoma decyzja: adres zostaje jawny |
 | „Zgłoś błąd”: temat | `Zgłoszenie błędu w aplikacji Śpiewnik <wersja>` | `Zgłoszenie błędu w aplikacji Śpiewnik (<wersja>)` — z nawiasami, `packageInfo.version` bez builda | **R** |
 | „Zgłoś błąd”: obsługa błędu | Alerty „Błąd” / „Zgłoś błąd” z kopiowaniem adresu | Od 12.0.0 dialog „Nie udało się otworzyć” z adresem i przyciskiem „Kopiuj adres”, w kształcie dialogów z systemu wizualnego; to samo przy nieudanym otwarciu strony | **—** zachowanie odtworzone |
-| **Changelog po aktualizacji** | Alert „Nowa wersja <v>” z tekstem dla `9.2024`/`10.2024`/`11.2024`; przyciski „OK”, „Zgłoś błąd”, „Wesprzyj”; także przy pierwszej instalacji | Brak | **B** |
+| **Changelog po aktualizacji** | Alert „Nowa wersja <v>” z tekstem dla `9.2024`/`10.2024`/`11.2024`; przyciski „OK”, „Zgłoś błąd”, „Wesprzyj”; także przy pierwszej instalacji | Brak. **Decyzja przed 12.0.0:** zamiast changelogu przy każdej aktualizacji powstanie **jednorazowy ekran powitalny po migracji** — osobny PR, warunki niżej | **R** — świadoma decyzja, węższy zakres niż iOS |
 | **Prośba o ocenę: wyzwalacz** | `scenePhase == .active` + licznik uruchomień | Od 12.0.0 wyłącznie licznik uruchomień, raz na start, poza `build` (`ReviewService.onLaunch`). Wyzwalacz „pierwsza ulubiona w sesji” **usunięty** | **—** |
 | Prośba o ocenę: progi | `[20, 50, 90, 140, 200, 270, 300, 390, 490, 640, 840, 1140, 1440, 1940]` | Od 12.0.0 te same progi | **—** |
 | Prośba o ocenę: limit per wersja | Tak (`lastVersionPromptedForReviewKey`) | Od 12.0.0 tak, klucz `reviewAskedVersion` (wersja z numerem builda). Klucz nowy, więc pierwsza prośba w 12.0.0 pada niezależnie od historii | **—** |
@@ -258,7 +258,7 @@ naprawione albo dorobione, mieści się w jednej z tych kategorii.
 |---|---|
 | Układ dwukolumnowy na tablecie | Nie zaczęte. Aplikacja działa na tablecie, ale nie korzysta z szerokości. Osobna praca, nie na wydanie 12.0.0 |
 | Skanowanie tekstu aparatem przy dodawaniu własnej pieśni | Nie zaczęte. Wymaga uprawnienia do aparatu i osobnego ekranu |
-| Alert z changelogiem po aktualizacji | **Do decyzji przed wydaniem, patrz niżej** |
+| Alert z changelogiem po aktualizacji | Zastąpiony jednorazowym ekranem powitalnym po migracji; warunki w sekcji 5.4 |
 | Aktualizacja tekstów pieśni po stronie iOS | Dotyczy starej aplikacji, która znika razem z tym wydaniem. Bezprzedmiotowe |
 
 ### 5.3 Różnice, które znikają razem ze starą aplikacją
@@ -267,3 +267,18 @@ Kod zakupów w aplikacji (StoreKit, niepodpięty), przełącznik „Dynamiczna w
 zakresy czcionki dla iPada, podwójne liczenie uruchomień, martwa wyszukiwarka w zakładce „Moje
 pieśni”, `isSizeImg` zapisywane pod cudzym kluczem. Nie odtwarzamy ich, bo to albo martwy kod,
 albo błędy.
+
+### 5.4 Ekran powitalny po migracji — uzgodnione warunki
+
+Zamiast changelogu przy każdej aktualizacji (jak w iOS) powstanie **jeden ekran, pokazany raz**.
+Powód: dla użytkownika starej aplikacji iOS wydanie 12.0.0 zmienia wszystko, co widzi, i przenosi
+jego dane — to warte słowa wyjaśnienia. Przy zwykłej aktualizacji Androida nie ma czego tłumaczyć.
+
+Implementacja osobnym PR-em po domknięciu parytetu. Warunki:
+
+- pokazywany **raz**, tylko użytkownikom przychodzącym ze starej aplikacji iOS — czyli gdy
+  `coreDataMigrationDone` zostało ustawione **w tej sesji**, a nie kiedyś wcześniej;
+- **nie** pokazywany przy czystej instalacji ani na Androidzie;
+- **jedno wyjście**, bez przycisków „Wesprzyj” i „Zgłoś błąd”;
+- zbudowany na tokenach z `docs/DESIGN-SYSTEM.md`;
+- własna flaga w `SharedPreferences`, żeby nie wracał przy kolejnym starcie.
