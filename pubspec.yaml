@@ -55,7 +55,6 @@ dependencies:
   package_info_plus: ^10.2.1
   provider: ^6.0.0
   path: ^1.8.0
-  convex_bottom_bar: ^3.0.0
   wakelock_plus: ^1.2.8
   in_app_review: ^2.0.10
   shared_preferences: ^2.0.0

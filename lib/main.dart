@@ -9,19 +9,18 @@ import 'package:spiewnik/view/favorite_songs_view.dart';
 import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
 import 'package:spiewnik/view/settings_view.dart';
+import 'package:spiewnik/view/widgets/app_navigation_bar.dart';
 import 'package:spiewnik/data/repositories/my_song_repository.dart';
 import 'package:spiewnik/data/repositories/song_repository.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/model/font_size_model.dart';
-import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/model/review_model.dart';
 import 'package:spiewnik/launch_counter.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:logger/logger.dart';
 
 final logger = Logger(
@@ -201,19 +200,9 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _selectedIndex,
         children: _buildScreens(),
       ),
-      bottomNavigationBar: ConvexAppBar(
-        style: TabStyle.reactCircle,
-        items: const [
-          TabItem(icon: Icons.auto_stories, title: 'Śpiewnik'),
-          TabItem(icon: Icons.favorite, title: 'Ulubione'),
-          TabItem(icon: Icons.edit_note, title: 'Moje pieśni'),
-        ],
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        color: context.appColors.textTertiary,
-        activeColor: context.appColors.accent,
-        curveSize: 80,
-        initialActiveIndex: _selectedIndex,
-        onTap: (int index) {
+      bottomNavigationBar: AppNavigationBar(
+        selectedIndex: _selectedIndex,
+        onSelected: (index) {
           setState(() {
             _selectedIndex = index;
           });
