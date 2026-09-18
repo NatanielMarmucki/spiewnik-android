@@ -61,7 +61,7 @@ class AppColors extends ThemeExtension<AppColors> {
 
   /// Motyw jasny, wobec tła #F7F4EE.
   static const AppColors light = AppColors(
-    accent: Color(0xFF7A5518),
+    accent: Color(0xFF1B7A18), // TYMCZASOWO: zielony zamiast szafranu, test CI
     onAccent: Color(0xFFFFFDF8),
     destructive: Color(0xFFA3231B),
     favorite: Color(0xFF8C2F4F),
