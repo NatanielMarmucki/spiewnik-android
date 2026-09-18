@@ -4,6 +4,7 @@ import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'song_detail_view.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+import 'package:spiewnik/theme/app_colors.dart';
 
 @immutable
 class SongListView extends StatefulWidget {
@@ -133,12 +134,10 @@ class SongListViewState extends State<SongListView> {
                                   contentPadding:
                                   const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
                                   leading: CircleAvatar(
-                                    backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
+                                    backgroundColor: context.appColors.accent,
                                     child: Text(
                                       song.number.toString(),
-                                      style:
-                                      const TextStyle(color: Colors.white),
+                                      style: TextStyle(color: context.appColors.onAccent),
                                     ),
                                   ),
                                   title:
@@ -151,8 +150,7 @@ class SongListViewState extends State<SongListView> {
                                   Column(mainAxisAlignment:
                                   MainAxisAlignment.center, children:
                                   [if (song.favorite)
-                                    const Icon(Icons.favorite, color:
-                                    Colors.red)]),
+                                    Icon(Icons.favorite, color: context.appColors.favorite)]),
                                   onTap:
                                       () {Navigator.push(context, MaterialPageRoute(builder:
                                       (context) => SongDetailView(song:

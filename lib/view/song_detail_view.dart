@@ -4,6 +4,7 @@ import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:spiewnik/model/font_size_model.dart';
+import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
 
 class SongDetailView extends StatefulWidget {
@@ -53,12 +54,10 @@ class SongDetailViewState extends State<SongDetailView> {
                     widget.viewModel.toggleFavoriteStatus(song);
                   });
                 },
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
                 child: Icon(
                   song.favorite ? Icons.favorite : Icons.favorite_border,
                   size: 24.0,
-                  color: song.favorite ? Colors.red : null,
+                  color: song.favorite ? context.appColors.favorite : null,
                 ),
               ),
             ),
@@ -71,8 +70,6 @@ class SongDetailViewState extends State<SongDetailView> {
                     const SnackBar(content: Text('Treść skopiowana do schowka')),
                   );
                 },
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
                 child: const Icon(
                   Icons.share,
                   size: 24.0,
@@ -85,8 +82,6 @@ class SongDetailViewState extends State<SongDetailView> {
                 onTap: () {
                   _showSearchDialog(context);
                 },
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
                 child: const Icon(
                   Icons.search,
                   size: 24.0,
@@ -99,10 +94,8 @@ class SongDetailViewState extends State<SongDetailView> {
           behavior: HitTestBehavior.translucent,
           onPanUpdate: (details) {
             if (details.delta.dx < -10) {
-              print('Swipe left');
               _goToNextSong();
             } else if (details.delta.dx > 10) {
-              print('Swipe right');
               _goToPreviousSong();
             }
           },
@@ -129,7 +122,7 @@ class SongDetailViewState extends State<SongDetailView> {
   }
 
   void _showSearchDialog(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final appColors = context.appColors;
     final FocusNode focusNode = FocusNode();
 
     showDialog(
@@ -139,44 +132,21 @@ class SongDetailViewState extends State<SongDetailView> {
         final TextEditingController controller = TextEditingController();
 
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
-          title: Text(
-            'Przejdź do pieśni',
-            style: TextStyle(
-              color: isDarkMode ? Colors.white : Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          title: const Text('Przejdź do pieśni'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'Podaj numer pieśni, do której chcesz przejść.',
-                style: TextStyle(
-                  color: isDarkMode ? Colors.white70 : Colors.black54,
-                  fontSize: 14,
-                ),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               TextField(
                 focusNode: focusNode,
                 autofocus: true,
                 keyboardType: TextInputType.number,
                 controller: controller,
-                decoration: InputDecoration(
-                  hintText: 'Numer pieśni',
-                  hintStyle: TextStyle(color: isDarkMode ? Colors.white38 : Colors.black38),
-                  filled: true,
-                  fillColor: isDarkMode ? Colors.black54 : Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+                decoration: const InputDecoration(hintText: 'Numer pieśni'),
                 onChanged: (value) {
                   input = value;
                 },
@@ -199,10 +169,10 @@ class SongDetailViewState extends State<SongDetailView> {
                     Navigator.pop(context);
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.red,
+                    foregroundColor: appColors.textSecondary,
                     padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                   ),
-                  child: const Text('Anuluj', style: TextStyle(fontSize: 18)),
+                  child: const Text('Anuluj'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -210,10 +180,10 @@ class SongDetailViewState extends State<SongDetailView> {
                     _navigateToSong(context, input);
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.blue,
+                    foregroundColor: appColors.accent,
                     padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                   ),
-                  child: const Text('Przejdź', style: TextStyle(fontSize: 18)),
+                  child: const Text('Przejdź'),
                 ),
               ],
             ),
@@ -228,31 +198,18 @@ class SongDetailViewState extends State<SongDetailView> {
   }
 
   void _showMessageDialog(BuildContext context, String message) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
-          title: Text(
-            'Uwaga',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: isDarkMode ? Colors.white : Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          content: Text(
-            message,
-            style: TextStyle(color: isDarkMode ? Colors.white : Colors.black, fontSize: 16),
-          ),
+          title: const Text('Uwaga', textAlign: TextAlign.center),
+          content: Text(message),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('OK', style: TextStyle(color: Colors.blue)),
+              child: const Text('OK'),
             ),
           ],
         );

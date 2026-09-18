@@ -114,8 +114,7 @@ class SettingsView extends StatelessWidget {
                             () => settingsViewModel.launchURL('https://spiewnik.odoo.com/contactus'),
                       ),
                     ),
-                    Divider(color:
-                    Theme.of(context).colorScheme.primary),
+                    const Divider(),
                     ListTile(
                       leading:
                       const Icon(Icons.person),
@@ -124,8 +123,7 @@ class SettingsView extends StatelessWidget {
                       onTap:
                           () => settingsViewModel.launchURL('https://spiewnik.odoo.com/about-us'),
                     ),
-                    Divider(color:
-                    Theme.of(context).colorScheme.primary),
+                    const Divider(),
                     ListTile(
                       leading:
                       const Icon(Icons.favorite),
@@ -134,8 +132,7 @@ class SettingsView extends StatelessWidget {
                       onTap:
                           () => settingsViewModel.launchURL('https://suppi.pl/spiewnik'),
                     ),
-                    Divider(color:
-                    Theme.of(context).colorScheme.primary),
+                    const Divider(),
                     Padding(
                       padding:
                       const EdgeInsets.only(bottom:
