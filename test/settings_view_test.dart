@@ -81,6 +81,22 @@ void main() {
     expect(find.text('Interlinia'), findsOneWidget);
   });
 
+  testWidgets('interlinia stoi zaraz pod rozmiarem tekstu, próbka pod obydwoma', (tester) async {
+    await pumpSettings(tester);
+
+    final size = tester.getCenter(find.text('Rozmiar tekstu')).dy;
+    final lineHeight = tester.getCenter(find.text('Interlinia')).dy;
+    final sample = tester.getCenter(find.byType(SongContent)).dy;
+
+    expect(lineHeight, greaterThan(size));
+    expect(sample, greaterThan(lineHeight), reason: 'próbka pokazuje oba ustawienia naraz');
+    expect(
+      find.byType(SettingsSlider),
+      findsNWidgets(2),
+      reason: 'między suwakami nie ma nic innego',
+    );
+  });
+
   testWidgets('wypisuje wersję aplikacji i wersję bazy pieśni', (tester) async {
     await pumpSettings(tester);
     await tester.scrollUntilVisible(find.text('Wersja bazy pieśni'), 200.0);

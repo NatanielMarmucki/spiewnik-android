@@ -90,7 +90,16 @@ class _ReadingSection extends StatelessWidget {
           divisions: (FontSizeModel.maxFontSize - FontSizeModel.minFontSize).round(),
           onChanged: fontSizeModel.setFontSize,
         ),
-        // Próbka zaraz pod suwakiem rozmiaru, żeby zmianę widać było bez przewijania.
+        SettingsSlider(
+          label: 'Interlinia',
+          value: fontSizeModel.lineHeight,
+          valueLabel: fontSizeModel.lineHeight.toStringAsFixed(2),
+          min: FontSizeModel.minLineHeight,
+          max: FontSizeModel.maxLineHeight,
+          divisions: ((FontSizeModel.maxLineHeight - FontSizeModel.minLineHeight) / 0.05).round(),
+          onChanged: fontSizeModel.setLineHeight,
+        ),
+        // Próbka pod obydwoma suwakami: pokazuje naraz rozmiar i interlinię.
         Padding(
           padding: const EdgeInsets.fromLTRB(22.0, 4.0, 22.0, 16.0),
           child: DecoratedBox(
@@ -108,15 +117,6 @@ class _ReadingSection extends StatelessWidget {
               ),
             ),
           ),
-        ),
-        SettingsSlider(
-          label: 'Interlinia',
-          value: fontSizeModel.lineHeight,
-          valueLabel: fontSizeModel.lineHeight.toStringAsFixed(2),
-          min: FontSizeModel.minLineHeight,
-          max: FontSizeModel.maxLineHeight,
-          divisions: ((FontSizeModel.maxLineHeight - FontSizeModel.minLineHeight) / 0.05).round(),
-          onChanged: fontSizeModel.setLineHeight,
         ),
         SettingsSwitch(
           label: 'Nie gaś ekranu przy pieśni',
