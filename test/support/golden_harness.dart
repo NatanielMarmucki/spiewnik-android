@@ -63,6 +63,8 @@ Future<void> goldenScreen(
   Widget Function(BuildContext context) build, {
   Future<void> Function(WidgetTester tester)? afterPump,
   Map<String, Object> preferences = const {'fontSize': 19.0, 'lineHeight': 1.62},
+  /// Systemowe powiększenie czcionki, osobne od rozmiaru tekstu pieśni.
+  double textScale = 1.0,
 }) async {
   for (final theme in [('light', lightTheme), ('dark', darkTheme)]) {
     SharedPreferences.setMockInitialValues(Map<String, Object>.from(preferences));
@@ -85,7 +87,10 @@ Future<void> goldenScreen(
         child: MaterialApp(
           theme: theme.$2,
           debugShowCheckedModeBanner: false,
-          home: Builder(builder: build),
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+            child: Builder(builder: build),
+          ),
         ),
       ),
     );

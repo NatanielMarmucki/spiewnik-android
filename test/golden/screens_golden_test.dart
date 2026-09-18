@@ -229,4 +229,37 @@ void main() {
       preferences: const {'fontSize': 30.0, 'lineHeight': 1.8},
     );
   }, skip: skipOnOtherPlatforms);
+
+  // Systemowe powiększenie ×2,0 (sekcja 6 dokumentu) na kluczowych ekranach.
+  testWidgets('lista pieśni: powiększenie x2', (tester) async {
+    final viewModel = songs();
+    await goldenScreen(
+      tester,
+      '17-lista-piesni-x2',
+      (context) => Scaffold(
+        appBar: AppBar(title: const Text('Śpiewnik')),
+        body: SongListView(viewModel: viewModel),
+      ),
+      textScale: 2.0,
+    );
+  }, skip: skipOnOtherPlatforms);
+
+  testWidgets('szczegóły pieśni: powiększenie x2', (tester) async {
+    final viewModel = songs();
+    await goldenScreen(
+      tester,
+      '18-szczegoly-piesni-x2',
+      (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
+      textScale: 2.0,
+    );
+  }, skip: skipOnOtherPlatforms);
+
+  testWidgets('ustawienia: powiększenie x2', (tester) async {
+    await goldenScreen(
+      tester,
+      '19-ustawienia-x2',
+      (context) => const SettingsView(),
+      textScale: 2.0,
+    );
+  }, skip: skipOnOtherPlatforms);
 }
