@@ -3,29 +3,30 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_text_theme.dart';
 
-/// Lupa z cyframi **w soczewce**: znak „szukaj po numerze", nie numer bieżącej pieśni.
+/// Lupa ze znakiem **w soczewce**: „szukaj po numerze", a nie numer bieżącej pieśni.
 ///
-/// W soczewce stoi stała próbka [label] — numer otwartej pieśni jest już w pasku górnym, a przy
-/// czterech cyfrach soczewka musiałaby zmieniać szerokość przy każdym przejściu między pieśniami.
+/// W soczewce stoi stały [label] — numer otwartej pieśni jest już w pasku górnym, a zmienna
+/// liczba cyfr kazałaby soczewce zmieniać szerokość przy każdym przejściu między pieśniami.
 class GoToNumberIcon extends StatelessWidget {
   final Color color;
 
-  /// Cyfry w soczewce. Stałe, żeby ikona nie skakała.
+  /// Znak w soczewce. Stały i **jednoznakowy**: trzy cyfry rozdmuchiwały soczewkę do rozmiaru,
+  /// przy którym lupa przytłaczała pasek.
   final String label;
 
-  const GoToNumberIcon({super.key, required this.color, this.label = '123'});
+  const GoToNumberIcon({super.key, required this.color, this.label = '1'});
 
-  /// Najmniejsza soczewka: przy jednej cyfrze lupa nie ma być mikroskopijna.
-  static const double minLensDiameter = 20.0;
+  /// Najmniejsza soczewka; przy jednym znaku to ona wyznacza rozmiar ikony.
+  static const double minLensDiameter = 15.0;
 
-  /// Odstęp między cyfrą a obwódką soczewki.
-  static const double _padding = 3.0;
+  /// Odstęp między znakiem a obwódką soczewki.
+  static const double _padding = 2.0;
 
   /// Długość uchwytu lupy, liczona od krawędzi soczewki.
-  static const double _handle = 5.0;
+  static const double _handle = 4.0;
 
-  static const double _stroke = 1.5;
-  static const double _fontSize = 10.0;
+  static const double _stroke = 1.4;
+  static const double _fontSize = 9.0;
 
   @override
   Widget build(BuildContext context) {
