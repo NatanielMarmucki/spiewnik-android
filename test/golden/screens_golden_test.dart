@@ -11,6 +11,7 @@ import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
 import 'package:spiewnik/view/settings_view.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
+import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 import 'package:spiewnik/view/song_list_view.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
@@ -196,7 +197,7 @@ void main() {
       afterPump: (tester) async {
         // warnIfMissed: ikona leży w InkWellu w pasku; ostrzeżenie o trafieniu jest mylące,
         // dialog otwiera się poprawnie.
-        await tester.tap(find.byIcon(Icons.search), warnIfMissed: false);
+        await tester.tap(find.byType(GoToNumberIcon), warnIfMissed: false);
         await tester.pumpAndSettle();
       },
     );

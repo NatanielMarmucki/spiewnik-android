@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
+import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 
 /// Pasek pod treścią pieśni z docs/DESIGN-SYSTEM.md, sekcja 5: strzałka w lewo z numerem
-/// poprzedniej pieśni, lupka przejścia do numeru w środku jako najszerszy cel i strzałka w prawo
+/// poprzedniej pieśni, lupa z cyframi w soczewce jako najszerszy cel w środku i strzałka w prawo
 /// z numerem następnej. Numeru bieżącej pieśni tu nie ma — stoi w pasku górnym, obok tytułu.
 ///
 /// Strzałki stoją **zawsze w tym samym miejscu**, także na krańcach śpiewnika: wtedy są wygaszone
@@ -144,8 +145,14 @@ class _GoToNumber extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: SongBottomBar.minHeight),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-            // Sama lupa: numer bieżącej pieśni stoi już w pasku górnym, obok tytułu.
-            child: Icon(Icons.search, size: SongBottomBar.iconSize, color: appColors.textSecondary),
+            // Lupa z cyframi w soczewce: znak, że szuka się po numerze.
+            // Oba współczynniki: bez heightFactor Center bierze całą wysokość, jaką dostanie
+            // od Scaffolda, i pasek zjada ekran.
+            child: Center(
+              widthFactor: 1.0,
+              heightFactor: 1.0,
+              child: GoToNumberIcon(color: appColors.textSecondary),
+            ),
           ),
         ),
       ),

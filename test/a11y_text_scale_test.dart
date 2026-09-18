@@ -8,6 +8,7 @@ import 'package:spiewnik/view/my_song_form_view.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
 import 'package:spiewnik/view/settings_view.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
+import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 import 'package:spiewnik/view/song_list_view.dart';
 import 'package:spiewnik/view/widgets/app_navigation_bar.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
@@ -128,7 +129,7 @@ void main() {
 
         await tester.tapAt(const Offset(200, 50)); // zamknięcie arkusza dotknięciem tła
         await tester.pumpAndSettle();
-        await tester.tap(find.byIcon(Icons.search), warnIfMissed: false);
+        await tester.tap(find.byType(GoToNumberIcon), warnIfMissed: false);
         await tester.pumpAndSettle();
         expect(find.text('Przejdź do pieśni'), findsOneWidget);
         expect(tester.takeException(), isNull, reason: 'modal przejścia do numeru');

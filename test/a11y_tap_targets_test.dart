@@ -7,6 +7,7 @@ import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/view/my_song_detail_view.dart';
 import 'package:spiewnik/view/settings_view.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
+import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 import 'package:spiewnik/view/song_list_view.dart';
 import 'package:spiewnik/view/widgets/app_navigation_bar.dart';
 import 'package:spiewnik/view/widgets/song_list_tile.dart';
@@ -116,7 +117,7 @@ void main() {
 
       expectTarget(tester, tapRegionOf(find.byIcon(Icons.chevron_left)), 'strzałka wstecz (nieaktywna)');
       expectTarget(tester, tapRegionOf(find.byIcon(Icons.chevron_right)), 'strzałka w przód');
-      expectTarget(tester, tapRegionOf(find.byIcon(Icons.search)), 'przejście do numeru');
+      expectTarget(tester, tapRegionOf(find.byType(GoToNumberIcon)), 'przejście do numeru');
     });
 
     testWidgets('pozycje arkusza opcji', (tester) async {
@@ -139,7 +140,7 @@ void main() {
         tester,
         (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
       );
-      await tester.tap(find.byIcon(Icons.search), warnIfMissed: false);
+      await tester.tap(find.byType(GoToNumberIcon), warnIfMissed: false);
       await tester.pumpAndSettle();
 
       // Bez wpisanego numeru „Przejdź” jest zablokowany, a mimo to trzyma swój rozmiar.

@@ -8,6 +8,7 @@ import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/song_detail_view.dart';
+import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 import 'package:spiewnik/view/widgets/song_bottom_bar.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
@@ -49,7 +50,7 @@ void main() {
   }
 
   Future<void> goToNumber(WidgetTester tester, String input) async {
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), input);
     await tester.pumpAndSettle(); // podgląd tytułu odblokowuje przycisk
@@ -69,7 +70,7 @@ void main() {
   testWidgets('pokazuje tytuł pieśni od razu po wpisaniu numeru', (tester) async {
     await openSong(tester, 1);
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '4');
     await tester.pumpAndSettle();
@@ -81,7 +82,7 @@ void main() {
   testWidgets('podpowiedź pokazuje zakres liczony z bazy', (tester) async {
     await openSong(tester, 1);
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
 
     expect(find.text('1-4'), findsOneWidget);
@@ -90,7 +91,7 @@ void main() {
   testWidgets('numer spoza zakresu tłumaczy, co wpisać, i blokuje przejście', (tester) async {
     await openSong(tester, 1);
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '9');
     await tester.pumpAndSettle();
@@ -105,7 +106,7 @@ void main() {
   testWidgets('numer z dziury w numeracji mówi, że takiej pieśni nie ma', (tester) async {
     await openSong(tester, 1);
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '3');
     await tester.pumpAndSettle();
@@ -116,7 +117,7 @@ void main() {
   testWidgets('Enter działa jak przycisk Przejdź', (tester) async {
     await openSong(tester, 1);
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '4');
     await tester.pumpAndSettle();
@@ -129,7 +130,7 @@ void main() {
   testWidgets('pole przyjmuje tylko cyfry', (tester) async {
     await openSong(tester, 1);
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '4a');
     await tester.pumpAndSettle();
@@ -179,9 +180,10 @@ void main() {
       expect(active.color, appColors.textSecondary, reason: 'aktywna wciąż mocniejsza');
     });
 
-    testWidgets('środek paska to sama lupa, bez numeru bieżącej pieśni', (tester) async {
+    testWidgets('środek paska to lupa z cyframi w soczewce, bez numeru pieśni', (tester) async {
       await openSong(tester, 4);
 
+      expect(find.byType(GoToNumberIcon), findsOneWidget);
       // Numer bieżącej pieśni stoi tylko w pasku górnym, obok tytułu.
       expect(find.text('4. Pieśń 4'), findsOneWidget);
       expect(
@@ -189,10 +191,22 @@ void main() {
         findsNothing,
       );
 
-      await tester.tap(find.byIcon(Icons.search));
+      await tester.tap(find.byType(GoToNumberIcon));
       await tester.pumpAndSettle();
 
       expect(find.text('Przejdź do pieśni'), findsOneWidget);
+    });
+
+    testWidgets('pasek zajmuje pasek, nie ekran', (tester) async {
+      await openSong(tester, 4);
+
+      final bar = tester.getSize(find.byType(SongBottomBar)).height;
+      final screen = tester.getSize(find.byType(Scaffold)).height;
+
+      // Lupa rysowana CustomPaintem potrafi rozepchnąć pasek, jeśli pozwolić jej wziąć
+      // całą wysokość od Scaffolda.
+      expect(bar, lessThan(screen / 4));
+      expect(bar, greaterThanOrEqualTo(SongBottomBar.minHeight));
     });
 
     testWidgets('gest i pasek prowadzą do tej samej pieśni, a blokada ekranu schodzi do zera', (tester) async {
@@ -320,7 +334,7 @@ void main() {
   testWidgets('anulowanie zostawia nas na tej samej pieśni', (tester) async {
     await openSong(tester, 1);
 
-    await tester.tap(find.byIcon(Icons.search));
+    await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '4');
     await tester.tap(find.text('Anuluj'));
