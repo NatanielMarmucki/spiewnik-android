@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spiewnik/model/my_song_model.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/my_songs_view.dart';
+import 'package:spiewnik/view/widgets/song_list_tile.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
 
 import 'support/fakes/fake_my_song_repository.dart';
@@ -26,7 +27,7 @@ void main() {
     await tester.pumpWidget(wrap(MySongsView(viewModel: MySongViewModel(repository))));
 
     expect(find.text('Brak własnych pieśni'), findsOneWidget);
-    expect(find.byType(ListTile), findsNothing);
+    expect(find.byType(SongListTile), findsNothing);
   });
 
   testWidgets('lists user songs alphabetically by title', (tester) async {
@@ -34,7 +35,7 @@ void main() {
 
     await tester.pumpWidget(wrap(MySongsView(viewModel: MySongViewModel(repository))));
 
-    final titles = tester.widgetList<ListTile>(find.byType(ListTile)).map((tile) => (tile.title as Text).data);
+    final titles = tester.widgetList<SongListTile>(find.byType(SongListTile)).map((tile) => tile.title);
     expect(titles, ['Łaska', 'Modlitwa', 'Żniwo']);
     expect(find.text('Brak własnych pieśni'), findsNothing);
   });
@@ -56,7 +57,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Zostaje'), findsOneWidget);
-      expect(tester.getTopLeft(find.byType(ListTile)).dx, greaterThan(0));
+      expect(tester.getTopLeft(find.byType(SongListTile)).dx, 0.0, reason: 'wiersz wraca na miejsce');
       expect(repository.songs.length, 1);
     });
 
