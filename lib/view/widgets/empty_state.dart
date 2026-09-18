@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+import 'package:spiewnik/theme/app_colors.dart';
+import 'package:spiewnik/theme/app_text_theme.dart';
+
+/// Stan pusty z docs/DESIGN-SYSTEM.md, sekcja 5: ikona kreskowa 26 dp w kolorze linii,
+/// nagłówek Newsreader 21, zdanie 14/1,55 mówiące co zrobić i opcjonalnie jedno wyjście
+/// jako przycisk-pastylka. Nigdy duża ilustracja.
+class EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+
+  /// Opcjonalne wyjście, np. „Wyczyść wyszukiwanie”.
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  const EmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.message,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  static const double iconSize = 26.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final colors = Theme.of(context).colorScheme;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: iconSize, color: appColors.line),
+            const SizedBox(height: 16.0),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: AppFonts.serif,
+                fontSize: 21.0,
+                height: 1.2,
+                fontWeight: FontWeight.w400,
+                color: colors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: AppFonts.ui,
+                fontSize: 14.0,
+                height: 1.55,
+                color: appColors.textSecondary,
+              ),
+            ),
+            if (actionLabel != null && onAction != null) ...[
+              const SizedBox(height: 24.0),
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48.0),
+                child: ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}

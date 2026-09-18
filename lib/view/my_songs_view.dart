@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:spiewnik/model/my_song_model.dart';
 import 'package:spiewnik/view/delete_my_song_dialog.dart';
 import 'package:spiewnik/view/my_song_detail_view.dart';
+import 'package:spiewnik/view/widgets/empty_state.dart';
 import 'package:spiewnik/view/widgets/song_list_tile.dart';
 import 'package:spiewnik/viewmodel/my_song_viewmodel.dart';
-import 'package:spiewnik/theme/app_colors.dart';
 
 class MySongsView extends StatelessWidget {
   final MySongViewModel viewModel;
@@ -20,11 +20,10 @@ class MySongsView extends StatelessWidget {
             valueListenable: viewModel.mySongsNotifier,
             builder: (context, mySongs, _) {
               if (mySongs.isEmpty) {
-                return Center(
-                  child: Text(
-                    'Brak własnych pieśni',
-                    style: TextStyle(fontSize: 18, color: context.appColors.textSecondary),
-                  ),
+                return const EmptyState(
+                  icon: Icons.edit_note,
+                  title: 'Brak własnych pieśni',
+                  message: 'Dodaj własny tekst plusem w pasku u góry. Zostanie tylko na tym urządzeniu.',
                 );
               }
               return ListView.builder(

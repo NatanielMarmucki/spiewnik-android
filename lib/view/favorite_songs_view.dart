@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
+import 'package:spiewnik/view/widgets/empty_state.dart';
 import 'package:spiewnik/view/widgets/song_list_tile.dart';
 import 'song_detail_view.dart';
 import 'package:spiewnik/model/song_model.dart';
-import 'package:spiewnik/theme/app_colors.dart';
 
 class FavoriteSongsView extends StatelessWidget {
   final SongViewModel viewModel;
@@ -19,11 +19,10 @@ class FavoriteSongsView extends StatelessWidget {
             valueListenable: viewModel.favoriteSongsNotifier,
             builder: (context, favoriteSongs, _) {
               if (favoriteSongs.isEmpty) {
-                return Center(
-                  child: Text(
-                    'Brak ulubionych pieśni',
-                    style: TextStyle(fontSize: 18, color: context.appColors.textSecondary),
-                  ),
+                return const EmptyState(
+                  icon: Icons.favorite_border,
+                  title: 'Brak ulubionych',
+                  message: 'Otwórz pieśń i dotknij serca w pasku, żeby trzymać ją pod ręką.',
                 );
               }
               return ListView.builder(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/theme/app_colors.dart';
+import 'package:spiewnik/view/widgets/empty_state.dart';
 import 'package:spiewnik/view/widgets/song_list_tile.dart';
 import 'song_detail_view.dart';
 import 'package:spiewnik/model/song_model.dart';
@@ -84,6 +85,16 @@ class SongListViewState extends State<SongListView> {
           child: ValueListenableBuilder<List<Song>>(
             valueListenable: widget.viewModel.filteredSongsNotifier,
             builder: (context, songs, _) {
+              if (songs.isEmpty) {
+                return EmptyState(
+                  icon: Icons.search_off,
+                  title: 'Brak wyników',
+                  message: 'Żadna pieśń nie pasuje do „${_controller.text.trim()}”. '
+                      'Spróbuj innego słowa albo wpisz numer pieśni.',
+                  actionLabel: 'Wyczyść wyszukiwanie',
+                  onAction: _clearSearch,
+                );
+              }
               // itemExtent null: wiersz rośnie razem z systemowym powiększeniem czcionki.
               return ListView.builder(
                 controller: _scrollController,
