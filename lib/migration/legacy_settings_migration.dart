@@ -83,7 +83,9 @@ class LegacySettingsMigration {
     // The old iPad version used 24-44; values outside the current range are clamped, not dropped.
     final fontSize = value.toDouble().clamp(minFontSize, maxFontSize);
     await prefs.setDouble(fontSizeKey, fontSize);
-    logger.i('Legacy settings migration: font size $value saved as $fontSize.');
+    logger.i(
+      'Legacy settings migration: the channel answered with $value, saved as fontSize $fontSize.',
+    );
     return fontSize;
   }
 }
