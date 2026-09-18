@@ -225,12 +225,19 @@ void main() {
       expect(numbers(viewModel.filteredSongsNotifier.value), [1]);
     });
 
-    test('removes the letter x from the content, which leaves a double space behind', () {
+    test('usunięcie znaku w środku treści nie psuje wyszukiwania', () {
+      // „Baranku Boży, x zmiłuj się" po usunięciu przecinka i x zostawiało podwójną spację,
+      // więc naturalne zapytanie nie pasowało, a nienaturalne pasowało (docs/PARITY.md).
+      viewModel.searchText = 'boży zmiłuj';
+      expect(numbers(viewModel.filteredSongsNotifier.value), [2]);
+    });
+
+    test('nadmiarowe spacje w zapytaniu też pasują', () {
       viewModel.searchText = 'boży  zmiłuj';
       expect(numbers(viewModel.filteredSongsNotifier.value), [2]);
 
-      viewModel.searchText = 'boży zmiłuj';
-      expect(viewModel.filteredSongsNotifier.value, isEmpty);
+      viewModel.searchText = '  boży   zmiłuj  ';
+      expect(numbers(viewModel.filteredSongsNotifier.value), [2]);
     });
 
     test('searching does not change the full list or the favorites list', () {

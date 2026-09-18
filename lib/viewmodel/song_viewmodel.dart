@@ -79,7 +79,7 @@ class SongViewModel {
     }
 
     // Diacritics are removed from both sides, so "zrodlo" finds "źródło" and "źródło" finds "zrodlo".
-    final lowercaseSearchText = removePolishDiacritics(_searchText.toLowerCase());
+    final lowercaseSearchText = _normalizeWhitespace(removePolishDiacritics(_searchText.toLowerCase()));
     filteredSongsNotifier.value = allSongsNotifier.value.where((song) {
       final lowercaseContent = removePolishDiacritics(song.content.toLowerCase());
       final cleanedContent = _removeNumber(lowercaseContent);
@@ -107,9 +107,17 @@ class SongViewModel {
 
   String _removeNumber(String str) {
     const charactersToRemove = "123456789,.;:'[]()!?-”—„x";
-    final filteredCharacters = str.split('').where((char) => !charactersToRemove.contains(char)).join().trim();
-    return filteredCharacters;
+    final filteredCharacters = str.split('').where((char) => !charactersToRemove.contains(char)).join();
+    return _normalizeWhitespace(filteredCharacters);
   }
+
+  /// Zwija ciągi białych znaków do jednej spacji.
+  ///
+  /// Usuwanie ignorowanych znaków zostawia dziury w środku tekstu: „Baranku Boży, x zmiłuj się"
+  /// stawało się „Baranku Boży  zmiłuj się" z podwójną spacją, więc zapytanie „boży zmiłuj" nie
+  /// pasowało, a „boży  zmiłuj" pasowało. Obie strony są teraz normalizowane tak samo, więc działa
+  /// jedno i drugie.
+  static String _normalizeWhitespace(String text) => text.replaceAll(RegExp(r'\s+'), ' ').trim();
 
   Song? findNextSong(int currentNumber) {
     return findSongByNumber(currentNumber + 1);
