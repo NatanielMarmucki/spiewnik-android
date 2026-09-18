@@ -92,7 +92,7 @@ void main() async {
   // Before runApp, so FontSizeModel loads the migrated font size.
   final migratedFontSize = await LegacySettingsMigration(logger: logger).run();
   // From what the migrations returned in this session, not from their flags: see PostMigrationWelcome.
-  final showWelcome = await PostMigrationWelcome(logger: logger).shouldShow(
+  final welcome = await PostMigrationWelcome(logger: logger).decide(
     coreDataResult: coreDataResult,
     migratedFontSize: migratedFontSize,
   );
@@ -105,7 +105,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AppSettingsModel()),
         Provider(create: (_) => SettingsViewModel()),
       ],
-      child: MyApp(store: objectBoxStore, showWelcome: showWelcome),
+      child: MyApp(store: objectBoxStore, welcome: welcome),
     ),
   );
 
@@ -117,13 +117,13 @@ void main() async {
 class MyApp extends StatelessWidget {
   final Store store;
 
-  /// Shows the one-time welcome screen after the migration from the old iOS app first.
-  final bool showWelcome;
+  /// The one-time welcome screen after the migration from the old iOS app, shown first; null skips it.
+  final WelcomeVariant? welcome;
 
   const MyApp({
     super.key,
     required this.store,
-    this.showWelcome = false,
+    this.welcome,
   });
 
   @override
@@ -134,7 +134,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       darkTheme: darkTheme,
       themeMode: context.watch<AppSettingsModel>().themeMode,
-      home: WelcomeGate(showWelcome: showWelcome, buildHome: (context) => HomeScreen(store: store)),
+      home: WelcomeGate(welcome: welcome, buildHome: (context) => HomeScreen(store: store)),
     );
   }
 }

@@ -4,6 +4,15 @@ import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/migration/core_data_migration.dart';
 
+/// What the welcome screen says about the data that came over.
+enum WelcomeVariant {
+  /// Favorites or user songs came over, possibly with the settings.
+  songs,
+
+  /// Only the settings (the font size) came over, no favorites and no user songs.
+  settingsOnly,
+}
+
 /// Decides whether to show the one-time welcome screen after the migration from the old iOS app
 /// (issue #37, docs/PARITY.md section 5.4).
 ///
@@ -28,41 +37,45 @@ class PostMigrationWelcome {
 
   PostMigrationWelcome({required this.logger});
 
-  /// Returns true when the screen should be shown now and records that it was.
+  /// Returns the variant to show now and records that the screen was shown, or null when it should
+  /// not appear.
   ///
   /// [coreDataResult] is what [CoreDataMigration.runOnStartup] returned in this session (null outside
   /// iOS), [migratedFontSize] what the legacy settings migration returned (null when it moved nothing).
-  /// The flag is written before returning true, so a crash while the screen is open does not bring it
+  /// The flag is written before a variant is returned, so a crash while the screen is open does not bring it
   /// back. Never throws: a failure means no welcome screen, not a broken start.
-  Future<bool> shouldShow({
+  Future<WelcomeVariant?> decide({
     required CoreDataMigrationResult? coreDataResult,
     required double? migratedFontSize,
     bool? isIOS,
   }) async {
     try {
       if (!(isIOS ?? Platform.isIOS)) {
-        return false;
+        return null;
       }
       if (coreDataResult == null || coreDataResult.status != CoreDataMigrationStatus.migrated) {
-        return false;
+        return null;
       }
-      final carriedOver =
-          coreDataResult.favoritesMarked > 0 || coreDataResult.mySongsAdded > 0 || migratedFontSize != null;
-      if (!carriedOver) {
+      final WelcomeVariant variant;
+      if (coreDataResult.favoritesMarked > 0 || coreDataResult.mySongsAdded > 0) {
+        variant = WelcomeVariant.songs;
+      } else if (migratedFontSize != null) {
+        variant = WelcomeVariant.settingsOnly;
+      } else {
         logger.i('Welcome screen: the migration found nothing to carry over, not showing it.');
-        return false;
+        return null;
       }
       final prefs = await SharedPreferences.getInstance();
       if (prefs.getBool(shownKey) ?? false) {
         logger.i('Welcome screen: already shown, not showing it again.');
-        return false;
+        return null;
       }
       await prefs.setBool(shownKey, true);
-      logger.i('Welcome screen: showing it once after the migration.');
-      return true;
+      logger.i('Welcome screen: showing it once after the migration (${variant.name}).');
+      return variant;
     } catch (error, stackTrace) {
       logger.e('Welcome screen: could not decide, not showing it.', error: error, stackTrace: stackTrace);
-      return false;
+      return null;
     }
   }
 }

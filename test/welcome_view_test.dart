@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spiewnik/post_migration_welcome.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/welcome_view.dart';
 
@@ -35,6 +36,32 @@ void main() {
       expect(find.text('Zaczynajmy'), findsOneWidget);
     });
 
+    testWidgets('wariant „tylko ustawienia”: inny pierwszy akapit, reszta ekranu bez zmian', (tester) async {
+      await pumpScreen(
+        tester,
+        (context) => WelcomeView(variant: WelcomeVariant.settingsOnly, onContinue: () {}),
+      );
+
+      expect(approvedText('Twoje ustawienia przeniosły się razem z aplikacją.'), findsOneWidget);
+      expect(find.textContaining('ulubione'), findsNothing, reason: 'nie obiecujemy ulubionych, których nie było');
+      expect(approvedText('Śpiewnik w nowej odsłonie'), findsOneWidget);
+      expect(approvedText('Co się zmieniło:'), findsOneWidget);
+      for (final change in WelcomeView.changes) {
+        expect(approvedText(change), findsOneWidget);
+      }
+      expect(find.text('Zaczynajmy'), findsOneWidget);
+    });
+
+    testWidgets('domyślny wariant mówi o ulubionych i własnych pieśniach', (tester) async {
+      await pumpScreen(tester, (context) => WelcomeView(variant: WelcomeVariant.songs, onContinue: () {}));
+
+      expect(
+        approvedText('Twoje ulubione i własne pieśni są na miejscu — przeniosły się razem z aplikacją.'),
+        findsOneWidget,
+      );
+      expect(approvedText('Twoje ustawienia przeniosły się razem z aplikacją.'), findsNothing);
+    });
+
     testWidgets('jednoliterowe słowa nie zostają na końcu wiersza', (tester) async {
       await pumpScreen(tester, (context) => WelcomeView(onContinue: () {}));
 
@@ -68,7 +95,7 @@ void main() {
     Widget home(BuildContext context) => const Scaffold(body: Text('lista pieśni'));
 
     testWidgets('najpierw ekran powitalny, po „Zaczynajmy” lista pieśni na stałe', (tester) async {
-      await pumpScreen(tester, (context) => WelcomeGate(showWelcome: true, buildHome: home));
+      await pumpScreen(tester, (context) => WelcomeGate(welcome: WelcomeVariant.songs, buildHome: home));
 
       expect(find.byType(WelcomeView), findsOneWidget);
       expect(find.text('lista pieśni'), findsNothing);
@@ -80,8 +107,14 @@ void main() {
       expect(find.text('lista pieśni'), findsOneWidget);
     });
 
+    testWidgets('przekazuje wariant do ekranu powitalnego', (tester) async {
+      await pumpScreen(tester, (context) => WelcomeGate(welcome: WelcomeVariant.settingsOnly, buildHome: home));
+
+      expect(approvedText(WelcomeView.settingsOnlyLead), findsOneWidget);
+    });
+
     testWidgets('bez ekranu powitalnego od razu lista pieśni', (tester) async {
-      await pumpScreen(tester, (context) => WelcomeGate(showWelcome: false, buildHome: home));
+      await pumpScreen(tester, (context) => WelcomeGate(welcome: null, buildHome: home));
 
       expect(find.byType(WelcomeView), findsNothing);
       expect(find.text('lista pieśni'), findsOneWidget);

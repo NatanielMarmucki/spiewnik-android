@@ -285,3 +285,6 @@ Zrobione w issue #37 (`lib/post_migration_welcome.dart`, `lib/view/welcome_view.
 - doprecyzowane przy wdrożeniu: migracja musiała **coś przenieść** (ulubione, własne pieśni albo
   rozmiar czcionki) i **nie** mogła skończyć się błędem — wtedy użytkownik widzi komunikat w
   ustawieniach, a chwalenie się nowym wyglądem byłoby nie na miejscu.
+- gdy przeniosły się **tylko ustawienia** (rozmiar czcionki), bez ulubionych i własnych pieśni,
+  pierwszy akapit brzmi „Twoje ustawienia przeniosły się razem z aplikacją.”, reszta ekranu jest
+  taka sama. Nie obiecujemy pieśni, których użytkownik nie miał.
