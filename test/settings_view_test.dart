@@ -142,16 +142,17 @@ void main() {
   });
 
   group('motyw', () {
-    testWidgets('domyślnie idzie za systemem i daje trzy wybory', (tester) async {
+    testWidgets('domyślnie idzie za systemem i daje trzy wybory w jednym przełączniku', (tester) async {
       await pumpSettings(tester);
 
       expect(appSettings.themeMode, ThemeMode.system);
-      expect(find.text('Jak w systemie'), findsOneWidget);
+      expect(find.byType(SegmentedButton<ThemeMode>), findsOneWidget);
+      expect(find.text('System'), findsOneWidget);
       expect(find.text('Jasny'), findsOneWidget);
       expect(find.text('Ciemny'), findsOneWidget);
     });
 
-    testWidgets('wybór ciemnego zapisuje się i zaznacza wiersz', (tester) async {
+    testWidgets('wybór ciemnego zapisuje się i zaznacza segment', (tester) async {
       await pumpSettings(tester);
 
       await tapVisible(tester, find.text('Ciemny'));
@@ -159,10 +160,8 @@ void main() {
       expect(appSettings.themeMode, ThemeMode.dark);
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString(AppSettingsModel.themeModeKey), 'dark');
-      final row = tester.widget<SettingsRow>(
-        find.ancestor(of: find.text('Ciemny'), matching: find.byType(SettingsRow)),
-      );
-      expect(row.selected, isTrue);
+      final button = tester.widget<SegmentedButton<ThemeMode>>(find.byType(SegmentedButton<ThemeMode>));
+      expect(button.selected, {ThemeMode.dark});
     });
 
     testWidgets('zapisany motyw wraca po ponownym wczytaniu', (tester) async {

@@ -145,7 +145,7 @@ class _AppearanceSection extends StatelessWidget {
   const _AppearanceSection();
 
   static const List<({ThemeMode mode, String label})> _options = [
-    (mode: ThemeMode.system, label: 'Jak w systemie'),
+    (mode: ThemeMode.system, label: 'System'),
     (mode: ThemeMode.light, label: 'Jasny'),
     (mode: ThemeMode.dark, label: 'Ciemny'),
   ];
@@ -153,17 +153,43 @@ class _AppearanceSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appSettings = context.watch<AppSettingsModel>();
+    final appColors = context.appColors;
+    final textTheme = Theme.of(context).textTheme;
 
     return SettingsSection(
       title: 'Wygląd',
       children: [
-        for (final option in _options)
-          SettingsRow(
-            icon: appSettings.themeMode == option.mode ? Icons.check : null,
-            label: option.label,
-            selected: appSettings.themeMode == option.mode,
-            onTap: () => appSettings.setThemeMode(option.mode),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(22.0, 4.0, 22.0, 12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Motyw', style: textTheme.bodyMedium),
+              const SizedBox(height: 8.0),
+              // Przełącznik trójstanowy zamiast listy: wybór widać bez czytania trzech wierszy.
+              // Na całą szerokość, żeby podpisy miały miejsce także przy powiększonej czcionce.
+              SegmentedButton<ThemeMode>(
+                segments: [
+                  for (final option in _options)
+                    ButtonSegment(value: option.mode, label: Text(option.label)),
+                ],
+                selected: {appSettings.themeMode},
+                onSelectionChanged: (selection) => appSettings.setThemeMode(selection.first),
+                showSelectedIcon: false,
+                style: SegmentedButton.styleFrom(
+                  foregroundColor: appColors.textSecondary,
+                  selectedForegroundColor: appColors.onAccent,
+                  selectedBackgroundColor: appColors.accent,
+                  side: BorderSide(color: appColors.line),
+                  textStyle: textTheme.labelLarge,
+                  // Cel dotknięcia rośnie z czcionką: wysokość jest minimalna, nie stała.
+                  minimumSize: const Size(0.0, 48.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                ),
+              ),
+            ],
           ),
+        ),
       ],
     );
   }

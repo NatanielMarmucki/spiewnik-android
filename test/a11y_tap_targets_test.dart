@@ -164,8 +164,10 @@ void main() {
     await pumpScreen(tester, (context) => const SettingsView());
 
     expectTarget(tester, tapRegionOf(find.text('Nie gaś ekranu przy pieśni')), 'przełącznik blokady');
-    for (final label in ['Jak w systemie', 'Jasny', 'Ciemny', 'Kontakt']) {
-      expectTarget(tester, tapRegionOf(find.text(label)), 'ustawienia: $label');
+    expectTarget(tester, tapRegionOf(find.text('Kontakt')), 'ustawienia: Kontakt');
+    // Segmenty motywu: każdy osobnym celem, choć siedzą w jednym przełączniku.
+    for (final label in ['System', 'Jasny', 'Ciemny']) {
+      expectTarget(tester, tapRegionOf(find.text(label)), 'motyw: $label');
     }
     expectTarget(
       tester,
