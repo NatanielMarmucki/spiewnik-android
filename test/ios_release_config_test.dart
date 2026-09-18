@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Ustawienia iOS, których App Store Connect wymaga przy wysyłce builda.
 void main() {
+  final infoPlist = File('ios/Runner/Info.plist').readAsStringSync();
   final privacyManifest = File('ios/Runner/PrivacyInfo.xcprivacy').readAsStringSync();
   final project = File('ios/Runner.xcodeproj/project.pbxproj').readAsStringSync();
 
@@ -12,6 +13,10 @@ void main() {
     final match = RegExp('<key>$key</key>\\s*<(true|false)/>').firstMatch(plist);
     return match == null ? null : match.group(1) == 'true';
   }
+
+  test('Info.plist deklaruje brak niestandardowego szyfrowania', () {
+    expect(plistBool(infoPlist, 'ITSAppUsesNonExemptEncryption'), isFalse);
+  });
 
   group('manifest prywatności targetu Runner', () {
     test('nie śledzi użytkownika i nie zbiera danych', () {
