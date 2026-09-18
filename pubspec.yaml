@@ -97,6 +97,25 @@ flutter:
   assets:
     - assets/songs_data.json
 
+  # Podzbiory latin + latin-ext wygenerowane przez tools/build_fonts.py (licencje OFL w assets/fonts/).
+  fonts:
+    - family: Newsreader
+      fonts:
+        - asset: assets/fonts/Newsreader-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Newsreader-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Newsreader-Regular.ttf
+          weight: 400
+    - family: SchibstedGrotesk
+      fonts:
+        - asset: assets/fonts/SchibstedGrotesk-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/SchibstedGrotesk-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/SchibstedGrotesk-SemiBold.ttf
+          weight: 600
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
