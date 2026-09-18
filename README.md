@@ -38,16 +38,25 @@ odinstalowywania. Stanu nie da się trzymać na stałe, więc przed testem odtwa
 **1. Stary projekt Swift.** Repo iOS, commit `37f0a8e` („update 11.2024”, wersja ze sklepu). Projekt nie używa
 CocoaPods. W repozytorium brakuje katalogu `Preview Content`, bez którego build się nie uda:
 
+**Symulator podawaj wyłącznie przez UDID**, nie przez nazwę. Nazwy się powtarzają — „iPhone 17" to dziś trzy różne
+urządzenia (iOS 26.0, 26.3, 27.0). `xcodebuild` zbuduje przy niejednoznacznej nazwie bez słowa skargi, a `simctl`
+trafi w przypadkowe z nich (`Unable to lookup in current state: Shutdown`). Stara aplikacja wyląduje wtedy na innym
+symulatorze niż build Fluttera i test „nie przejdzie" z powodu procedury, nie kodu.
+
 ```sh
-SIM="iPhone 17"   # nazwa albo UDID symulatora
+xcrun simctl list devices available   # skopiuj UDID właściwego urządzenia
+SIM="EEE75C35-E60A-47AA-9739-659B160776DE"
 OLD=$(mktemp -d)
 git -C /ścieżka/do/repo-ios archive 37f0a8e | tar -x -C "$OLD"
 mkdir -p "$OLD/Spiewnik/Preview Content"
 xcrun simctl uninstall "$SIM" com.natanielmarmucki.Spiewnik   # tylko jeśli na symulatorze jest nowsza wersja
 xcodebuild -project "$OLD/Spiewnik.xcodeproj" -scheme Spiewnik -configuration Debug \
-  -destination "platform=iOS Simulator,name=$SIM" -derivedDataPath "$OLD/dd" build
+  -destination "platform=iOS Simulator,id=$SIM" -derivedDataPath "$OLD/dd" build
 xcrun simctl install "$SIM" "$OLD/dd/Build/Products/Debug-iphonesimulator/Spiewnik.app"
 ```
+
+Stara aplikacja ma w `Info.plist` manifest scen (`UIApplicationSupportsMultipleScenes`), więc uruchamia się także
+na iOS 27 — test można przejść na tej samej wersji systemu, na której sprawdzasz nowy build.
 
 **2. Dane w starej aplikacji** (ręcznie w symulatorze):
 
