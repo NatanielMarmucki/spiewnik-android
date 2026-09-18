@@ -64,6 +64,7 @@ class _Option extends StatelessWidget {
     return Semantics(
       button: true,
       label: option.value == null ? option.label : '${option.label}, ${option.value}',
+      onTap: option.onTap,
       container: true,
       excludeSemantics: true,
       child: InkWell(

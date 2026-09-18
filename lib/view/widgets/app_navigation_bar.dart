@@ -80,6 +80,9 @@ class _Destination extends StatelessWidget {
       button: true,
       selected: isSelected,
       label: destination.label,
+      // Akcja musi być na węźle: excludeSemantics ucina ją z InkWella, a czytnik ekranu
+      // aktywuje wtedy pustkę.
+      onTap: onTap,
       // Jeden węzeł na zakładkę: czytnik ekranu czyta podpis raz, nie osobno ikonę i tekst.
       container: true,
       excludeSemantics: true,

@@ -69,6 +69,7 @@ class SettingsRow extends StatelessWidget {
       button: onTap != null,
       selected: onTap != null && selected ? true : null,
       label: value == null ? label : '$label: $value',
+      onTap: onTap,
       container: true,
       excludeSemantics: true,
       child: InkWell(
@@ -129,6 +130,7 @@ class SettingsSwitch extends StatelessWidget {
     return Semantics(
       toggled: value,
       label: label,
+      onTap: () => onChanged(!value),
       container: true,
       excludeSemantics: true,
       child: InkWell(

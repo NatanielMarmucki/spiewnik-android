@@ -75,6 +75,7 @@ class _SongListTileState extends State<SongListTile> {
       // Jeden węzeł na wiersz: numer, tytuł i „ulubiona” czytane razem, zamiast osobnych ikon.
       container: true,
       excludeSemantics: true,
+      onTap: widget.onTap,
       label: [
         if (widget.number != null) '${widget.number}',
         widget.title,

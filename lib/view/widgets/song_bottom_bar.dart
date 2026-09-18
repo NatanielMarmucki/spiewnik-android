@@ -101,6 +101,7 @@ class _Arrow extends StatelessWidget {
       button: true,
       enabled: enabled,
       label: number == null ? label : '$label, numer $number',
+      onTap: enabled ? onTap : null,
       container: true,
       excludeSemantics: true,
       child: InkWell(
@@ -137,6 +138,7 @@ class _GoToNumber extends StatelessWidget {
     return Semantics(
       button: true,
       label: 'Przejdź do pieśni, teraz numer $number',
+      onTap: onTap,
       container: true,
       excludeSemantics: true,
       child: InkWell(
