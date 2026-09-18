@@ -122,6 +122,59 @@ void main() {
     expect((await prefs()).getBool(LegacySettingsMigration.doneKey), isTrue);
   });
 
+  group('kanał nie odpowiada', () {
+    /// Kanału nie ma w ogóle: dokładnie to zobaczymy, gdyby rejestracja po migracji na UIScene
+    /// spóźniła się względem wywołania z Darta.
+    void noChannel() {
+      calls = [];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(LegacySettingsMigration.channel, null);
+    }
+
+    test('nie zapisuje flagi, więc migracja spróbuje jeszcze raz', () async {
+      SharedPreferences.setMockInitialValues({});
+      noChannel();
+
+      final result = await LegacySettingsMigration(logger: logger).run(isIOS: true);
+
+      expect(result, isNull);
+      expect((await prefs()).containsKey('fontSize'), isFalse);
+      expect(
+        (await prefs()).getBool(LegacySettingsMigration.doneKey),
+        isNull,
+        reason: 'brak flagi: to nasz błąd, nie brak danych u użytkownika',
+      );
+    });
+
+    test('przy następnym starcie migracja dochodzi do skutku', () async {
+      SharedPreferences.setMockInitialValues({});
+      noChannel();
+      await LegacySettingsMigration(logger: logger).run(isIOS: true);
+
+      // Drugie uruchomienie, tym razem kanał odpowiada.
+      mockChannel(24.0);
+      final result = await LegacySettingsMigration(logger: logger).run(isIOS: true);
+
+      expect(result, 24.0);
+      expect((await prefs()).getDouble('fontSize'), 24.0);
+      expect((await prefs()).getBool(LegacySettingsMigration.doneKey), isTrue);
+    });
+
+    test('brak klucza w starej aplikacji nadal zamyka migrację', () async {
+      SharedPreferences.setMockInitialValues({});
+      mockChannel(null);
+
+      final result = await LegacySettingsMigration(logger: logger).run(isIOS: true);
+
+      expect(result, isNull);
+      expect(
+        (await prefs()).getBool(LegacySettingsMigration.doneKey),
+        isTrue,
+        reason: 'kanał odpowiedział, po prostu nie ma czego przenosić',
+      );
+    });
+  });
+
   test('does nothing outside iOS', () async {
     SharedPreferences.setMockInitialValues({});
     mockChannel(22.0);

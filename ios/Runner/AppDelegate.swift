@@ -18,7 +18,18 @@ import UIKit
   /// on: it calls com.natanielmarmucki.spiewnik/legacy_user_defaults before runApp.
   func didInitializeImplicitFlutterEngine(_ engineBridge: any FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
-    LegacyUserDefaults.register(with: engineBridge.applicationRegistrar.messenger())
+    AppDelegate.registerApplicationChannels(with: engineBridge.applicationRegistrar.messenger())
+  }
+
+  /// Channels the app itself owns, apart from the plugins.
+  ///
+  /// Split out so a test can register them on a spy messenger and check that they answer, without
+  /// an engine and without pulling in every plugin.
+  static func registerApplicationChannels(
+    with messenger: FlutterBinaryMessenger,
+    defaults: UserDefaults = .standard
+  ) {
+    LegacyUserDefaults.register(with: messenger, defaults: defaults)
   }
 }
 

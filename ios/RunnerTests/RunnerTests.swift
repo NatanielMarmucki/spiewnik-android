@@ -67,3 +67,93 @@ class LegacyUserDefaultsTests: XCTestCase {
     XCTAssertTrue(read(method: "readString") as AnyObject === FlutterMethodNotImplemented as AnyObject)
   }
 }
+
+/// Channel registration after the UIScene migration.
+///
+/// The font size migration calls `com.natanielmarmucki.spiewnik/legacy_user_defaults` from Dart
+/// before `runApp`. Under the scene lifecycle the channel is registered in
+/// `didInitializeImplicitFlutterEngine` instead of `didFinishLaunchingWithOptions`, so these tests
+/// check the wiring survives: the delegate conforms to the protocol, and the handler registered by
+/// `registerApplicationChannels` actually answers a real encoded call.
+class ApplicationChannelsTests: XCTestCase {
+  /// Kolejka jest w protokole wymagana, ale nasz kanał jej nie używa.
+  private final class NoopTaskQueue: NSObject, FlutterTaskQueue {}
+
+  /// Records handlers instead of talking to an engine, and lets a test call them.
+  private final class SpyMessenger: NSObject, FlutterBinaryMessenger {
+    private(set) var handlers: [String: FlutterBinaryMessageHandler] = [:]
+
+    func setMessageHandlerOnChannel(
+      _ channel: String,
+      binaryMessageHandler handler: FlutterBinaryMessageHandler? = nil
+    ) -> FlutterBinaryMessengerConnection {
+      handlers[channel] = handler
+      return FlutterBinaryMessengerConnection(handlers.count)
+    }
+
+    func send(onChannel channel: String, message: Data?) {}
+
+    func send(onChannel channel: String, message: Data?, binaryReply callback: FlutterBinaryReply? = nil) {}
+
+    func cleanUpConnection(_ connection: FlutterBinaryMessengerConnection) {}
+
+    func makeBackgroundTaskQueue() -> any FlutterTaskQueue { return NoopTaskQueue() }
+
+    /// Sends an encoded method call to the registered handler and decodes its answer.
+    func call(_ channel: String, method: String, arguments: Any?) throws -> Any? {
+      let handler = try XCTUnwrap(handlers[channel], "no handler on \(channel)")
+      let codec = FlutterStandardMethodCodec.sharedInstance()
+      let message = codec.encode(FlutterMethodCall(methodName: method, arguments: arguments))
+      var reply: Data?
+      var answered = false
+      handler(message) { data in
+        reply = data
+        answered = true
+      }
+      XCTAssertTrue(answered, "handler did not answer")
+      guard let reply else { return nil }
+      return codec.decodeEnvelope(reply)
+    }
+  }
+
+  func testAppDelegateRegistersChannelsOnTheImplicitEngine() {
+    // Registration moved to this callback; without the conformance it would never run and the
+    // migration would read nothing, silently.
+    XCTAssertTrue(AppDelegate() is FlutterImplicitEngineDelegate)
+  }
+
+  func testRegisteredChannelAnswers() throws {
+    let suiteName = "ApplicationChannelsTests.\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defaults.set(24, forKey: "isSize")
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let messenger = SpyMessenger()
+
+    AppDelegate.registerApplicationChannels(with: messenger, defaults: defaults)
+
+    XCTAssertTrue(messenger.handlers.keys.contains(LegacyUserDefaults.channelName))
+    let value = try messenger.call(
+      LegacyUserDefaults.channelName,
+      method: LegacyUserDefaults.readNumberMethod,
+      arguments: ["key": "isSize"]
+    )
+    XCTAssertEqual((value as? NSNumber)?.intValue, 24)
+  }
+
+  func testRegisteredChannelAnswersNilWhenTheOldAppNeverSavedTheSize() throws {
+    let suiteName = "ApplicationChannelsTests.\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let messenger = SpyMessenger()
+
+    AppDelegate.registerApplicationChannels(with: messenger, defaults: defaults)
+
+    // Answering with nil is the normal "no key" case; it must not look like a dead channel.
+    let value = try messenger.call(
+      LegacyUserDefaults.channelName,
+      method: LegacyUserDefaults.readNumberMethod,
+      arguments: ["key": "isSize"]
+    )
+    XCTAssertNil(value)
+  }
+}
