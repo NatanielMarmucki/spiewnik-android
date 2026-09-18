@@ -2,7 +2,7 @@
 
 Źródła:
 - iOS: `/Users/natanielmarmucki/Spiewnik/AUDIT.md` (w prośbie nazwany `AUDIT-ios.md`). Opisuje stan HEAD `37f0a8e`, wersję `11.2024`, Core Data.
-- Android: `/Users/natanielmarmucki/StudioProjects/Spiewnik/AUDIT.md` (w prośbie nazwany `AUDIT-flutter.md`). Opisuje kopię roboczą `1.2.1+5`, ObjectBox.
+- Android: `docs/AUDIT.md` (w prośbie nazwany `AUDIT-flutter.md`). Opisuje kopię roboczą `1.2.1+5`, ObjectBox.
 
 Dokument pokazuje wyłącznie różnice i zgodności. Nie ocenia, która wersja jest właściwa. Oznaczenie **NIEPOTWIERDZONE** jest przeniesione z audytów. Numery linii są w audytach źródłowych.
 

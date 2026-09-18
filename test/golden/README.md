@@ -14,7 +14,7 @@ pliki `*_testImage.png`, `*_masterImage.png` i `*_isolatedDiff.png` w `test/gold
 
 ## Co jest w zestawie
 
-Numeracja odpowiada dawnym zrzutom z emulatora opisanym w `REDESIGN-CONTEXT.md`.
+Numeracja pochodzi z dawnych zrzutów z emulatora, robionych przed redesignem.
 
 | Nazwa | Ekran |
 |---|---|

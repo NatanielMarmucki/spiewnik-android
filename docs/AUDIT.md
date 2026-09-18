@@ -1,5 +1,8 @@
 # AUDIT — Śpiewnik Android (Flutter)
 
+> **Stan sprzed migracji i redesignu, wrzesień 2026. Materiał źródłowy dla PARITY.md — nie opisuje
+> obecnego kodu.**
+
 Repozytorium: `/Users/natanielmarmucki/StudioProjects/Spiewnik`
 Data audytu: 2026-09-17. Tryb tylko do odczytu.
 
