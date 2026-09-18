@@ -64,6 +64,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.search));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '2');
+    await tester.pumpAndSettle(); // podgląd tytułu odblokowuje przycisk
     await tester.tap(find.text('Przejdź'));
     await tester.pumpAndSettle();
 

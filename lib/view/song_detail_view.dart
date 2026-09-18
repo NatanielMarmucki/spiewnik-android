@@ -4,6 +4,7 @@ import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
+import 'package:spiewnik/view/widgets/go_to_song_dialog.dart';
 import 'package:spiewnik/view/widgets/song_bottom_bar.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
 
@@ -95,120 +96,17 @@ class SongDetailViewState extends State<SongDetailView> {
         nextNumber: widget.viewModel.findNextSong(song.number)?.number,
         onPrevious: _goToPreviousSong,
         onNext: _goToNextSong,
-        onGoToNumber: () => _showSearchDialog(context),
+        onGoToNumber: _showSearchDialog,
       ),
     );
   }
 
-  void _showSearchDialog(BuildContext context) {
-    final appColors = context.appColors;
-    final FocusNode focusNode = FocusNode();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        String input = '';
-        final TextEditingController controller = TextEditingController();
-
-        return AlertDialog(
-          title: const Text('Przejdź do pieśni'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Podaj numer pieśni, do której chcesz przejść.',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                focusNode: focusNode,
-                autofocus: true,
-                keyboardType: TextInputType.number,
-                controller: controller,
-                decoration: const InputDecoration(hintText: 'Numer pieśni'),
-                onChanged: (value) {
-                  input = value;
-                },
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(4),
-                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                ],
-              ),
-            ],
-          ),
-          actionsPadding: EdgeInsets.zero,
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: appColors.textSecondary,
-                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-                  ),
-                  child: const Text('Anuluj'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _navigateToSong(context, input);
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: appColors.accent,
-                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-                  ),
-                  child: const Text('Przejdź'),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      focusNode.requestFocus();
-    });
-  }
-
-  void _showMessageDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Uwaga', textAlign: TextAlign.center),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _navigateToSong(BuildContext context, String input) {
-    final result = widget.viewModel.goToNumber(input);
-    switch (result.outcome) {
-      case GoToSongOutcome.found:
-        _openSong(context, result.song!);
-      case GoToSongOutcome.notFound:
-        _showMessageDialog(context, 'Pieśń o podanym numerze nie została znaleziona');
-      case GoToSongOutcome.invalidNumber:
-        _showMessageDialog(
-          context,
-          'Podano niepoprawny numer. W śpiewniku znajduje się ${widget.viewModel.songCount} pieśni.',
-        );
+  Future<void> _showSearchDialog() async {
+    final song = await showGoToSongDialog(context, widget.viewModel);
+    if (!mounted || song == null) {
+      return;
     }
+    _openSong(context, song);
   }
 
   void _openSong(BuildContext context, Song song) {

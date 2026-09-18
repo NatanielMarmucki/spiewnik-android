@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,34 +50,89 @@ void main() {
     await tester.tap(find.byIcon(Icons.search));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), input);
+    await tester.pumpAndSettle(); // podgląd tytułu odblokowuje przycisk
     await tester.tap(find.text('Przejdź'));
     await tester.pumpAndSettle();
   }
 
-  testWidgets('opens the song with the typed number', (tester) async {
+  testWidgets('otwiera pieśń o wpisanym numerze', (tester) async {
     await openSong(tester, 1);
 
     await goToNumber(tester, '4');
 
     expect(find.text('4. Pieśń 4'), findsOneWidget);
-    expect(find.text('treść 4'), findsOneWidget);
+    expect(find.textContaining('treść 4'), findsOneWidget);
   });
 
-  testWidgets('shows how many songs there are when the number is outside the songbook', (tester) async {
+  testWidgets('pokazuje tytuł pieśni od razu po wpisaniu numeru', (tester) async {
     await openSong(tester, 1);
 
-    await goToNumber(tester, '9');
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '4');
+    await tester.pumpAndSettle();
 
-    expect(find.text('Podano niepoprawny numer. W śpiewniku znajduje się 4 pieśni.'), findsOneWidget);
-    expect(find.text('1. Pieśń 1'), findsOneWidget);
+    expect(find.text('Pieśń 4'), findsOneWidget, reason: 'podgląd tytułu pod polem');
+    expect(find.text('1. Pieśń 1'), findsOneWidget, reason: 'wciąż stoimy na pierwszej pieśni');
   });
 
-  testWidgets('shows a message for a number that is missing from the songbook', (tester) async {
+  testWidgets('podpowiedź pokazuje zakres liczony z bazy', (tester) async {
     await openSong(tester, 1);
 
-    await goToNumber(tester, '3');
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle();
 
-    expect(find.text('Pieśń o podanym numerze nie została znaleziona'), findsOneWidget);
+    expect(find.text('1-4'), findsOneWidget);
+  });
+
+  testWidgets('numer spoza zakresu tłumaczy, co wpisać, i blokuje przejście', (tester) async {
+    await openSong(tester, 1);
+
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '9');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Podaj numer od 1 do 4'), findsOneWidget);
+    final button = tester.widget<TextButton>(
+      find.ancestor(of: find.text('Przejdź'), matching: find.byType(TextButton)),
+    );
+    expect(button.onPressed, isNull, reason: 'nie ma dokąd przejść');
+  });
+
+  testWidgets('numer z dziury w numeracji mówi, że takiej pieśni nie ma', (tester) async {
+    await openSong(tester, 1);
+
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '3');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nie ma pieśni o tym numerze'), findsOneWidget);
+  });
+
+  testWidgets('Enter działa jak przycisk Przejdź', (tester) async {
+    await openSong(tester, 1);
+
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '4');
+    await tester.pumpAndSettle();
+    await tester.testTextInput.receiveAction(TextInputAction.go);
+    await tester.pumpAndSettle();
+
+    expect(find.text('4. Pieśń 4'), findsOneWidget);
+  });
+
+  testWidgets('pole przyjmuje tylko cyfry', (tester) async {
+    await openSong(tester, 1);
+
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '4a');
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<TextField>(find.byType(TextField)).controller?.text, '4');
   });
 
   group('pasek pod treścią', () {
@@ -161,7 +217,7 @@ void main() {
     expect(find.text('2. Pieśń 2'), findsOneWidget);
   });
 
-  testWidgets('cancelling the dialog stays on the song', (tester) async {
+  testWidgets('anulowanie zostawia nas na tej samej pieśni', (tester) async {
     await openSong(tester, 1);
 
     await tester.tap(find.byIcon(Icons.search));
