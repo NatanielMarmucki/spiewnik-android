@@ -4,6 +4,7 @@ import 'package:spiewnik/model/app_settings_model.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/data_migration_notice.dart';
+import 'package:spiewnik/view/link_failure_dialog.dart';
 import 'package:spiewnik/view/widgets/settings_section.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
@@ -36,25 +37,22 @@ class SettingsView extends StatelessWidget {
               SettingsRow(
                 icon: Icons.sms,
                 label: 'Kontakt',
-                onTap: () => settingsViewModel.launchURL('https://spiewnik.odoo.com/contactus'),
+                onTap: () => _openPage(context, settingsViewModel, 'https://spiewnik.odoo.com/contactus'),
               ),
               SettingsRow(
                 icon: Icons.person,
                 label: 'O mnie',
-                onTap: () => settingsViewModel.launchURL('https://spiewnik.odoo.com/about-us'),
+                onTap: () => _openPage(context, settingsViewModel, 'https://spiewnik.odoo.com/about-us'),
               ),
               SettingsRow(
                 icon: Icons.favorite_border,
                 label: 'Wesprzyj',
-                onTap: () => settingsViewModel.launchURL('https://suppi.pl/spiewnik'),
+                onTap: () => _openPage(context, settingsViewModel, 'https://suppi.pl/spiewnik'),
               ),
               SettingsRow(
                 icon: Icons.error_outline,
                 label: 'Zgłoś błąd',
-                onTap: () async {
-                  final version = await settingsViewModel.getAppVersion();
-                  settingsViewModel.sendEmail(version);
-                },
+                onTap: () => _reportBug(context, settingsViewModel),
               ),
             ],
           ),
@@ -66,6 +64,22 @@ class SettingsView extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Otwiera stronę, a gdy się nie uda — mówi o tym zamiast milczeć.
+Future<void> _openPage(BuildContext context, SettingsViewModel viewModel, String url) async {
+  final opened = await viewModel.launchURL(url);
+  if (!opened && context.mounted) {
+    await showPageFailureDialog(context, url);
+  }
+}
+
+Future<void> _reportBug(BuildContext context, SettingsViewModel viewModel) async {
+  final version = await viewModel.getAppVersion();
+  final sent = await viewModel.sendEmail(version);
+  if (!sent && context.mounted) {
+    await showEmailFailureDialog(context, SettingsViewModel.contactEmail);
   }
 }
 

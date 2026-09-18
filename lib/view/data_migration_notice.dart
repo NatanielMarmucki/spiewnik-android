@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spiewnik/view/link_failure_dialog.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
 
 /// Shown at the bottom of the settings only when moving data from the old iOS app failed.
@@ -16,10 +17,13 @@ class DataMigrationNoticeState extends State<DataMigrationNotice> {
 
   Future<void> _sendDetails(String error) async {
     final version = await widget.settingsViewModel.getAppVersion();
-    await widget.settingsViewModel.sendEmail(
+    final sent = await widget.settingsViewModel.sendEmail(
       version,
       details: 'Nie udało się przenieść danych z poprzedniej wersji aplikacji.\n\nSzczegóły błędu:\n$error',
     );
+    if (!sent && mounted) {
+      await showEmailFailureDialog(context, SettingsViewModel.contactEmail);
+    }
   }
 
   @override

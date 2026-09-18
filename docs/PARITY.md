@@ -63,9 +63,9 @@ Oznaczenia w kolumnie „Rozbieżność”:
 | Link „Kontakt” | `https://spiewnik.odoo.com/contactus` | `https://spiewnik.odoo.com/contactus` | **—** |
 | Link „O mnie” | `https://spiewnik.odoo.com/about-us` | `https://spiewnik.odoo.com/about-us` | **—** |
 | „Wesprzyj” | Link `https://suppi.pl/spiewnik` (+ niepodpięty kod zakupów) | Link `https://suppi.pl/spiewnik` | **—** w UI; **R** w kodzie |
-| „Zgłoś błąd”: adres | `mailto:n.marmucki@icloud.com` | `mailto:n.marmucki@icloud.com` | **—** (do podmiany razem z B3, patrz niżej) |
+| „Zgłoś błąd”: adres | `mailto:n.marmucki@icloud.com` | Stała `SettingsViewModel.contactEmail` — **jedyne miejsce w kodzie z adresem**; do podmiany na alias przed wydaniem | **—** |
 | „Zgłoś błąd”: temat | `Zgłoszenie błędu w aplikacji Śpiewnik <wersja>` | `Zgłoszenie błędu w aplikacji Śpiewnik (<wersja>)` — z nawiasami, `packageInfo.version` bez builda | **R** |
-| „Zgłoś błąd”: obsługa błędu | Alerty „Błąd” / „Zgłoś błąd” z kopiowaniem adresu | `print` w konsoli, brak komunikatu dla użytkownika | **R** — przy tej poprawce (B3) **podmienić też adres**: dziś w kodzie jest prywatny `n.marmucki@icloud.com`, a repozytorium jest publiczne |
+| „Zgłoś błąd”: obsługa błędu | Alerty „Błąd” / „Zgłoś błąd” z kopiowaniem adresu | Od 12.0.0 dialog „Nie udało się otworzyć” z adresem i przyciskiem „Kopiuj adres”, w kształcie dialogów z systemu wizualnego; to samo przy nieudanym otwarciu strony | **—** zachowanie odtworzone |
 | **Changelog po aktualizacji** | Alert „Nowa wersja <v>” z tekstem dla `9.2024`/`10.2024`/`11.2024`; przyciski „OK”, „Zgłoś błąd”, „Wesprzyj”; także przy pierwszej instalacji | Brak | **B** |
 | **Prośba o ocenę: wyzwalacz** | `scenePhase == .active` + licznik uruchomień | (a) licznik w `MyApp.build`; (b) pierwsze dodanie ulubionej w sesji | **R** |
 | Prośba o ocenę: progi | `[20, 50, 90, 140, 200, 270, 300, 390, 490, 640, 840, 1140, 1440, 1940]` | `[5, 10, 50, 100, 250, 500, 750, 1000]` | **R** |
