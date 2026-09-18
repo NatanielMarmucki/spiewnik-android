@@ -98,13 +98,31 @@ xcrun simctl spawn "$SIM" log show --last 5m --style compact --predicate 'proces
 - w aplikacji: te same ulubione, własne pieśni z pełną treścią, po drugim uruchomieniu bez duplikatów;
 - `Model.sqlite`, `-wal` i `-shm` identyczne z kopią.
 
+## Testy golden (wygląd ekranów)
+
+`test/golden/` trzyma obrazy wszystkich ekranów w motywie jasnym i ciemnym. Rasteryzacja czcionek różni się
+między systemami, więc **obrazy powstają wyłącznie na Linuksie**, w kontenerze z przypiętym Flutterem
+(`tools/golden.Dockerfile`, wersja 3.47.4 — ta sama co na CI).
+
+```sh
+tools/golden.sh            # sprawdza, czy wygląd zgadza się z obrazami w repozytorium
+tools/golden.sh --update   # zapisuje nowe obrazy po zamierzonej zmianie wyglądu
+```
+
+Pierwsze uruchomienie buduje obraz Dockera (kilka minut), kolejne korzystają z gotowego.
+
+Lokalne `flutter test` na macOS **pomija** te testy (są oznaczone tagiem `golden` i pominięte poza Linuksem),
+żeby pętla pracy została szybka. Na CI uruchamiają się normalnie i to one pilnują, żeby wygląd nie zmienił się
+przypadkiem. Gdy test golden obleje na CI, w artefaktach przebiegu (`golden-failures`) leżą trzy obrazy dla
+każdej różnicy: oczekiwany, otrzymany i mapa różnic.
+
 ## CI
 
 GitHub Actions, `.github/workflows/`:
 
 | Workflow | Kiedy | Co robi |
 |---|---|---|
-| `ci.yml`, zadanie „Analyze and test” | każdy pull request i push do `main` | `flutter analyze --no-fatal-infos` i `flutter test` na Ubuntu |
+| `ci.yml`, zadanie „Analyze and test” | każdy pull request i push do `main` | `flutter analyze --no-fatal-infos` i `flutter test` na Ubuntu, razem z testami golden |
 | `ci.yml`, zadanie „Build the Android app” | jw., równolegle | `flutter build apk --debug --target-platform android-arm64` |
 | `ios-build.yml` | **tylko ręcznie** (zakładka Actions → „iOS build” → „Run workflow”) | `flutter build ios --simulator --no-codesign` na macOS |
 

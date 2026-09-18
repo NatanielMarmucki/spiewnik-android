@@ -1,3 +1,8 @@
+@Tags(['golden'])
+library;
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spiewnik/view/favorite_songs_view.dart';
@@ -17,8 +22,14 @@ import '../support/platform_fakes.dart';
 
 /// Zrzuty wszystkich ekranów w obu motywach, renderowane bez urządzenia.
 ///
-/// Aktualizacja obrazów po zmianie wyglądu: `flutter test --update-goldens test/golden`.
+/// Obrazy powstają na Linuksie, bo rasteryzacja czcionek różni się między platformami.
+/// Na innych systemach testy są pomijane, żeby lokalne `flutter test` zostało szybkie
+/// i zielone; sprawdzasz je przez `tools/golden.sh` (kontener z Linuksem).
 void main() {
+  // Obrazy w repozytorium pochodzą z Linuksa i tylko tam zgadzają się co do piksela.
+  // Na macOS i Windowsie testy są pomijane; sprawdzasz je przez tools/golden.sh.
+  final bool skipOnOtherPlatforms = !Platform.isLinux;
+
   late FakeWakelock wakelock;
   late FakeShare share;
 
@@ -50,7 +61,7 @@ void main() {
     await goldenScreen(tester, '01-lista-piesni', (context) {
       return Scaffold(appBar: AppBar(title: const Text('Śpiewnik')), body: SongListView(viewModel: songs()));
     });
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('lista pieśni: wynik wyszukiwania', (tester) async {
     await goldenScreen(
@@ -62,7 +73,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 400));
       },
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('lista pieśni: brak wyników', (tester) async {
     await goldenScreen(
@@ -74,7 +85,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 400));
       },
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('ulubione', (tester) async {
     await goldenScreen(
@@ -82,7 +93,7 @@ void main() {
       '04-ulubione',
       (context) => Scaffold(appBar: AppBar(title: const Text('Ulubione')), body: FavoriteSongsView(viewModel: songs())),
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('ulubione: pusta lista', (tester) async {
     await goldenScreen(
@@ -93,7 +104,7 @@ void main() {
         body: FavoriteSongsView(viewModel: songs(empty: true)),
       ),
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('moje pieśni', (tester) async {
     await goldenScreen(
@@ -101,7 +112,7 @@ void main() {
       '05-moje-piesni',
       (context) => Scaffold(appBar: AppBar(title: const Text('Moje pieśni')), body: MySongsView(viewModel: mySongs())),
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('moje pieśni: pusta lista', (tester) async {
     await goldenScreen(
@@ -112,7 +123,7 @@ void main() {
         body: MySongsView(viewModel: mySongs(empty: true)),
       ),
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('dialog usuwania własnej pieśni', (tester) async {
     await goldenScreen(
@@ -124,11 +135,11 @@ void main() {
         await tester.pumpAndSettle();
       },
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('formularz: puste pola', (tester) async {
     await goldenScreen(tester, '07-formularz-pusty', (context) => MySongFormView(viewModel: mySongs(empty: true)));
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('formularz: walidacja', (tester) async {
     await goldenScreen(
@@ -140,7 +151,7 @@ void main() {
         await tester.pumpAndSettle();
       },
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('formularz: dialog odrzucenia zmian', (tester) async {
     await goldenScreen(
@@ -156,7 +167,7 @@ void main() {
         await tester.pumpAndSettle();
       },
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('podgląd własnej pieśni', (tester) async {
     final viewModel = mySongs();
@@ -165,7 +176,7 @@ void main() {
       '10-podglad-mojej-piesni',
       (context) => MySongDetailView(song: viewModel.getMySongs().single, viewModel: viewModel),
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('szczegóły pieśni', (tester) async {
     final viewModel = songs();
@@ -174,7 +185,7 @@ void main() {
       '12-szczegoly-piesni',
       (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('szczegóły pieśni: dialog przejścia do numeru', (tester) async {
     final viewModel = songs();
@@ -189,7 +200,7 @@ void main() {
         await tester.pumpAndSettle();
       },
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('szczegóły pieśni: komunikat o numerze', (tester) async {
     final viewModel = songs();
@@ -211,11 +222,11 @@ void main() {
         await tester.pumpAndSettle();
       },
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('ustawienia', (tester) async {
     await goldenScreen(tester, '16-ustawienia', (context) => const SettingsView());
-  });
+  }, skip: skipOnOtherPlatforms);
 
   testWidgets('ustawienia: największy tekst', (tester) async {
     await goldenScreen(
@@ -224,5 +235,5 @@ void main() {
       (context) => const SettingsView(),
       preferences: const {'fontSize': 30.0, 'lineHeight': 1.8},
     );
-  });
+  }, skip: skipOnOtherPlatforms);
 }
