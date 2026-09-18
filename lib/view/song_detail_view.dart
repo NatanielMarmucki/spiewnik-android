@@ -4,6 +4,7 @@ import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
+import 'package:spiewnik/view/widgets/song_bottom_bar.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
 
 class SongDetailView extends StatefulWidget {
@@ -75,18 +76,6 @@ class SongDetailViewState extends State<SongDetailView> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: InkWell(
-                onTap: () {
-                  _showSearchDialog(context);
-                },
-                child: const Icon(
-                  Icons.search,
-                  size: 24.0,
-                ),
-              ),
-            ),
           ],
         ),
       body: GestureDetector(
@@ -99,6 +88,14 @@ class SongDetailViewState extends State<SongDetailView> {
           }
         },
         child: SongContent(content: song.content),
+      ),
+      bottomNavigationBar: SongBottomBar(
+        number: song.number,
+        previousNumber: widget.viewModel.findPreviousSong(song.number)?.number,
+        nextNumber: widget.viewModel.findNextSong(song.number)?.number,
+        onPrevious: _goToPreviousSong,
+        onNext: _goToNextSong,
+        onGoToNumber: () => _showSearchDialog(context),
       ),
     );
   }
