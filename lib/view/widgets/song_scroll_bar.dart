@@ -55,6 +55,7 @@ class SongScrollBar extends StatefulWidget {
 class _SongScrollBarState extends State<SongScrollBar> {
   bool _dragging = false;
   String? _label;
+  bool _labelReadScheduled = false;
 
   @override
   void initState() {
@@ -67,6 +68,13 @@ class _SongScrollBarState extends State<SongScrollBar> {
         setState(() {});
       }
     });
+    widget.controller.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onScroll);
+    super.dispose();
   }
 
   @override
@@ -98,9 +106,17 @@ class _SongScrollBarState extends State<SongScrollBar> {
   }
 
   /// Etykietę czytamy po przeliczeniu układu, bo dopiero wtedy lista wie, co naprawdę widać.
+  ///
+  /// Jeden odczyt na klatkę i ani jednego z metody `build`: wołanie stąd przy budowaniu potrafiło
+  /// wpaść w pętlę „przerysuj → odczytaj → przerysuj", która na emulatorze kończyła się ANR-em.
   void _updateLabel() {
+    if (_labelReadScheduled) {
+      return;
+    }
+    _labelReadScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
+      _labelReadScheduled = false;
+      if (!mounted || !_dragging) {
         return;
       }
       final index = firstVisibleItemIndex(widget.controller);
@@ -109,6 +125,13 @@ class _SongScrollBarState extends State<SongScrollBar> {
         setState(() => _label = label);
       }
     });
+  }
+
+  /// Przewinięcie zmienia to, co widać, więc etykieta dopytuje listę po każdej zmianie pozycji.
+  void _onScroll() {
+    if (_dragging) {
+      _updateLabel();
+    }
   }
 
   @override
@@ -150,12 +173,6 @@ class _SongScrollBarState extends State<SongScrollBar> {
     // Krótka lista: nie ma czego przewijać na skróty.
     if (position.maxScrollExtent < position.viewportDimension * (SongScrollBar.minScreensToShow - 1)) {
       return const SizedBox.shrink();
-    }
-
-    // Po każdym przerysowaniu w trakcie przeciągania dopytujemy listę jeszcze raz: pojedynczy
-    // odczyt po skoku potrafi być o klatkę do tyłu i etykieta pokazywała numer o jeden mniejszy.
-    if (_dragging) {
-      _updateLabel();
     }
 
     return LayoutBuilder(
