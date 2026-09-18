@@ -48,7 +48,10 @@ class SongContent extends StatelessWidget {
       ],
     );
 
-    return Center(
+    return Align(
+      // Do góry, nie na środek: krótka pieśń wisiała w pionie i wyglądało to jak przypadkowy
+      // pusty pas nad tekstem.
+      alignment: Alignment.topCenter,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: scale.maxColumnWidth),
         child: scrollable
@@ -83,6 +86,9 @@ class _FirstVerse extends StatelessWidget {
 
   const _FirstVerse({required this.block, required this.scale});
 
+  /// Litera, także z polskim ogonkiem — cyfry, nawiasy i cudzysłowy inicjału nie dostają.
+  static bool _startsWithLetter(String text) => RegExp(r'^\p{L}', unicode: true).hasMatch(text);
+
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
@@ -93,8 +99,9 @@ class _FirstVerse extends StatelessWidget {
     final spans = _inlineSpans(block.inlines, body, appColors.accent);
     final first = spans.isEmpty ? null : spans.first;
 
-    // Inicjał to pierwsza litera treści; reszta pierwszego kawałka idzie dalej normalnie.
-    if (first is! TextSpan || (first.text ?? '').isEmpty) {
+    // Inicjał to pierwsza **litera** treści. Gdy zwrotka zaczyna się od znaku (np. „[:” otwierającego
+    // powtórzenie albo cudzysłowu), powiększanie go wygląda jak błąd, więc zwrotka idzie bez inicjału.
+    if (first is! TextSpan || (first.text ?? '').isEmpty || !_startsWithLetter(first.text!)) {
       return Text.rich(TextSpan(children: spans), style: body);
     }
     final text = first.text!;

@@ -58,6 +58,30 @@ void main() {
     return spans;
   }
 
+  testWidgets('zwrotka zaczynająca się od znaku idzie bez inicjału', (tester) async {
+    // 98 pieśni w assecie zaczyna się od „[:”; powiększony nawias wyglądał jak błąd.
+    await pumpContent(tester, content: '1. [:Barankowi cześć,:] Barankowi cześć.');
+
+    final spans = flatten(spanOf(tester, 'Barankowi cześć')).cast<TextSpan>();
+    final sizes = spans.map((span) => span.style?.fontSize ?? 19.0).toSet();
+
+    expect(sizes, {19.0}, reason: 'żaden fragment nie jest powiększony do inicjału');
+    expect(find.textContaining('[:'), findsOneWidget, reason: 'znacznik powtórzenia zostaje');
+  });
+
+  testWidgets('krótka pieśń zaczyna się u góry, nie na środku ekranu', (tester) async {
+    await pumpContent(tester, content: '1. Krótka pieśń.');
+
+    final body = tester.getRect(find.byType(SongContent));
+    final text = tester.getRect(find.textContaining('Krótka pieśń').first);
+
+    expect(
+      text.top - body.top,
+      lessThan(60.0),
+      reason: 'wyśrodkowana w pionie krótka pieśń wyglądała jak przypadkowy pusty pas u góry',
+    );
+  });
+
   testWidgets('zdejmuje znaczniki z toku tekstu', (tester) async {
     await pumpContent(tester);
 
