@@ -159,7 +159,7 @@ void main() {
         expect(tester.takeException(), isNull);
 
         // Do dołu listy da się dojechać: nic nie zasłania ostatniej sekcji.
-        await tester.scrollUntilVisible(find.text('Wersja bazy pieśni'), 300.0);
+        await tester.scrollUntilVisible(find.text('Zgłoś błąd'), 300.0);
         expect(tester.takeException(), isNull);
       });
     });

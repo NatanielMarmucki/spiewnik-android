@@ -58,7 +58,6 @@ class SettingsView extends StatelessWidget {
               ),
             ],
           ),
-          _VersionsSection(settingsViewModel: settingsViewModel),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 22.0),
             child: DataMigrationNotice(settingsViewModel: settingsViewModel),
@@ -191,30 +190,6 @@ class _AppearanceSection extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Wersje aplikacji i danych pieśni, potrzebne przy zgłaszaniu błędów w tekstach.
-class _VersionsSection extends StatelessWidget {
-  final SettingsViewModel settingsViewModel;
-
-  const _VersionsSection({required this.settingsViewModel});
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<({String appVersion, int dataVersion})>(
-      future: settingsViewModel.getVersions(),
-      builder: (context, snapshot) {
-        final versions = snapshot.data;
-        return SettingsSection(
-          title: 'Wersje',
-          children: [
-            SettingsRow(label: 'Wersja aplikacji', value: versions?.appVersion ?? '—'),
-            SettingsRow(label: 'Wersja bazy pieśni', value: versions == null ? '—' : '${versions.dataVersion}'),
-          ],
-        );
-      },
     );
   }
 }

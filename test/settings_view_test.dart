@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:spiewnik/json_manager.dart';
 import 'package:spiewnik/model/app_settings_model.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/theme/theme.dart';
@@ -29,7 +28,7 @@ void main() {
       buildNumber: '1',
       buildSignature: '',
     );
-    SharedPreferences.setMockInitialValues({JsonManager.dataVersionKey: 7});
+    SharedPreferences.setMockInitialValues({});
     urlLauncher = FakeUrlLauncher()..install();
     wakelock = FakeWakelock()..install();
   });
@@ -95,14 +94,6 @@ void main() {
       findsNWidgets(2),
       reason: 'między suwakami nie ma nic innego',
     );
-  });
-
-  testWidgets('wypisuje wersję aplikacji i wersję bazy pieśni', (tester) async {
-    await pumpSettings(tester);
-    await tester.scrollUntilVisible(find.text('Wersja bazy pieśni'), 200.0);
-
-    expect(find.text('12.0.0'), findsOneWidget);
-    expect(find.text('7'), findsOneWidget);
   });
 
   group('nie gaś ekranu', () {
