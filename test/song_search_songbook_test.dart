@@ -39,7 +39,7 @@ void main() {
 
     test('every word must occur, not any of them', () {
       // "duszo" and "chwałę" are searched by their stems "dusz" and "chwal" (see "inflected forms").
-      expect(search('duszo chwałę'), containingAll(['dusz', 'chwal']));
+      expect(search('duszo chwałę'), unorderedEquals(containingAll(['dusz', 'chwal'])));
       expect(search('duszo chwałę').length, lessThan(containingAll(['dusz']).length));
     });
 
