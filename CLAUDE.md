@@ -19,7 +19,7 @@ UI po polsku; kod, komentarze, commity i opisy PR po angielsku.
 - `lib/view/` — ekrany. `ScreenWakeLock` (`view/screen_wake_lock.dart`) liczy otwarte ekrany szczegółów.
 - `ios/`, `android/` — projekty natywne. Wtyczki iOS idą przez Swift Package Manager; w CocoaPods został tylko ObjectBox.
 - Dokumenty: `README.md` (opis, uruchomienie, testy w skrócie), `docs/DEVELOPMENT.md` (szczegóły testów, CI,
-  test migracji E2E, pułapki), `docs/PARITY.md` (różnice wobec starej aplikacji iOS),
+  test migracji E2E, pułapki), `docs/RELEASING.md` (wydanie), `docs/PARITY.md` (różnice wobec starej aplikacji iOS),
   `docs/DESIGN-SYSTEM.md` (system wizualny), `docs/SCHEMA-ZMYSONG.md` (schemat bazy iOS), `test/fixtures/README.md`.
   Materiały historyczne, opisujące stan sprzed migracji i redesignu: `docs/AUDIT.md`,
   `docs/ARCHITECTURE-PROPOSAL.md` — czytaj je jako źródło decyzji, nie jako opis obecnego kodu.
