@@ -23,8 +23,9 @@ const Size _screenSize = Size(411, 915);
 /// Loads the typefaces from assets and the Material icon font; otherwise the test draws rectangles
 /// instead of letters and icons.
 Future<void> loadAppFonts() async {
+  // `flutter test` always sets FLUTTER_ROOT, even when the shell does not.
   final iconsFont = File(
-    '${Platform.environment['FLUTTER_ROOT'] ?? '/Users/natanielmarmucki/development/flutter'}'
+    '${Platform.environment['FLUTTER_ROOT']!}'
     '/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
   );
   if (iconsFont.existsSync()) {
