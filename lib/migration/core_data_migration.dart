@@ -42,7 +42,7 @@ class CoreDataMigrationResult {
 }
 
 /// One-time migration of favorites and user songs from the old iOS app database
-/// (Documents/Model.sqlite, schema in SCHEMA-ZMYSONG.md) into ObjectBox.
+/// (Documents/Model.sqlite, schema in docs/SCHEMA-ZMYSONG.md) into ObjectBox.
 ///
 /// Runs after the songs are loaded from the asset. The old database is never deleted: it stays
 /// as a backup. A failure never blocks the start of the app: it is logged, recorded in
