@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_text_theme.dart';
 
-/// Skala tekstu pieśni z docs/DESIGN-SYSTEM.md, sekcja 2.
+/// Song text scale from docs/DESIGN-SYSTEM.md, section 2.
 ///
-/// Wszystko liczy się z [size] (w dokumencie `S`), czyli rozmiaru ustawionego suwakiem.
-/// Interlinia zostaje mnożnikiem, więc [lineHeightMultiplier] jest osobną wartością
-/// z ustawień (zakres 1,4–1,8, domyślnie 1,62).
+/// Everything is computed from [size] (`S` in the document), the size set with the slider.
+/// Line height stays a multiplier, so [lineHeightMultiplier] is a separate value
+/// from the settings (range 1.4–1.8, default 1.62).
 ///
-/// Klasa liczy tylko wymiary. Systemowe powiększenie czcionki nakłada się na to osobno,
-/// przez `textScaler`, nigdy zamiast tego (reguła 5 z sekcji 7 dokumentu).
+/// The class only computes dimensions. System font scaling is applied on top of this separately,
+/// through `textScaler`, never instead of it (rule 5 from section 7 of the document).
 @immutable
 class SongTextScale {
-  /// Najmniejszy i największy rozmiar z suwaka.
+  /// Smallest and largest size on the slider.
   static const double minSize = 10.0;
   static const double maxSize = 30.0;
   static const double defaultSize = 19.0;
 
-  /// Zakres mnożnika interlinii.
+  /// Range of the line height multiplier.
   static const double minLineHeight = 1.4;
   static const double maxLineHeight = 1.8;
   static const double defaultLineHeight = 1.62;
 
-  /// Margines boczny kolumny tekstu: stały, niezależny od [size].
+  /// Side margin of the text column: fixed, independent of [size].
   static const double sideMargin = 22.0;
 
   static const double _blockGapRatio = 1.26;
@@ -31,36 +31,36 @@ class SongTextScale {
   static const double _maxColumnWidthRatio = 34.0;
   static const double _verseRuleRatio = 1.5;
 
-  /// Rozmiar tekstu pieśni w dp.
+  /// Song text size in dp.
   final double size;
 
-  /// Mnożnik interlinii.
+  /// Line height multiplier.
   final double lineHeightMultiplier;
 
   const SongTextScale({this.size = defaultSize, this.lineHeightMultiplier = defaultLineHeight});
 
-  /// Wysokość wiersza w dp.
+  /// Line height in dp.
   double get lineHeight => lineHeightMultiplier * size;
 
-  /// Odstęp między blokami (zwrotkami), zamiast pustych wierszy.
+  /// Gap between blocks (verses), instead of empty lines.
   double get blockGap => _blockGapRatio * size;
 
-  /// Wcięcie refrenu.
+  /// Chorus indent.
   double get refrainIndent => _refrainIndentRatio * size;
 
-  /// Inicjał pierwszej zwrotki.
+  /// Drop cap of the first verse.
   double get initialSize => _initialRatio * size;
 
-  /// Cyfra kolejnej zwrotki.
+  /// Number of each following verse.
   double get verseNumberSize => _verseNumberRatio * size;
 
-  /// Maksymalna szerokość kolumny tekstu.
+  /// Maximum width of the text column.
   double get maxColumnWidth => _maxColumnWidthRatio * size;
 
-  /// Długość linii obok cyfry zwrotki i wersalika refrenu.
+  /// Length of the rule next to the verse number and the chorus uppercase label.
   double get verseRuleWidth => _verseRuleRatio * size;
 
-  /// Styl tekstu pieśni: Newsreader w rozmiarze [size] z interlinią [lineHeightMultiplier].
+  /// Song text style: Newsreader at [size] with line height [lineHeightMultiplier].
   TextStyle textStyle({Color? color}) {
     return TextStyle(
       fontFamily: AppFonts.serif,
@@ -71,7 +71,7 @@ class SongTextScale {
     );
   }
 
-  /// Skala z wartości zapisanych w ustawieniach, przyciętych do zakresów.
+  /// Scale from the values saved in the settings, clamped to the ranges.
   factory SongTextScale.fromSettings({required double size, required double lineHeight}) {
     return SongTextScale(
       size: size.clamp(minSize, maxSize),

@@ -6,23 +6,23 @@ import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/app_text_theme.dart';
 import 'package:spiewnik/theme/song_text_scale.dart';
 
-/// Treść pieśni z docs/DESIGN-SYSTEM.md, sekcja 3: znaczniki zamienione na typografię.
+/// Song content from docs/DESIGN-SYSTEM.md, section 3: markers replaced with typography.
 ///
-/// - inicjał `2,16 × S` otwiera pierwszą zwrotkę i zastępuje jej numer,
-/// - kolejne zwrotki: cyfra `0,74 × S` z linią,
-/// - refren: wersalik „Refren” z linią i wcięcie `0,74 × S`, bez kursywy,
-/// - powtórzenie: znaki `[:` i `:]` w akcencie, przyklejone do sąsiednich słów,
-/// - granica bloku to odstęp `1,26 × S`, nigdy pusty wiersz.
+/// - a `2.16 × S` drop cap opens the first verse and replaces its number,
+/// - subsequent verses: a `0.74 × S` digit with a rule,
+/// - chorus: an uppercase „Refren” label with a rule and a `0.74 × S` indent, no italics,
+/// - repeat: `[:` and `:]` marks in the accent, attached to the neighboring words,
+/// - a block boundary is a `1.26 × S` gap, never an empty line.
 ///
-/// Rozmiar bierze się z ustawień użytkownika (`S`), a systemowe powiększenie czcionki
-/// nakłada się na to osobno, przez `textScaler` — nigdy zamiast niego (reguła 5, sekcja 7).
+/// The size comes from the user's settings (`S`), and the system font scaling is applied on top
+/// of it separately, through `textScaler` — never instead of it (rule 5, section 7).
 class SongContent extends StatelessWidget {
   final String content;
 
-  /// Wewnętrzny margines; domyślnie 22 dp po bokach i odstęp bloku u góry i u dołu.
+  /// Inner padding; by default 22 dp on the sides and a block gap at the top and bottom.
   final EdgeInsets? padding;
 
-  /// Czy treść ma własne przewijanie. Próbka w ustawieniach siedzi już w liście, więc nie.
+  /// Whether the content scrolls on its own. The preview in settings already sits in a list, so no.
   final bool scrollable;
 
   const SongContent({super.key, required this.content, this.padding, this.scrollable = true});
@@ -49,8 +49,8 @@ class SongContent extends StatelessWidget {
     );
 
     return Align(
-      // Do góry, nie na środek: krótka pieśń wisiała w pionie i wyglądało to jak przypadkowy
-      // pusty pas nad tekstem.
+      // To the top, not the center: a short song hung vertically centered and it looked like an
+      // accidental empty band above the text.
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: scale.maxColumnWidth),
@@ -79,14 +79,15 @@ class _Block extends StatelessWidget {
   }
 }
 
-/// Pierwsza zwrotka: inicjał zamiast numeru.
+/// First verse: a drop cap instead of the number.
 class _FirstVerse extends StatelessWidget {
   final VerseBlock block;
   final SongTextScale scale;
 
   const _FirstVerse({required this.block, required this.scale});
 
-  /// Litera, także z polskim ogonkiem — cyfry, nawiasy i cudzysłowy inicjału nie dostają.
+  /// A letter, including Polish ones with diacritics (ą, ę) — digits, brackets and quotation marks get
+  /// no drop cap.
   static bool _startsWithLetter(String text) => RegExp(r'^\p{L}', unicode: true).hasMatch(text);
 
   @override
@@ -99,8 +100,9 @@ class _FirstVerse extends StatelessWidget {
     final spans = _inlineSpans(block.inlines, body, appColors.accent);
     final first = spans.isEmpty ? null : spans.first;
 
-    // Inicjał to pierwsza **litera** treści. Gdy zwrotka zaczyna się od znaku (np. „[:” otwierającego
-    // powtórzenie albo cudzysłowu), powiększanie go wygląda jak błąd, więc zwrotka idzie bez inicjału.
+    // The drop cap is the first **letter** of the content. When a verse starts with a symbol (e.g. the
+    // „[:” that opens a repeat, or a quotation mark), enlarging it looks like a bug, so the verse goes
+    // without a drop cap.
     if (first is! TextSpan || (first.text ?? '').isEmpty || !_startsWithLetter(first.text!)) {
       return Text.rich(TextSpan(children: spans), style: body);
     }
@@ -118,7 +120,7 @@ class _FirstVerse extends StatelessWidget {
   }
 }
 
-/// Kolejna zwrotka: cyfra z linią nad akapitem.
+/// Subsequent verse: a digit with a rule above the paragraph.
 class _Verse extends StatelessWidget {
   final VerseBlock block;
   final SongTextScale scale;
@@ -147,7 +149,7 @@ class _Verse extends StatelessWidget {
   }
 }
 
-/// Refren: wersalik z linią i wcięcie.
+/// Chorus: an uppercase label with a rule, and an indent.
 class _Refrain extends StatelessWidget {
   final RefrainBlock block;
   final SongTextScale scale;
@@ -173,10 +175,10 @@ class _Refrain extends StatelessWidget {
   }
 }
 
-/// Etykieta bloku z krótkim hairline'em obok.
+/// Block label with a short hairline next to it.
 ///
-/// Linia jest **krótka i stała** (1,5 × S): linia wiodąca przez całą szerokość znaczy w indeksie
-/// co innego, prowadzi wzrok do numeru pieśni, i powielanie jej w tekście pieśni myli.
+/// The line is **short and fixed** (1.5 × S): a full-width leader line means something else in the
+/// index, where it guides the eye to the song number, and repeating it in the song text is confusing.
 class _MarkerLine extends StatelessWidget {
   final Widget label;
   final double ruleWidth;
@@ -197,7 +199,7 @@ class _MarkerLine extends StatelessWidget {
   }
 }
 
-/// Akapit treści bloku, ze znakami powtórzenia w akcencie.
+/// Paragraph of the block content, with the repeat marks in the accent.
 class _Paragraph extends StatelessWidget {
   final SongBlock block;
   final SongTextScale scale;
@@ -214,10 +216,10 @@ class _Paragraph extends StatelessWidget {
   }
 }
 
-/// Zamienia kawałki bloku na spany: zwykły tekst i znaki powtórzenia w akcencie.
+/// Turns the block's pieces into spans: plain text and repeat marks in the accent.
 ///
-/// Znaki nie mają odstępu od sąsiedniego słowa, więc trzymają się frazy także wtedy,
-/// gdy akapit zawinie się w jej środku.
+/// The marks have no space before or after the neighboring word, so they stay with the phrase even
+/// when the paragraph wraps in the middle of it.
 List<InlineSpan> _inlineSpans(List<SongInline> inlines, TextStyle style, Color accent) {
   return [
     for (final part in inlines)

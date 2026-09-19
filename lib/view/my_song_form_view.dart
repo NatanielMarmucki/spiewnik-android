@@ -95,7 +95,7 @@ class MySongFormViewState extends State<MySongFormView> {
 
   @override
   Widget build(BuildContext context) {
-    // Wielolinijkowe pole to blok, nie pastylka: promień 12 dp z systemu wizualnego.
+    // A multiline field is a block, not a pill: the 12 dp radius from the design system.
     final contentBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(12.0),
       borderSide: BorderSide(color: context.appColors.line),

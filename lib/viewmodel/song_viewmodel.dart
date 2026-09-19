@@ -17,7 +17,7 @@ class SongViewModel {
     _filterSongs();
   }
 
-  /// Tekst z wyszukiwarki. Widok pyta o niego, żeby wiedzieć, czy pokazuje pełną listę.
+  /// Text from the search field. The view asks for it to know whether it shows the full list.
   String get searchText => _searchText;
 
   set searchText(String value) {
@@ -51,8 +51,8 @@ class SongViewModel {
         : GoToSongResult(GoToSongOutcome.found, song);
   }
 
-  // Prywatne z rozmysłem: odczyt z repozytorium idzie tylko przez notyfikatory, bo widok
-  // wołający je wprost ominąłby odświeżanie list.
+  // Private on purpose: reads from the repository go only through the notifiers, because a view
+  // calling these directly would bypass the list refresh.
   List<Song> _getAllSongs() => repository.all();
 
   List<Song> _getFavoriteSongs() => repository.favorites();
@@ -61,7 +61,7 @@ class SongViewModel {
 
   void toggleFavoriteStatus(Song song) {
     repository.setFavorite(song, !song.favorite);
-    // Dwie listy, bo ulubiona zmienia i wiersz na liście głównej, i skład listy ulubionych.
+    // Both lists, because a favorite changes both the row in the main list and the contents of the favorites list.
     _loadAllSongs();
     _loadFavoriteSongs();
   }
@@ -105,12 +105,11 @@ class SongViewModel {
     return _normalizeWhitespace(filteredCharacters);
   }
 
-  /// Zwija ciągi białych znaków do jednej spacji.
+  /// Collapses runs of whitespace into a single space.
   ///
-  /// Usuwanie ignorowanych znaków zostawia dziury w środku tekstu: „Baranku Boży, x zmiłuj się"
-  /// stawało się „Baranku Boży  zmiłuj się" z podwójną spacją, więc zapytanie „boży zmiłuj" nie
-  /// pasowało, a „boży  zmiłuj" pasowało. Obie strony są teraz normalizowane tak samo, więc działa
-  /// jedno i drugie.
+  /// Removing the ignored characters leaves gaps inside the text: „Baranku Boży, x zmiłuj się"
+  /// became „Baranku Boży  zmiłuj się" with a double space, so the query „boży zmiłuj" did not
+  /// match, but „boży  zmiłuj" did. Both sides are now normalized the same way, so both work.
   static String _normalizeWhitespace(String text) => text.replaceAll(RegExp(r'\s+'), ' ').trim();
 
   Song? findNextSong(int currentNumber) {

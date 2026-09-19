@@ -39,7 +39,7 @@ class MySongsView extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 16.0),
                       alignment: Alignment.centerRight,
                       color: Theme.of(context).colorScheme.error,
-                      // Tło gestu, nie przycisk: czytnik ekranu usuwa pieśń z podglądu pieśni.
+                      // Swipe background, not a button: screen reader users delete the song from the song view.
                       child: ExcludeSemantics(
                         child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
                       ),

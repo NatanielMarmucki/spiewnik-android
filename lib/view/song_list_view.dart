@@ -50,7 +50,7 @@ class SongListViewState extends State<SongListView> {
     return Column(
       children: [
         Padding(
-          // Wyszukiwarka jest widoczna zawsze (docs/DESIGN-SYSTEM.md, sekcja 5).
+          // The search field is always visible (docs/DESIGN-SYSTEM.md, section 5).
           padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
           child: ValueListenableBuilder<TextEditingValue>(
             valueListenable: _controller,
@@ -70,7 +70,7 @@ class SongListViewState extends State<SongListView> {
                         ? null
                         : IconButton(
                             icon: const Icon(Icons.close, size: 15.0),
-                            // Cel dotknięcia 48 dp, mimo małej ikony.
+                            // 48 dp touch target, despite the small icon.
                             constraints: const BoxConstraints(minWidth: 48.0, minHeight: 48.0),
                             tooltip: 'Wyczyść wyszukiwanie',
                             onPressed: _clearSearch,
@@ -96,11 +96,11 @@ class SongListViewState extends State<SongListView> {
                   onAction: _clearSearch,
                 );
               }
-              // itemExtent null: wiersz rośnie razem z systemowym powiększeniem czcionki.
+              // itemExtent null: the row grows with the system font scaling.
               return SongScrollBar(
                 controller: _scrollController,
-                // Uchwyt tylko na pełnej liście: przy wynikach wyszukiwania nie ma po czym jeździć,
-                // a etykieta z numerem i tak nie odpowiadałaby pozycji.
+                // Thumb only on the full list: search results have nothing to scroll through,
+                // and the number label would not match the position anyway.
                 enabled: widget.viewModel.searchText.isEmpty,
                 labelForIndex: (index) => index < songs.length ? '${songs[index].number}' : null,
                 child: ListView.builder(
