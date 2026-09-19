@@ -1,47 +1,54 @@
-# Zrzuty golden — wygląd ekranów w obu motywach
+# Golden screenshots: every screen in both themes
 
-`screens_golden_test.dart` renderuje każdy ekran offscreen, w motywie jasnym i ciemnym, i porównuje
-z obrazem w `goldens/`. Testy chodzą w zwykłym `flutter test`, bez urządzenia i bez emulatora, więc
-działają też na CI.
+`screens_golden_test.dart` renders every screen offscreen, in the light and the dark theme, and compares it with
+the image in `goldens/`. No device or emulator is involved, so the images are reproducible and the tests run on CI.
+
+Font rasterization differs between systems, so the images are generated and checked **only on Linux**: in a
+container locally, directly on CI. On macOS a plain `flutter test` skips these tests.
 
 ```sh
-flutter test test/golden                    # sprawdza, czy wygląd się nie zmienił
-flutter test --update-goldens test/golden   # zapisuje nowe obrazy po zamierzonej zmianie
+tools/golden.sh            # checks that the UI has not changed
+tools/golden.sh --update   # writes new images after an intended change
 ```
 
-Po zmianie wyglądu **obejrzyj różnice**, zanim zaktualizujesz obrazy: nieudana asercja zapisuje
-pliki `*_testImage.png`, `*_masterImage.png` i `*_isolatedDiff.png` w `test/golden/failures/`.
+After a UI change **look at the differences** before updating the images: a failed comparison writes
+`*_testImage.png`, `*_masterImage.png` and `*_isolatedDiff.png` to `test/golden/failures/` (on CI they are in the
+`golden-failures` artifact). More in `docs/DEVELOPMENT.md`.
 
-## Co jest w zestawie
+## What is in the set
 
-Numeracja pochodzi z dawnych zrzutów z emulatora, robionych przed redesignem.
+The file names are in Polish and the numbering comes from old emulator screenshots taken before the redesign,
+so there are gaps. Each name has a `-light.png` and a `-dark.png` file.
 
-| Nazwa | Ekran |
+| Name | Screen |
 |---|---|
-| `01-lista-piesni` | Lista pieśni z polem wyszukiwania |
-| `02-wyszukiwanie-wyniki` | Wyniki wyszukiwania |
-| `03-wyszukiwanie-brak-wynikow` | Brak trafień (ekran bez komunikatu) |
-| `04-ulubione`, `04b-ulubione-puste` | Ulubione z danymi i pusta lista |
-| `05-moje-piesni`, `05b-moje-piesni-puste` | Własne pieśni z danymi i pusta lista |
-| `06-usuwanie-dialog` | Gest usuwania i dialog potwierdzenia |
-| `07-formularz-pusty`, `08-formularz-walidacja` | Formularz własnej pieśni |
-| `09-formularz-odrzuc-zmiany` | Dialog „Odrzucić zmiany?” |
-| `10-podglad-mojej-piesni` | Podgląd własnej pieśni |
-| `12-szczegoly-piesni` | Treść pieśni |
-| `13-dialog-przejdz-do-piesni`, `14-dialog-uwaga` | Dialogi na ekranie pieśni |
-| `16-ustawienia`, `16b-ustawienia-max` | Ustawienia przy domyślnym i największym tekście |
+| `01-lista-piesni` | Song list with the search field |
+| `02-wyszukiwanie-wyniki` | Search results |
+| `03-wyszukiwanie-brak-wynikow` | No search results |
+| `04-ulubione`, `04b-ulubione-puste` | Favorites with data and the empty list |
+| `05-moje-piesni`, `05b-moje-piesni-puste` | User songs with data and the empty list |
+| `06-usuwanie-dialog` | Delete confirmation dialog for a user song |
+| `07-formularz-pusty`, `08-formularz-walidacja` | User song form: empty, and with validation errors |
+| `09-formularz-odrzuc-zmiany` | "Odrzucić zmiany?" (discard changes) dialog |
+| `10-podglad-mojej-piesni` | User song preview |
+| `12-szczegoly-piesni` | Song text |
+| `13-dialog-przejdz-do-piesni`, `13b-dialog-przejdz-wpisany-numer` | Go to number dialog: empty, and with a number entered |
+| `14-arkusz-opcji` | Options sheet on the song screen |
+| `16-ustawienia`, `16b-ustawienia-max` | Settings at the default and the largest text size |
+| `17-lista-piesni-x2`, `18-szczegoly-piesni-x2`, `19-ustawienia-x2` | Song list, song text and settings at system text scale ×2 |
+| `20-lista-szybkie-przewijanie` | Song list while fast scrolling |
+| `21-powitanie`, `22-powitanie-x2`, `22b-powitanie-x2-przycisk` | Welcome screen after the migration from iOS, also at ×2 and scrolled to the button |
 
-## Dlaczego tak, a nie zrzuty z emulatora
+## Why goldens and not emulator screenshots
 
-Sterowanie emulatorem przez `adb` okazało się zawodne: kliknięcia trafiały w inne aplikacje, ekran
-gasł w trakcie, a przeciążony emulator pokazywał ANR-y. Testy golden są powtarzalne, pokazują też
-stany trudne do wyklikania (pusta lista ulubionych, największy rozmiar tekstu) i pilnują wyglądu
-przy każdej zmianie kodu.
+Driving the emulator through `adb` turned out to be unreliable: taps landed in other apps, the screen went dark
+halfway through, and the overloaded emulator showed ANRs. Golden tests are reproducible, also show states that are
+hard to click through (an empty favorites list, the largest text size), and guard the UI on every code change.
 
-Ograniczenia: to render Fluttera bez warstwy systemowej, więc nie widać paska stanu, klawiatury,
-systemowego arkusza udostępniania ani SnackBara pokazywanego przez system.
+Limitations: this is Flutter's rendering without the system layer, so there is no status bar, keyboard, system share
+sheet or system-shown SnackBar.
 
-## Kroje pisma w testach
+## Fonts in the tests
 
-`loadAppFonts` w `test/support/golden_harness.dart` ładuje Newsreader i Schibsted Grotesk z `assets/fonts`
-oraz czcionkę ikon Material z katalogu Fluttera. Bez tego test rysuje prostokąty zamiast liter i ikon.
+`loadAppFonts` in `test/support/golden_harness.dart` loads Newsreader and Schibsted Grotesk from `assets/fonts` and the
+Material icons font from the Flutter directory. Without it the test draws boxes instead of letters and icons.

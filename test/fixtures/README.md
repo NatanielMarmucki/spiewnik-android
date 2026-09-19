@@ -1,27 +1,27 @@
-# Fixtures: baza Core Data starej aplikacji iOS
+# Fixtures: the old iOS app's Core Data database
 
-Schemat: `docs/SCHEMA-ZMYSONG.md`.
+Schema: `docs/SCHEMA-ZMYSONG.md`.
 
-| Plik | Pochodzenie | Zawartość |
+| File | Origin | Contents |
 |---|---|---|
-| `ios_with_data.sqlite` (+ `-wal`, `-shm`) | baza z symulatora, **ręcznie zmieniony jeden wiersz** (niżej) | 2000 pieśni, ulubione 5 i 12, jedna własna pieśń |
-| `ios_fresh.sqlite` (+ `-wal`, `-shm`) | baza z symulatora zaraz po instalacji | 2000 pieśni, brak ulubionych i własnych pieśni |
-| `ios_no_mysong.sqlite` | plik szablonowy z repozytorium iOS | 2000 pieśni, brak tabeli `ZMYSONG` |
+| `ios_with_data.sqlite` (+ `-wal`, `-shm`) | database from the simulator, **one row changed by hand** (below) | 2000 songs, favorites 5 and 12, one user song |
+| `ios_fresh.sqlite` (+ `-wal`, `-shm`) | database from the simulator right after install | 2000 songs, no favorites and no user songs |
+| `ios_no_mysong.sqlite` | template file from the iOS repository | 2000 songs, no `ZMYSONG` table |
 
-Bazy z symulatora są w trybie WAL. Puste pliki `-wal` i przygotowane `-shm` są celowo w repozytorium,
-żeby testy działały na takim samym zestawie plików jak na urządzeniu.
+The simulator databases are in WAL mode. The empty `-wal` files and the prepared `-shm` files are in the repository
+on purpose, so the tests run on the same set of files as on a device.
 
-## Ręczna zmiana w `ios_with_data.sqlite`
+## The manual change in `ios_with_data.sqlite`
 
-Oryginalny wiersz z symulatora miał testowe teksty. Zamieniono je, pozostałe dane są bez zmian
-(pełny zrzut bazy przed zmianą i po niej różni się tylko tym wierszem):
+The original row from the simulator had test gibberish. It was replaced; the rest of the data is unchanged
+(a full dump of the database before and after the change differs only in this row):
 
 ```sql
--- przed: INSERT INTO ZMYSONG VALUES(1,1,1,'Sdfdsfdsfdsfsdfds','Dsfdsfds');
+-- before: INSERT INTO ZMYSONG VALUES(1,1,1,'Sdfdsfdsfdsfsdfds','Dsfdsfds');
 UPDATE ZMYSONG SET ZTITLE = 'Pieśń poranna', ZCONTENT = '1. Dziękuję Ci, Panie, za nowy dzień.' WHERE Z_PK = 1;
 ```
 
-Zmianę wykonano w `sqlite3` z `.filectrl persist_wal 1`, żeby zamknięcie połączenia nie usunęło plików
-`-wal` i `-shm`. Po zmianie: `PRAGMA journal_mode` = `wal`, `PRAGMA integrity_check` = `ok`.
+The change was made in `sqlite3` with `.filectrl persist_wal 1`, so that closing the connection would not delete
+the `-wal` and `-shm` files. After the change: `PRAGMA journal_mode` = `wal`, `PRAGMA integrity_check` = `ok`.
 
-Testy nie modyfikują tych plików; przypadki syntetyczne powstają na kopiach (`test/core_data_reader_test.dart`).
+The tests never modify these files; synthetic cases are created on copies (`test/core_data_reader_test.dart`).
