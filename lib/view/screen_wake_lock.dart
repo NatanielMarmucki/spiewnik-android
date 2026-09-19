@@ -1,15 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-/// Keeps the screen on while at least one song detail screen is open.
+/// Keeps the screen on while a song screen (a songbook song or a user song) is open.
 ///
-/// Screens call [acquire] in initState and [release] in dispose. A plain enable/disable pair is not
-/// enough: pushReplacement (going to a song by number, swiping to the next one) builds the new screen
-/// before the old one is disposed, so the old screen's disable would arrive last and turn the screen
-/// off while a song is open. Counting open screens enables the wakelock only when the first one opens
-/// and disables it only when the last one closes.
+/// Screens call [acquire] in initState and [release] in dispose. This is a plain on/off pair because
+/// only one song screen is open at a time: moving between songs turns pages inside [SongDetailView]'s
+/// PageView and never builds a second song screen.
+///
+/// **Why it used to be a counter, and when it must be again.** Before the PageView, moving to another
+/// song replaced the whole screen with pushReplacement, which builds the new screen before disposing
+/// the old one. The old screen's release then came last and turned the screen off while a song was
+/// open (fixed in #16 by counting open screens). If navigation ever puts two song screens on the stack
+/// at once again (pushReplacement between songs, a song pushed over a song), bring the counter back.
 class ScreenWakeLock {
-  static int _holders = 0;
+  static bool _held = false;
   static bool _enabled = true;
 
   /// Reflects the "Nie gaś ekranu przy pieśni" setting. Turning it off releases the wakelock right
@@ -23,24 +27,23 @@ class ScreenWakeLock {
   }
 
   static void acquire() {
-    _holders++;
-    if (_holders == 1) {
-      _apply();
+    if (_held) {
+      return;
     }
+    _held = true;
+    _apply();
   }
 
   static void release() {
-    if (_holders == 0) {
+    if (!_held) {
       return;
     }
-    _holders--;
-    if (_holders == 0) {
-      _apply();
-    }
+    _held = false;
+    _apply();
   }
 
   static void _apply() {
-    if (_enabled && _holders > 0) {
+    if (_enabled && _held) {
       WakelockPlus.enable();
     } else {
       WakelockPlus.disable();
@@ -48,7 +51,7 @@ class ScreenWakeLock {
   }
 
   @visibleForTesting
-  static int get holders => _holders;
+  static bool get isHeld => _held;
 
   @visibleForTesting
   static bool get isEnabled => _enabled;

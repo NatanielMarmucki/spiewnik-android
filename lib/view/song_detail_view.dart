@@ -13,6 +13,8 @@ import 'package:spiewnik/view/widgets/song_bottom_bar.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
 import 'package:spiewnik/view/widgets/song_options_sheet.dart';
 
+/// A song screen: the song text is a page in a [PageView] over the whole songbook, so moving to the
+/// previous or next song turns the page under the bars instead of replacing the screen.
 class SongDetailView extends StatefulWidget {
   final Song song;
   final SongViewModel viewModel;
@@ -24,76 +26,90 @@ class SongDetailView extends StatefulWidget {
 }
 
 class SongDetailViewState extends State<SongDetailView> {
-  late Song song;
+  late final PageController _pageController;
+
+  /// Position of the shown song in [SongViewModel.allSongsNotifier], which lists songs by number.
+  late int _index;
 
   /// Anchor for the share sheet on iPad, where it is a popover next to the button.
   final GlobalKey _optionsButtonKey = GlobalKey();
+
+  List<Song> get _songs => widget.viewModel.allSongsNotifier.value;
+
+  Song get song => _songs[_index];
 
   @override
   void initState() {
     super.initState();
     ScreenWakeLock.acquire();
-    song = widget.song;
+    _index = _indexOf(widget.song);
+    _pageController = PageController(initialPage: _index);
   }
 
   @override
   void dispose() {
+    _pageController.dispose();
     ScreenWakeLock.release();
     super.dispose();
   }
 
+  int _indexOf(Song song) => _songs.indexWhere((s) => s.number == song.number);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          titleSpacing: 0,
-          title: Text(
+    // Toggling a favorite reloads the list with new Song objects; order and length stay the same.
+    return ValueListenableBuilder<List<Song>>(
+      valueListenable: widget.viewModel.allSongsNotifier,
+      builder: (context, songs, _) {
+        final song = songs[_index];
+        return Scaffold(
+          appBar: AppBar(
+            titleSpacing: 0,
+            title: Text(
               '${song.number}. ${song.title}',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.0,
               ),
             ),
-          actions: [
-            IconButton(
-              tooltip: song.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych',
-              onPressed: () {
-                setState(() {
-                  widget.viewModel.toggleFavoriteStatus(song);
-                });
-              },
-              icon: Icon(
-                song.favorite ? Icons.favorite : Icons.favorite_border,
-                size: 24.0,
-                color: song.favorite ? context.appColors.favorite : null,
+            actions: [
+              IconButton(
+                tooltip: song.favorite ? 'Usuń z ulubionych' : 'Dodaj do ulubionych',
+                onPressed: () => widget.viewModel.toggleFavoriteStatus(song),
+                icon: Icon(
+                  song.favorite ? Icons.favorite : Icons.favorite_border,
+                  size: 24.0,
+                  color: song.favorite ? context.appColors.favorite : null,
+                ),
               ),
+              IconButton(
+                key: _optionsButtonKey,
+                tooltip: 'Opcje pieśni',
+                onPressed: _showOptions,
+                icon: const Icon(Icons.more_vert, size: 24.0),
+              ),
+            ],
+          ),
+          // Only the text moves; the bars stay (docs/DESIGN-SYSTEM.md, section 5, "Moving between songs").
+          // The builder keeps only the shown page alive (two while dragging), not 2000.
+          body: PageView.builder(
+            controller: _pageController,
+            itemCount: songs.length,
+            onPageChanged: (index) => setState(() => _index = index),
+            itemBuilder: (context, index) => SongContent(
+              key: ValueKey(songs[index].number),
+              content: songs[index].content,
             ),
-            IconButton(
-              key: _optionsButtonKey,
-              tooltip: 'Opcje pieśni',
-              onPressed: _showOptions,
-              icon: const Icon(Icons.more_vert, size: 24.0),
-            ),
-          ],
-        ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onPanUpdate: (details) {
-          if (details.delta.dx < -10) {
-            _goToNextSong();
-          } else if (details.delta.dx > 10) {
-            _goToPreviousSong();
-          }
-        },
-        child: SongContent(content: song.content),
-      ),
-      bottomNavigationBar: SongBottomBar(
-        previousNumber: widget.viewModel.findPreviousSong(song.number)?.number,
-        nextNumber: widget.viewModel.findNextSong(song.number)?.number,
-        onPrevious: _goToPreviousSong,
-        onNext: _goToNextSong,
-        onGoToNumber: _showSearchDialog,
-      ),
+          ),
+          bottomNavigationBar: SongBottomBar(
+            previousNumber: _index > 0 ? songs[_index - 1].number : null,
+            nextNumber: _index < songs.length - 1 ? songs[_index + 1].number : null,
+            onPrevious: () => _turnTo(_index - 1),
+            onNext: () => _turnTo(_index + 1),
+            onGoToNumber: _showSearchDialog,
+          ),
+        );
+      },
     );
   }
 
@@ -161,31 +177,23 @@ class SongDetailViewState extends State<SongDetailView> {
   }
 
   Future<void> _showSearchDialog() async {
-    final song = await showGoToSongDialog(context, widget.viewModel);
-    if (!mounted || song == null) {
+    final target = await showGoToSongDialog(context, widget.viewModel);
+    if (!mounted || target == null) {
       return;
     }
-    _openSong(context, song);
+    // Opening the book at a page, not turning through the pages in between: no animation.
+    _pageController.jumpToPage(_indexOf(target));
   }
 
-  void _openSong(BuildContext context, Song song) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => SongDetailView(song: song, viewModel: widget.viewModel)),
-    );
-  }
-
-  void _goToNextSong() {
-    final nextSong = widget.viewModel.findNextSong(song.number);
-    if (nextSong != null) {
-      _openSong(context, nextSong);
+  /// Turns to the neighboring page like the swipe does; without animation when the system asks for less motion.
+  void _turnTo(int index) {
+    if (index < 0 || index >= _songs.length) {
+      return;
     }
-  }
-
-  void _goToPreviousSong() {
-    final previousSong = widget.viewModel.findPreviousSong(song.number);
-    if (previousSong != null) {
-      _openSong(context, previousSong);
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _pageController.jumpToPage(index);
+    } else {
+      _pageController.animateToPage(index, duration: Durations.medium2, curve: Easing.standard);
     }
   }
 }
