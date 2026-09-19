@@ -48,7 +48,7 @@ class CoreDataReadException implements Exception {
 
 /// Reads favorites and user songs from the old iOS Core Data database.
 ///
-/// Schema: SCHEMA-ZMYSONG.md. The original file is never opened: the database and its
+/// Schema: docs/SCHEMA-ZMYSONG.md. The original file is never opened: the database and its
 /// -wal and -shm files are copied to a temporary directory and only SELECT queries run on
 /// the copy, which is deleted afterwards.
 ///

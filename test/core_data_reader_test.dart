@@ -7,7 +7,7 @@ import 'package:path/path.dart' as p;
 import 'package:spiewnik/migration/core_data_reader.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-/// Fixtures in test/fixtures come from the iOS app (see SCHEMA-ZMYSONG.md and test/fixtures/README.md)
+/// Fixtures in test/fixtures come from the iOS app (see docs/SCHEMA-ZMYSONG.md and test/fixtures/README.md)
 /// and tests never modify them:
 /// - ios_with_data: database from a simulator with favorites 5 and 12 and one user song
 ///   (its title and content were edited by hand, see test/fixtures/README.md),

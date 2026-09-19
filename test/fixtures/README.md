@@ -1,6 +1,6 @@
 # Fixtures: baza Core Data starej aplikacji iOS
 
-Schemat: `SCHEMA-ZMYSONG.md` w katalogu głównym repozytorium.
+Schemat: `docs/SCHEMA-ZMYSONG.md`.
 
 | Plik | Pochodzenie | Zawartość |
 |---|---|---|
