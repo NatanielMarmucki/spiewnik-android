@@ -17,8 +17,8 @@ void main() {
 
   List<SongBlock> parseSong(int number) => parser.parse(songs[number]!.content);
 
-  group('pieśń 1 „Alleluja, chwalcie Pana” — zwrotki, refren i powtórzenie', () {
-    test('dzieli na bloki bez pustych wierszy', () {
+  group('song 1 „Alleluja, chwalcie Pana” — verses, chorus and a repeat', () {
+    test('splits into blocks without empty lines', () {
       final blocks = parseSong(1);
 
       expect(blocks, isNotEmpty);
@@ -26,7 +26,7 @@ void main() {
       expect(blocks.first, isA<VerseBlock>());
     });
 
-    test('pierwsza zwrotka jest oznaczona jako pierwsza, kolejne nie', () {
+    test('the first verse is marked as first, the later ones are not', () {
       final verses = parseSong(1).whereType<VerseBlock>().toList();
 
       expect(verses.first.number, 1);
@@ -35,21 +35,21 @@ void main() {
       expect(verses.map((verse) => verse.number), [1, 2, 3]);
     });
 
-    test('zdejmuje numer zwrotki z toku tekstu', () {
+    test('removes the verse number from the running text', () {
       final first = parseSong(1).whereType<VerseBlock>().first;
 
       expect(first.text, startsWith('Alleluja, chwalcie Pana'));
       expect(first.text, isNot(startsWith('1.')));
     });
 
-    test('zdejmuje etykietę refrenu z toku tekstu', () {
+    test('removes the chorus label from the running text', () {
       final refrain = parseSong(1).whereType<RefrainBlock>().single;
 
       expect(refrain.text, startsWith('Wysławiajcie imię Pańskie'));
       expect(refrain.text, isNot(contains('Refren:')));
     });
 
-    test('znaki powtórzenia zostają jako osobne kawałki, a nie w tekście', () {
+    test('repeat marks stay as separate pieces, not in the text', () {
       final refrain = parseSong(1).whereType<RefrainBlock>().single;
       final marks = refrain.inlines.whereType<RepeatMark>().toList();
 
@@ -59,8 +59,8 @@ void main() {
     });
   });
 
-  group('pieśń 2 „Barankowi chwałę” — bez refrenu', () {
-    test('ma same zwrotki', () {
+  group('song 2 „Barankowi chwałę” — no chorus', () {
+    test('has only verses', () {
       final blocks = parseSong(2);
 
       expect(blocks.whereType<RefrainBlock>(), isEmpty);
@@ -68,8 +68,8 @@ void main() {
     });
   });
 
-  group('pieśń 6 „Barankowi cześć” — powtórzenie przez całą zwrotkę', () {
-    test('zwrotka zaczyna się i kończy znakami powtórzenia', () {
+  group('song 6 „Barankowi cześć” — a repeat spanning the whole verse', () {
+    test('the verse starts and ends with repeat marks', () {
       final first = parseSong(6).whereType<VerseBlock>().first;
 
       expect(first.inlines.first, isA<RepeatMark>());
@@ -77,7 +77,7 @@ void main() {
       expect(first.inlines.whereType<RepeatMark>().length, greaterThanOrEqualTo(2));
     });
 
-    test('tekst między znakami zostaje w całości, także gdy jest długi', () {
+    test('the text between the marks stays whole, even when it is long', () {
       final first = parseSong(6).whereType<VerseBlock>().first;
 
       expect(first.text, contains('Barankowi cześć, chwała Mu!'));
@@ -85,8 +85,8 @@ void main() {
     });
   });
 
-  group('cały śpiewnik', () {
-    test('żaden blok nie jest pusty i nie zaczyna się od znacznika', () {
+  group('whole songbook', () {
+    test('no block is empty or starts with a marker', () {
       for (final song in songs.values) {
         final blocks = parser.parse(song.content);
         expect(blocks, isNotEmpty, reason: 'pieśń ${song.number}');
@@ -102,7 +102,7 @@ void main() {
       }
     });
 
-    test('znaki powtórzenia zawsze się równoważą w bloku', () {
+    test('repeat marks always balance within a block', () {
       for (final song in songs.values) {
         for (final block in parser.parse(song.content)) {
           var open = 0;
@@ -115,7 +115,7 @@ void main() {
       }
     });
 
-    test('tekst po złożeniu z powrotem zgadza się z oryginałem bez znaczników', () {
+    test('the text joined back together matches the original without markers', () {
       final song = songs[15]!;
       final joined = parser
           .parse(song.content)
@@ -131,8 +131,8 @@ void main() {
     });
   });
 
-  group('literówki w danych', () {
-    test('niesparowany znak zostaje zwykłym tekstem, nie znacznikiem', () {
+  group('typos in the data', () {
+    test('an unpaired mark stays plain text, not a marker', () {
       // Pieśń 169: w danych jest „[Czym prędzej pośpiesz Doń!:]” — otwarcie zgubiło dwukropek.
       final blocks = parseSong(169);
       final withStray = blocks.firstWhere((block) => block.text.contains('Czym prędzej'));
@@ -141,7 +141,7 @@ void main() {
       expect(withStray.text, contains(':]'));
     });
 
-    test('para w tym samym bloku nadal działa', () {
+    test('a pair in the same block still works', () {
       final blocks = parser.parse('1. Zwykły [:powtarzany:] tekst i samotny :] znak');
       final marks = blocks.single.inlines.whereType<RepeatMark>().toList();
 
@@ -150,13 +150,13 @@ void main() {
     });
   });
 
-  group('jakość danych', () {
+  group('data quality', () {
     /// Bloki, w których znaki powtórzenia się nie równoważą. To literówki w treściach pieśni
     /// (patrz issue o poprawce danych). Liczba ma nie rosnąć: przy edycji assetu łatwo dołożyć
     /// kolejne, a parser pokaże je wtedy jako zwykły tekst, czyli po cichu.
     const knownUnpairedBlocks = 14;
 
-    test('liczba bloków z niesparowanymi znakami nie rośnie', () {
+    test('the number of blocks with unpaired marks does not grow', () {
       final offenders = <String>[];
 
       for (final song in songs.values) {
@@ -179,22 +179,22 @@ void main() {
     });
   });
 
-  group('zachowania szczegółowe', () {
-    test('pojedyncze łamanie wiersza w bloku zostaje', () {
+  group('details', () {
+    test('a single line break within a block is kept', () {
       final blocks = parser.parse('1. Pierwszy wers\ndrugi wers\n\n2. Kolejna zwrotka');
 
       expect(blocks, hasLength(2));
       expect(blocks.first.text, 'Pierwszy wers\ndrugi wers');
     });
 
-    test('blok bez znacznika trafia do akapitu zwykłego', () {
+    test('a block without a marker becomes a plain paragraph', () {
       final blocks = parser.parse('Sam tekst bez numeru');
 
       expect(blocks.single, isA<PlainBlock>());
       expect(blocks.single.text, 'Sam tekst bez numeru');
     });
 
-    test('pusta treść daje pustą listę bloków', () {
+    test('empty content gives an empty block list', () {
       expect(parser.parse(''), isEmpty);
       expect(parser.parse('\n\n  \n'), isEmpty);
     });

@@ -39,7 +39,7 @@ void main() {
   List<SongListTile> tiles(WidgetTester tester) =>
       tester.widgetList<SongListTile>(find.byType(SongListTile)).toList();
 
-  testWidgets('wyszukiwarka jest widoczna od razu, z podpowiedzią z systemu wizualnego', (tester) async {
+  testWidgets('the search field is visible right away, with the hint from the design system', (tester) async {
     await pumpList(tester);
 
     expect(find.byType(TextField), findsOneWidget);
@@ -47,13 +47,13 @@ void main() {
     expect(tester.getSize(find.byType(TextField)).height, greaterThanOrEqualTo(44.0));
   });
 
-  testWidgets('pokazuje pieśni w kolejności numerów', (tester) async {
+  testWidgets('shows songs in number order', (tester) async {
     await pumpList(tester);
 
     expect(tiles(tester).map((tile) => tile.number), [1, 2, 3]);
   });
 
-  testWidgets('filtruje po tytule i podświetla trafienie', (tester) async {
+  testWidgets('filters by title and highlights the match', (tester) async {
     await pumpList(tester);
 
     await search(tester, 'zrodlo');
@@ -62,7 +62,7 @@ void main() {
     expect(tiles(tester).single.highlight, 'Źródło');
   });
 
-  testWidgets('filtruje po numerze', (tester) async {
+  testWidgets('filters by number', (tester) async {
     await pumpList(tester);
 
     await search(tester, '2');
@@ -70,7 +70,7 @@ void main() {
     expect(tiles(tester).map((tile) => tile.number), [2]);
   });
 
-  testWidgets('krzyżyk pojawia się dopiero przy tekście i czyści wyszukiwanie', (tester) async {
+  testWidgets('the clear icon appears only once there is text, and clears the search', (tester) async {
     await pumpList(tester);
     expect(find.byIcon(Icons.close), findsNothing);
 
@@ -85,7 +85,7 @@ void main() {
     expect(find.byIcon(Icons.close), findsNothing);
   });
 
-  testWidgets('filtr czeka na przerwę w pisaniu', (tester) async {
+  testWidgets('the filter waits for a pause in typing', (tester) async {
     await pumpList(tester);
 
     await tester.enterText(find.byType(TextField), 'zrodlo');
@@ -97,14 +97,14 @@ void main() {
     expect(tiles(tester), hasLength(1));
   });
 
-  testWidgets('serce ulubionej trafia do wiersza', (tester) async {
+  testWidgets('the favorite flag reaches the list row', (tester) async {
     await pumpList(tester);
 
     expect(tiles(tester).firstWhere((tile) => tile.number == 2).isFavorite, isTrue);
     expect(tiles(tester).firstWhere((tile) => tile.number == 1).isFavorite, isFalse);
   });
 
-  testWidgets('uchwyt szybkiego przewijania znika po wpisaniu wyszukiwania', (tester) async {
+  testWidgets('the fast-scroll thumb is disabled once a search is entered', (tester) async {
     await pumpList(tester);
 
     expect(

@@ -62,7 +62,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('nieudane zgłoszenie błędu mówi o tym i podaje adres', (tester) async {
+  testWidgets('a failed bug report says so and shows the address', (tester) async {
     await pumpSettings(tester);
 
     await tapRow(tester, 'Zgłoś błąd');
@@ -72,7 +72,7 @@ void main() {
     expect(find.textContaining(SettingsViewModel.contactEmail), findsOneWidget);
   });
 
-  testWidgets('z dialogu można skopiować adres', (tester) async {
+  testWidgets('the address can be copied from the dialog', (tester) async {
     String? copied;
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
       if (call.method == 'Clipboard.setData') {
@@ -94,7 +94,7 @@ void main() {
     expect(find.text('Nie udało się otworzyć'), findsNothing, reason: 'dialog się zamyka');
   });
 
-  testWidgets('nieudane otwarcie strony podaje adres strony', (tester) async {
+  testWidgets('a failure to open a web page shows the page address', (tester) async {
     await pumpSettings(tester);
 
     await tapRow(tester, 'Wesprzyj');
@@ -102,7 +102,7 @@ void main() {
     expect(find.textContaining('https://suppi.pl/spiewnik'), findsOneWidget);
   });
 
-  testWidgets('udane otwarcie nie pokazuje niczego', (tester) async {
+  testWidgets('a successful open shows nothing', (tester) async {
     viewModel = SettingsViewModel(logger: Logger(level: Level.off), openUrl: (url) async => true);
     await pumpSettings(tester);
 
@@ -111,7 +111,7 @@ void main() {
     expect(find.text('Nie udało się otworzyć'), findsNothing);
   });
 
-  test('adres kontaktowy jest w jednym miejscu', () {
+  test('the contact address is defined in one place', () {
     expect(SettingsViewModel.contactEmail, contains('@'));
   });
 }

@@ -157,7 +157,7 @@ void main() {
       expect(numbers(viewModel.filteredSongsNotifier.value), [1]);
     });
 
-    test('nie prosi o ocenę: to już nie jest sprawa tego view modelu', () async {
+    test('does not ask for a review: that is no longer the job of this view model', () async {
       putSongs([song(1), song(2)]);
       final viewModel = open();
 
@@ -213,14 +213,14 @@ void main() {
       expect(numbers(viewModel.filteredSongsNotifier.value), [1]);
     });
 
-    test('usunięcie znaku w środku treści nie psuje wyszukiwania', () {
+    test('a character removed from the middle of the content does not break search', () {
       // „Baranku Boży, x zmiłuj się" po usunięciu przecinka i x zostawiało podwójną spację,
       // więc naturalne zapytanie nie pasowało, a nienaturalne pasowało (docs/PARITY.md).
       viewModel.searchText = 'boży zmiłuj';
       expect(numbers(viewModel.filteredSongsNotifier.value), [2]);
     });
 
-    test('nadmiarowe spacje w zapytaniu też pasują', () {
+    test('extra spaces in the query still match', () {
       viewModel.searchText = 'boży  zmiłuj';
       expect(numbers(viewModel.filteredSongsNotifier.value), [2]);
 

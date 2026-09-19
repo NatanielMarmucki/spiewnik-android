@@ -33,7 +33,7 @@ void main() {
         .style;
   }
 
-  testWidgets('dialog ma promień 12 dp i wnętrze 24 dp', (tester) async {
+  testWidgets('dialog has a 12 dp radius and 24 dp padding', (tester) async {
     await openConfirmation(tester);
 
     final dialog = tester.widget<AlertDialog>(find.byType(AlertDialog));
@@ -46,7 +46,7 @@ void main() {
     expect(dialog.contentPadding, kDialogContentPadding);
   });
 
-  testWidgets('akcje rozchodzą się do krawędzi dialogu', (tester) async {
+  testWidgets('actions spread out to the dialog edges', (tester) async {
     await openConfirmation(tester);
 
     final row = tester.widget<Row>(
@@ -64,7 +64,7 @@ void main() {
     expect(confirm.left - cancel.right, greaterThan(100.0), reason: 'akcje są rozsunięte');
   });
 
-  testWidgets('każda akcja ma własne tło 12%', (tester) async {
+  testWidgets('each action has its own 12% background', (tester) async {
     await openConfirmation(tester);
     final appColors = Theme.of(tester.element(find.byType(AlertDialog))).extension<AppColors>()!;
 
@@ -78,7 +78,7 @@ void main() {
     );
   });
 
-  testWidgets('akcja niszcząca jest w kolorze niszczącym na tle 12%, nie wypełniona', (tester) async {
+  testWidgets('destructive action uses the destructive color on a 12% background, not filled', (tester) async {
     await openConfirmation(tester);
     final appColors = Theme.of(tester.element(find.byType(AlertDialog))).extension<AppColors>()!;
 
@@ -92,14 +92,14 @@ void main() {
     );
   });
 
-  testWidgets('Anuluj przestaje być akcentem', (tester) async {
+  testWidgets('„Anuluj” uses the secondary text color instead of the accent', (tester) async {
     await openConfirmation(tester);
     final appColors = Theme.of(tester.element(find.byType(AlertDialog))).extension<AppColors>()!;
 
     expect(styleOf(tester, 'Anuluj')?.foregroundColor?.resolve({}), appColors.textSecondary);
   });
 
-  testWidgets('w ciemnym motywie kolory też idą z tokenów', (tester) async {
+  testWidgets('dark theme colors also come from tokens', (tester) async {
     await openConfirmation(tester, theme: darkTheme);
     final appColors = Theme.of(tester.element(find.byType(AlertDialog))).extension<AppColors>()!;
 
@@ -107,7 +107,7 @@ void main() {
     expect(styleOf(tester, 'Anuluj')?.foregroundColor?.resolve({}), appColors.textSecondary);
   });
 
-  testWidgets('zablokowana akcja zostaje czytelna, w kolorze tekstu trzeciego', (tester) async {
+  testWidgets('disabled action stays readable, in the tertiary text color', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: lightTheme,
@@ -131,7 +131,7 @@ void main() {
     );
   });
 
-  testWidgets('przyciski dialogu mają cel co najmniej 48 dp', (tester) async {
+  testWidgets('dialog buttons have a tap target of at least 48 dp', (tester) async {
     await openConfirmation(tester);
 
     for (final label in ['Anuluj', 'Usuń']) {

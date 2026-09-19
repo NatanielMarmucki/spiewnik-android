@@ -16,7 +16,7 @@ void main() {
 
   Future<SharedPreferences> prefs() => SharedPreferences.getInstance();
 
-  test('pierwsza instalacja dostaje nowe domyślne 19 i 1,62', () async {
+  test('first install gets the new defaults 19 and 1.62', () async {
     final model = await load({});
 
     expect(model.fontSize, 19.0);
@@ -26,14 +26,14 @@ void main() {
     expect((await prefs()).containsKey(FontSizeModel.lineHeightKey), isFalse);
   });
 
-  test('dotychczasowe ustawienia 16 i 1,5 zostają bez zmian', () async {
+  test('existing settings 16 and 1.5 stay unchanged', () async {
     final model = await load({'fontSize': 16.0, 'lineHeight': 1.5});
 
     expect(model.fontSize, 16.0);
     expect(model.lineHeight, 1.5);
   });
 
-  test('wartości poniżej zakresu są przycinane do minimum', () async {
+  test('values below the range are clamped to the minimum', () async {
     final model = await load({'fontSize': 8.0, 'lineHeight': 1.0});
 
     expect(model.fontSize, 10.0);
@@ -42,7 +42,7 @@ void main() {
     expect((await prefs()).getDouble(FontSizeModel.lineHeightKey), 1.4);
   });
 
-  test('wartości powyżej zakresu są przycinane do maksimum', () async {
+  test('values above the range are clamped to the maximum', () async {
     final model = await load({'fontSize': 44.0, 'lineHeight': 3.0});
 
     expect(model.fontSize, 30.0);
@@ -51,7 +51,7 @@ void main() {
     expect((await prefs()).getDouble(FontSizeModel.lineHeightKey), 1.8);
   });
 
-  test('ułamkowa wartość z migracji iOS zostaje bez zaokrąglania', () async {
+  test('keeps a fractional value from the iOS migration without rounding', () async {
     // isSize ze starej aplikacji potrafi być ułamkiem, np. po przeciągnięciu suwaka.
     final model = await load({'fontSize': 25.5549418926239});
 
@@ -59,13 +59,13 @@ void main() {
     expect(model.lineHeight, 1.62); // interlinii stara aplikacja nie migruje
   });
 
-  test('ułamkowa wartość z migracji iOS powyżej zakresu jest przycinana', () async {
+  test('clamps a fractional value from the iOS migration that is above the range', () async {
     final model = await load({'fontSize': 33.75});
 
     expect(model.fontSize, 30.0);
   });
 
-  test('suwak nie potrafi wyjść poza zakres', () async {
+  test('slider cannot go outside the range', () async {
     final model = await load({});
 
     model.setFontSize(99.0);
@@ -76,7 +76,7 @@ void main() {
     expect((await prefs()).getDouble(FontSizeModel.fontSizeKey), 30.0);
   });
 
-  test('przywrócenie domyślnych ustawia 19 i 1,62', () async {
+  test('restoring defaults sets 19 and 1.62', () async {
     final model = await load({'fontSize': 12.0, 'lineHeight': 1.75});
 
     model.resetToDefaults();
@@ -87,7 +87,7 @@ void main() {
     expect((await prefs()).getDouble(FontSizeModel.lineHeightKey), 1.62);
   });
 
-  test('skala pieśni bierze wartości z ustawień', () async {
+  test('song text scale takes its values from settings', () async {
     final model = await load({'fontSize': 19.0, 'lineHeight': 1.62});
 
     expect(model.songTextScale.lineHeight, closeTo(30.78, 0.001));

@@ -48,20 +48,20 @@ void main() {
     });
   });
 
-  group('tytuł', () {
-    test('zapytanie pasujące tylko do tytułu też znajduje pieśń', () {
+  group('title', () {
+    test('a query that matches only the title also finds the song', () {
       expect(search('Żniwo'), [3]);
       expect(search('zniwo'), [3]);
     });
 
-    test('podaje trafiony fragment tytułu z oryginalnymi literami', () {
+    test('returns the matched part of the title with its original letters', () {
       viewModel.searchText = 'zrodlo';
       final song = viewModel.filteredSongsNotifier.value.firstWhere((song) => song.number == 1);
 
       expect(viewModel.titleMatch(song), 'Źródło');
     });
 
-    test('bez trafienia w tytule zwraca null', () {
+    test('returns null when the title does not match', () {
       viewModel.searchText = 'ogonkow';
       final song = viewModel.filteredSongsNotifier.value.single;
 
@@ -69,7 +69,7 @@ void main() {
       expect(viewModel.titleMatch(song), isNull);
     });
 
-    test('puste zapytanie nie podświetla niczego', () {
+    test('an empty query highlights nothing', () {
       viewModel.searchText = '';
 
       expect(viewModel.titleMatch(viewModel.filteredSongsNotifier.value.first), isNull);

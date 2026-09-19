@@ -57,7 +57,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('akcje pieśni siedzą w arkuszu, a w pasku zostają same trzy kropki', (tester) async {
+  testWidgets('song actions sit in the options sheet and only the three dots remain in the app bar', (tester) async {
     viewModel.addSong(title: 'Moja pieśń', content: 'treść');
     await pumpList(tester);
     await openSong(tester, 'Moja pieśń');
@@ -75,7 +75,7 @@ void main() {
     expect(find.text('Usuń pieśń'), findsOneWidget);
   });
 
-  testWidgets('usuwanie jest odcięte hairline\'em i w kolorze niszczącym', (tester) async {
+  testWidgets('delete is separated by a hairline and uses the destructive color', (tester) async {
     viewModel.addSong(title: 'Moja pieśń', content: 'treść');
     await pumpList(tester);
     await openSong(tester, 'Moja pieśń');

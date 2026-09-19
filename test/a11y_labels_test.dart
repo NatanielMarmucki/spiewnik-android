@@ -48,8 +48,8 @@ void main() {
     return MySongViewModel(repository);
   }
 
-  group('każdy cel dotknięcia ma etykietę', () {
-    testWidgets('lista pieśni', (tester) async {
+  group('every tap target has a label', () {
+    testWidgets('song list', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(tester, (context) => Scaffold(body: SongListView(viewModel: viewModel)));
@@ -60,7 +60,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('szczegóły pieśni z arkuszem opcji', (tester) async {
+    testWidgets('song detail with the options sheet', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(
@@ -76,7 +76,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('moje pieśni, podgląd i formularz', (tester) async {
+    testWidgets('user songs list, preview and form', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = mySongs();
       await pumpScreen(tester, (context) => Scaffold(body: MySongsView(viewModel: viewModel)));
@@ -93,7 +93,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('ustawienia', (tester) async {
+    testWidgets('settings', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpScreen(tester, (context) => const SettingsView());
 
@@ -102,8 +102,8 @@ void main() {
     });
   });
 
-  group('etykiety są po polsku i mówią, co robi akcja', () {
-    testWidgets('pasek i dolny pasek pieśni', (tester) async {
+  group('labels are in Polish and say what the action does', () {
+    testWidgets('song app bar and bottom bar', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(
@@ -120,7 +120,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('pozycje arkusza opcji', (tester) async {
+    testWidgets('options sheet items', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(
@@ -137,7 +137,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('akcje własnej pieśni', (tester) async {
+    testWidgets('user song actions', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = mySongs();
       await pumpScreen(
@@ -155,7 +155,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('wiersz listy czyta numer, tytuł i ulubioną jako jedno', (tester) async {
+    testWidgets('list row reads number, title and favorite as one label', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(tester, (context) => Scaffold(body: SongListView(viewModel: viewModel)));
@@ -165,7 +165,7 @@ void main() {
     });
   });
 
-  testWidgets('ikona stanu pustego jest ozdobna, nie czyta się osobno', (tester) async {
+  testWidgets('empty state icon is decorative and is not read separately', (tester) async {
     final handle = tester.ensureSemantics();
     final viewModel = MySongViewModel(FakeMySongRepository());
     await pumpScreen(tester, (context) => Scaffold(body: MySongsView(viewModel: viewModel)));

@@ -55,8 +55,8 @@ void main() {
   }
 
   for (final scale in [1.3, 2.0]) {
-    group('powiększenie ×$scale', () {
-      testWidgets('lista pieśni z wyszukiwarką', (tester) async {
+    group('text scale ×$scale', () {
+      testWidgets('song list with search field', (tester) async {
         final viewModel = songs();
         await pumpScreen(
           tester,
@@ -70,7 +70,7 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('ulubione i moje pieśni, też puste', (tester) async {
+      testWidgets('favorites and user songs, including empty', (tester) async {
         final viewModel = songs();
         await pumpScreen(
           tester,
@@ -95,7 +95,7 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('dolna nawigacja mieści trzy podpisy', (tester) async {
+      testWidgets('bottom navigation fits three labels', (tester) async {
         await pumpScreen(
           tester,
           (context) => Scaffold(
@@ -111,7 +111,7 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('szczegóły pieśni z paskiem, arkuszem i modalem', (tester) async {
+      testWidgets('song detail with bar, options sheet and modal', (tester) async {
         final viewModel = songs();
         await pumpScreen(
           tester,
@@ -135,7 +135,7 @@ void main() {
         expect(tester.takeException(), isNull, reason: 'modal przejścia do numeru');
       });
 
-      testWidgets('podgląd i formularz własnej pieśni', (tester) async {
+      testWidgets('user song preview and form', (tester) async {
         final viewModel = mySongs();
         await pumpScreen(
           tester,
@@ -149,7 +149,7 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('ustawienia przy największym rozmiarze tekstu', (tester) async {
+      testWidgets('settings at the largest text size', (tester) async {
         await pumpScreen(
           tester,
           (context) => const SettingsView(),

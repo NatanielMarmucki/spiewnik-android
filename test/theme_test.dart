@@ -4,8 +4,8 @@ import 'package:spiewnik/theme/theme.dart';
 
 /// Motyw bez cieni: docs/DESIGN-SYSTEM.md nie przewiduje ich nigdzie, także na przycisku-pastylce.
 void main() {
-  for (final (name, theme) in [('jasny', lightTheme), ('ciemny', darkTheme)]) {
-    group('motyw $name: przycisk-pastylka bez cienia', () {
+  for (final (name, theme) in [('light', lightTheme), ('dark', darkTheme)]) {
+    group('$name theme: pill button has no shadow', () {
       final style = theme.elevatedButtonTheme.style!;
 
       for (final states in <Set<WidgetState>>[
@@ -15,13 +15,13 @@ void main() {
         {WidgetState.focused},
         {WidgetState.disabled},
       ]) {
-        test('elevation 0 i przezroczysty cień w stanie ${states.isEmpty ? 'spoczynku' : states.first.name}', () {
+        test('elevation 0 and a transparent shadow in the ${states.isEmpty ? 'resting' : states.first.name} state', () {
           expect(style.elevation!.resolve(states), 0.0);
           expect(style.shadowColor!.resolve(states), Colors.transparent);
         });
       }
 
-      testWidgets('wciśnięty przycisk nie unosi się', (tester) async {
+      testWidgets('a pressed button does not lift', (tester) async {
         await tester.pumpWidget(
           MaterialApp(
             theme: theme,

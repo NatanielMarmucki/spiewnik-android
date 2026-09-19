@@ -58,7 +58,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('otwiera pieśń o wpisanym numerze', (tester) async {
+  testWidgets('opens the song with the entered number', (tester) async {
     await openSong(tester, 1);
 
     await goToNumber(tester, '4');
@@ -67,7 +67,7 @@ void main() {
     expect(find.textContaining('treść 4'), findsOneWidget);
   });
 
-  testWidgets('pokazuje tytuł pieśni od razu po wpisaniu numeru', (tester) async {
+  testWidgets('shows the song title as soon as a number is entered', (tester) async {
     await openSong(tester, 1);
 
     await tester.tap(find.byType(GoToNumberIcon));
@@ -79,7 +79,7 @@ void main() {
     expect(find.text('1. Pieśń 1'), findsOneWidget, reason: 'wciąż stoimy na pierwszej pieśni');
   });
 
-  testWidgets('podpowiedź pokazuje zakres liczony z bazy', (tester) async {
+  testWidgets('the hint shows the number range taken from the database', (tester) async {
     await openSong(tester, 1);
 
     await tester.tap(find.byType(GoToNumberIcon));
@@ -88,7 +88,7 @@ void main() {
     expect(find.text('1-4'), findsOneWidget);
   });
 
-  testWidgets('numer spoza zakresu tłumaczy, co wpisać, i blokuje przejście', (tester) async {
+  testWidgets('an out-of-range number explains what to enter and disables the button', (tester) async {
     await openSong(tester, 1);
 
     await tester.tap(find.byType(GoToNumberIcon));
@@ -103,7 +103,7 @@ void main() {
     expect(button.onPressed, isNull, reason: 'nie ma dokąd przejść');
   });
 
-  testWidgets('numer z dziury w numeracji mówi, że takiej pieśni nie ma', (tester) async {
+  testWidgets('a number from a gap in the numbering says there is no such song', (tester) async {
     await openSong(tester, 1);
 
     await tester.tap(find.byType(GoToNumberIcon));
@@ -114,7 +114,7 @@ void main() {
     expect(find.text('Nie ma pieśni o tym numerze'), findsOneWidget);
   });
 
-  testWidgets('Enter działa jak przycisk Przejdź', (tester) async {
+  testWidgets('Enter works like the „Przejdź” button', (tester) async {
     await openSong(tester, 1);
 
     await tester.tap(find.byType(GoToNumberIcon));
@@ -127,7 +127,7 @@ void main() {
     expect(find.text('4. Pieśń 4'), findsOneWidget);
   });
 
-  testWidgets('pole przyjmuje tylko cyfry', (tester) async {
+  testWidgets('the field accepts only digits', (tester) async {
     await openSong(tester, 1);
 
     await tester.tap(find.byType(GoToNumberIcon));
@@ -138,8 +138,8 @@ void main() {
     expect(tester.widget<TextField>(find.byType(TextField)).controller?.text, '4');
   });
 
-  group('pasek pod treścią', () {
-    testWidgets('strzałki prowadzą do sąsiednich pieśni i pokazują ich numery', (tester) async {
+  group('bottom bar', () {
+    testWidgets('arrows go to the neighboring songs and show their numbers', (tester) async {
       await openSong(tester, 4);
 
       expect(find.byType(SongBottomBar), findsOneWidget);
@@ -158,7 +158,7 @@ void main() {
       expect(find.text('4. Pieśń 4'), findsOneWidget);
     });
 
-    testWidgets('na krańcu strzałka zostaje na miejscu, ale jest nieaktywna', (tester) async {
+    testWidgets('at the end the arrow stays in place but is disabled', (tester) async {
       await openSong(tester, 5); // ostatnia pieśń
 
       expect(find.byIcon(Icons.chevron_right), findsOneWidget, reason: 'strzałka zawsze w tym samym miejscu');
@@ -169,7 +169,7 @@ void main() {
       expect(find.text('5. Pieśń 5'), findsOneWidget, reason: 'nic się nie dzieje');
     });
 
-    testWidgets('nieaktywna strzałka zostaje widoczna, w kolorze tekstu trzeciego', (tester) async {
+    testWidgets('a disabled arrow stays visible in the tertiary text color', (tester) async {
       await openSong(tester, 1); // pierwsza pieśń: nie ma poprzedniej
 
       final appColors = Theme.of(tester.element(find.byType(SongBottomBar))).extension<AppColors>()!;
@@ -180,7 +180,7 @@ void main() {
       expect(active.color, appColors.textSecondary, reason: 'aktywna wciąż mocniejsza');
     });
 
-    testWidgets('środek paska to lupa z cyframi w soczewce, bez numeru pieśni', (tester) async {
+    testWidgets('the middle of the bar is a magnifier with digits in the lens, without the song number', (tester) async {
       await openSong(tester, 4);
 
       expect(find.byType(GoToNumberIcon), findsOneWidget);
@@ -197,7 +197,7 @@ void main() {
       expect(find.text('Przejdź do pieśni'), findsOneWidget);
     });
 
-    testWidgets('pasek zajmuje pasek, nie ekran', (tester) async {
+    testWidgets('the bottom bar keeps its own height instead of stretching to the screen', (tester) async {
       await openSong(tester, 4);
 
       final bar = tester.getSize(find.byType(SongBottomBar)).height;
@@ -209,7 +209,7 @@ void main() {
       expect(bar, greaterThanOrEqualTo(SongBottomBar.minHeight));
     });
 
-    testWidgets('gest i pasek prowadzą do tej samej pieśni, a blokada ekranu schodzi do zera', (tester) async {
+    testWidgets('swipe and bar lead to the same song, and the keep-screen-on count drops to zero', (tester) async {
       await openSong(tester, 4);
 
       await tester.drag(find.byType(SongContent), const Offset(-300, 0));
@@ -229,7 +229,7 @@ void main() {
     });
   });
 
-  group('arkusz opcji', () {
+  group('options sheet', () {
     late FakeShare share;
 
     setUp(() => share = FakeShare()..install());
@@ -240,7 +240,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('pasek ma serce i trzy kropki, a ikony udostępniania już nie', (tester) async {
+    testWidgets('the bar has a heart and three dots, but no share icon anymore', (tester) async {
       await openSong(tester, 1);
 
       expect(find.byIcon(Icons.favorite_border), findsOneWidget);
@@ -248,7 +248,7 @@ void main() {
       expect(find.byIcon(Icons.share), findsNothing, reason: 'udostępnianie przeniosło się do arkusza');
     });
 
-    testWidgets('pokazuje trzy pozycje, a przy rozmiarze tekstu bieżącą wartość', (tester) async {
+    testWidgets('shows three items, with the current value next to text size', (tester) async {
       await openSong(tester, 1);
 
       await openSheet(tester);
@@ -263,7 +263,7 @@ void main() {
       );
     });
 
-    testWidgets('udostępnianie wysyła numer, tytuł i treść', (tester) async {
+    testWidgets('sharing sends the number, title and lyrics', (tester) async {
       await openSong(tester, 4);
 
       await openSheet(tester);
@@ -276,7 +276,7 @@ void main() {
       expect(find.text('Udostępnij pieśń'), findsNothing, reason: 'arkusz zamyka się przed akcją');
     });
 
-    testWidgets('kopiowanie wkłada treść do schowka i potwierdza', (tester) async {
+    testWidgets('copying puts the lyrics on the clipboard and confirms', (tester) async {
       String? copied;
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
         if (call.method == 'Clipboard.setData') {
@@ -297,7 +297,7 @@ void main() {
       expect(find.text('Treść skopiowana do schowka'), findsOneWidget);
     });
 
-    testWidgets('pozycje arkusza mają wysokość co najmniej 52 dp', (tester) async {
+    testWidgets('sheet items are at least 52 dp tall', (tester) async {
       await openSong(tester, 1);
 
       await openSheet(tester);
@@ -309,7 +309,7 @@ void main() {
     });
   });
 
-  testWidgets('przeciągnięcie w lewo otwiera następną pieśń, w prawo poprzednią', (tester) async {
+  testWidgets('swiping left opens the next song, swiping right the previous one', (tester) async {
     await openSong(tester, 4);
 
     await tester.drag(find.byType(SongContent), const Offset(-300, 0));
@@ -321,7 +321,7 @@ void main() {
     expect(find.text('4. Pieśń 4'), findsOneWidget);
   });
 
-  testWidgets('przy dziurze w numeracji przeciągnięcie nic nie robi', (tester) async {
+  testWidgets('swiping does nothing at a gap in the numbering', (tester) async {
     // Numery to 1, 2, 4, 5: po dwójce nie ma trójki, więc nie ma dokąd przejść.
     await openSong(tester, 2);
 
@@ -331,7 +331,7 @@ void main() {
     expect(find.text('2. Pieśń 2'), findsOneWidget);
   });
 
-  testWidgets('anulowanie zostawia nas na tej samej pieśni', (tester) async {
+  testWidgets('canceling keeps us on the same song', (tester) async {
     await openSong(tester, 1);
 
     await tester.tap(find.byType(GoToNumberIcon));

@@ -14,12 +14,12 @@ void main() {
     return match == null ? null : match.group(1) == 'true';
   }
 
-  test('Info.plist deklaruje brak niestandardowego szyfrowania', () {
+  test('Info.plist declares no non-exempt encryption', () {
     expect(plistBool(infoPlist, 'ITSAppUsesNonExemptEncryption'), isFalse);
   });
 
-  group('manifest prywatności targetu Runner', () {
-    test('nie śledzi użytkownika i nie zbiera danych', () {
+  group('Runner target privacy manifest', () {
+    test('does not track the user and collects no data', () {
       expect(plistBool(privacyManifest, 'NSPrivacyTracking'), isFalse);
       expect(privacyManifest, matches(RegExp(r'<key>NSPrivacyTrackingDomains</key>\s*<array/>')));
       expect(privacyManifest, matches(RegExp(r'<key>NSPrivacyCollectedDataTypes</key>\s*<array/>')));
@@ -31,19 +31,19 @@ void main() {
           '<key>NSPrivacyAccessedAPITypeReasons</key>\\s*<array>\\s*<string>${RegExp.escape(reason)}</string>\\s*</array>',
         ));
 
-    test('podaje powód CA92.1 dla UserDefaults, z których czyta AppDelegate', () {
+    test('declares reason CA92.1 for UserDefaults, which AppDelegate reads', () {
       expect(privacyManifest, declares('UserDefaults', 'CA92.1'));
     });
 
-    test('podaje powód C617.1 dla dat plików czytanych przez package_info_plus i ObjectBox', () {
+    test('declares reason C617.1 for file timestamps read by package_info_plus and ObjectBox', () {
       expect(privacyManifest, declares('FileTimestamp', 'C617.1'));
     });
 
-    test('podaje powód E174.1 dla wolnego miejsca sprawdzanego przez ObjectBox', () {
+    test('declares reason E174.1 for free disk space checked by ObjectBox', () {
       expect(privacyManifest, declares('DiskSpace', 'E174.1'));
     });
 
-    test('trafia do bundla przez fazę Resources targetu Runner', () {
+    test('is added to the bundle by the Resources phase of the Runner target', () {
       final buildFile = RegExp(r'(\w{24}) /\* PrivacyInfo\.xcprivacy in Resources \*/ = \{isa = PBXBuildFile;')
           .firstMatch(project);
       expect(buildFile, isNotNull);

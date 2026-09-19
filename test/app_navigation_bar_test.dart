@@ -27,7 +27,7 @@ void main() {
   TextStyle labelStyle(WidgetTester tester, String label) =>
       tester.widget<Text>(find.text(label)).style!;
 
-  testWidgets('ma trzy zakładki z ikonami i podpisami', (tester) async {
+  testWidgets('has three tabs with icons and labels', (tester) async {
     await pumpBar(tester);
 
     for (final destination in AppNavigationBar.destinations) {
@@ -36,13 +36,13 @@ void main() {
     }
   });
 
-  testWidgets('ikona ma 17 dp', (tester) async {
+  testWidgets('icon is 17 dp', (tester) async {
     await pumpBar(tester);
 
     expect(tester.widget<Icon>(find.byIcon(Icons.menu_book)).size, 17.0);
   });
 
-  testWidgets('aktywna zakładka: akcent, waga 600 i kreska 2 dp', (tester) async {
+  testWidgets('active tab: accent, weight 600 and a 2 dp indicator line', (tester) async {
     await pumpBar(tester, selected: 1);
 
     expect(tester.widget<Icon>(find.byIcon(Icons.favorite)).color, AppColors.light.accent);
@@ -55,14 +55,14 @@ void main() {
     expect(indicators, isNotEmpty);
   });
 
-  testWidgets('nieaktywna zakładka jest w kolorze tekstu trzeciego', (tester) async {
+  testWidgets('inactive tab uses the tertiary text color', (tester) async {
     await pumpBar(tester, selected: 1);
 
     expect(tester.widget<Icon>(find.byIcon(Icons.menu_book)).color, AppColors.light.textTertiary);
     expect(labelStyle(tester, 'Śpiewnik').color, AppColors.light.textTertiary);
   });
 
-  testWidgets('dotknięcie zgłasza wybraną zakładkę', (tester) async {
+  testWidgets('tap reports the selected tab', (tester) async {
     int? tapped;
     await tester.pumpWidget(
       MaterialApp(
@@ -77,7 +77,7 @@ void main() {
     expect(tapped, 2);
   });
 
-  testWidgets('wysokość jest minimalna: rośnie z powiększeniem czcionki', (tester) async {
+  testWidgets('height is a minimum: it grows with font scaling', (tester) async {
     await pumpBar(tester);
     final normal = tester.getSize(find.byType(AppNavigationBar)).height;
 
@@ -88,7 +88,7 @@ void main() {
     expect(scaled, greaterThan(normal));
   });
 
-  testWidgets('każda zakładka ma etykietę dla czytnika ekranu', (tester) async {
+  testWidgets('each tab has a screen reader label', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpBar(tester, selected: 0);
 
@@ -96,7 +96,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('cel dotknięcia ma co najmniej 40 x 48 dp', (tester) async {
+  testWidgets('tap target is at least 40 x 48 dp', (tester) async {
     await pumpBar(tester);
 
     final tile = tester.getRect(find.ancestor(of: find.text('Śpiewnik'), matching: find.byType(InkWell)).first);

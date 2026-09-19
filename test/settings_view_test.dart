@@ -71,7 +71,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('pokazuje sekcje ustawień', (tester) async {
+  testWidgets('shows the settings sections', (tester) async {
     await pumpSettings(tester);
 
     expect(find.text('CZYTANIE'), findsOneWidget);
@@ -80,7 +80,7 @@ void main() {
     expect(find.text('Interlinia'), findsOneWidget);
   });
 
-  testWidgets('interlinia stoi zaraz pod rozmiarem tekstu, próbka pod obydwoma', (tester) async {
+  testWidgets('line height sits right below text size, and the sample below both', (tester) async {
     await pumpSettings(tester);
 
     final size = tester.getCenter(find.text('Rozmiar tekstu')).dy;
@@ -96,7 +96,7 @@ void main() {
     );
   });
 
-  testWidgets('reset stoi nad przełącznikiem blokady ekranu', (tester) async {
+  testWidgets('reset sits above the keep-screen-on switch', (tester) async {
     await pumpSettings(tester);
 
     final reset = tester.getCenter(find.text('Przywróć domyślny rozmiar i interlinię')).dy;
@@ -105,8 +105,8 @@ void main() {
     expect(reset, lessThan(wakeLock), reason: 'reset zostaje przy tym, czego dotyczy');
   });
 
-  group('nie gaś ekranu', () {
-    testWidgets('domyślnie włączone, a wyłączenie zdejmuje blokadę od razu', (tester) async {
+  group('keep screen on', () {
+    testWidgets('is on by default, and turning it off releases the wakelock immediately', (tester) async {
       await pumpSettings(tester);
       // Otwarta pieśń w tle: ustawienia są osiągalne z ekranu pieśni.
       ScreenWakeLock.acquire();
@@ -120,7 +120,7 @@ void main() {
       expect(wakelock.enabled, isFalse, reason: 'blokada schodzi, choć pieśń jest otwarta');
     });
 
-    testWidgets('wyłączona nie zapala blokady przy otwarciu pieśni', (tester) async {
+    testWidgets('when off, opening a song does not enable the wakelock', (tester) async {
       SharedPreferences.setMockInitialValues({AppSettingsModel.keepScreenOnKey: false});
       await pumpSettings(tester);
 
@@ -131,7 +131,7 @@ void main() {
       expect(wakelock.enabled, isFalse);
     });
 
-    testWidgets('zapisuje się w ustawieniach', (tester) async {
+    testWidgets('is saved in preferences', (tester) async {
       await pumpSettings(tester);
 
       await tapVisible(tester, find.byType(Switch));
@@ -141,8 +141,8 @@ void main() {
     });
   });
 
-  group('motyw', () {
-    testWidgets('domyślnie idzie za systemem i daje trzy wybory w jednym przełączniku', (tester) async {
+  group('theme', () {
+    testWidgets('follows the system by default and offers three choices in one segmented control', (tester) async {
       await pumpSettings(tester);
 
       expect(appSettings.themeMode, ThemeMode.system);
@@ -152,7 +152,7 @@ void main() {
       expect(find.text('Ciemny'), findsOneWidget);
     });
 
-    testWidgets('wybór ciemnego zapisuje się i zaznacza segment', (tester) async {
+    testWidgets('choosing dark is saved and selects its segment', (tester) async {
       await pumpSettings(tester);
 
       await tapVisible(tester, find.text('Ciemny'));
@@ -164,7 +164,7 @@ void main() {
       expect(button.selected, {ThemeMode.dark});
     });
 
-    testWidgets('zapisany motyw wraca po ponownym wczytaniu', (tester) async {
+    testWidgets('the saved theme is restored on reload', (tester) async {
       SharedPreferences.setMockInitialValues({AppSettingsModel.themeModeKey: 'light'});
 
       await pumpSettings(tester);
@@ -173,7 +173,7 @@ void main() {
     });
   });
 
-  testWidgets('reset nie rusza motywu ani blokady ekranu', (tester) async {
+  testWidgets('reset does not change the theme or keep-screen-on', (tester) async {
     SharedPreferences.setMockInitialValues({
       AppSettingsModel.themeModeKey: 'dark',
       AppSettingsModel.keepScreenOnKey: false,
@@ -189,7 +189,7 @@ void main() {
     expect(appSettings.keepScreenOn, isFalse);
   });
 
-  testWidgets('próbka pieśni rośnie z rozmiarem tekstu i nic nie ucina', (tester) async {
+  testWidgets('song sample grows with text size and nothing is clipped', (tester) async {
     await pumpSettings(tester, size: const Size(400, 900));
     final sample = find.byType(SongContent);
     final smallest = tester.getSize(sample).height;

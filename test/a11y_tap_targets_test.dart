@@ -70,7 +70,7 @@ void main() {
     return MySongViewModel(repository);
   }
 
-  testWidgets('wiersz listy i pole wyszukiwania', (tester) async {
+  testWidgets('list row and search field', (tester) async {
     final viewModel = songs();
     await pumpScreen(tester, (context) => Scaffold(body: SongListView(viewModel: viewModel)));
 
@@ -81,7 +81,7 @@ void main() {
     expectTarget(tester, find.byTooltip('Wyczyść wyszukiwanie'), 'czyszczenie wyszukiwania');
   });
 
-  testWidgets('zakładki dolnej nawigacji, także nieaktywne', (tester) async {
+  testWidgets('bottom navigation tabs, including inactive ones', (tester) async {
     await pumpScreen(
       tester,
       (context) => Scaffold(
@@ -95,8 +95,8 @@ void main() {
     }
   });
 
-  group('pasek pieśni', () {
-    testWidgets('ikony paska górnego', (tester) async {
+  group('song detail', () {
+    testWidgets('top bar icons', (tester) async {
       final viewModel = songs();
       await pumpScreen(
         tester,
@@ -107,7 +107,7 @@ void main() {
       expectTarget(tester, find.byTooltip('Opcje pieśni'), 'trzy kropki');
     });
 
-    testWidgets('strzałki i przejście do numeru, przy nieaktywnej strzałce', (tester) async {
+    testWidgets('arrows and go-to-number, with a disabled arrow', (tester) async {
       final viewModel = songs();
       // Pierwsza pieśń: lewa strzałka jest nieaktywna, ale zostaje na miejscu.
       await pumpScreen(
@@ -120,7 +120,7 @@ void main() {
       expectTarget(tester, tapRegionOf(find.byType(GoToNumberIcon)), 'przejście do numeru');
     });
 
-    testWidgets('pozycje arkusza opcji', (tester) async {
+    testWidgets('options sheet items', (tester) async {
       final viewModel = songs();
       await pumpScreen(
         tester,
@@ -134,7 +134,7 @@ void main() {
       }
     });
 
-    testWidgets('akcje modalu przejścia do numeru, w tym zablokowany przycisk', (tester) async {
+    testWidgets('go-to-number modal actions, including the disabled button', (tester) async {
       final viewModel = songs();
       await pumpScreen(
         tester,
@@ -149,7 +149,7 @@ void main() {
     });
   });
 
-  testWidgets('akcje własnej pieśni', (tester) async {
+  testWidgets('user song actions', (tester) async {
     final viewModel = mySongs();
     await pumpScreen(
       tester,
@@ -165,7 +165,7 @@ void main() {
     }
   });
 
-  testWidgets('wiersze ustawień, przełącznik i wybór motywu', (tester) async {
+  testWidgets('settings rows, switch and theme picker', (tester) async {
     await pumpScreen(tester, (context) => const SettingsView());
 
     expectTarget(tester, tapRegionOf(find.text('Nie gaś ekranu przy pieśni')), 'przełącznik blokady');

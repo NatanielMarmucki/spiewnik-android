@@ -21,7 +21,7 @@ void main() {
 
   Future<bool?> shownFlag() async => (await SharedPreferences.getInstance()).getBool(PostMigrationWelcome.shownKey);
 
-  group('decyzja z wyniku migracji w tej sesji', () {
+  group('decision from the migration result in this session', () {
     setUp(() => SharedPreferences.setMockInitialValues({}));
 
     const migratedData = CoreDataMigrationResult(
@@ -30,7 +30,7 @@ void main() {
       mySongsAdded: 2,
     );
 
-    test('pokazuje, gdy migracja przeniosła ulubione i własne pieśni, i zapisuje flagę', () async {
+    test('shows when the migration moved favorites and user songs, and saves the flag', () async {
       expect(
         await welcome().decide(coreDataResult: migratedData, migratedFontSize: null, isIOS: true),
         WelcomeVariant.songs,
@@ -38,17 +38,17 @@ void main() {
       expect(await shownFlag(), isTrue);
     });
 
-    test('pokazuje, gdy przeniosła same ulubione', () async {
+    test('shows when it moved only favorites', () async {
       const result = CoreDataMigrationResult(CoreDataMigrationStatus.migrated, favoritesMarked: 1);
       expect(await welcome().decide(coreDataResult: result, migratedFontSize: null, isIOS: true), WelcomeVariant.songs);
     });
 
-    test('pokazuje, gdy przeniosła same własne pieśni', () async {
+    test('shows when it moved only user songs', () async {
       const result = CoreDataMigrationResult(CoreDataMigrationStatus.migrated, mySongsAdded: 1);
       expect(await welcome().decide(coreDataResult: result, migratedFontSize: null, isIOS: true), WelcomeVariant.songs);
     });
 
-    test('pokazuje wariant „tylko ustawienia”, gdy baza była pusta, ale przeniósł się rozmiar czcionki',
+    test('shows the „tylko ustawienia” variant when the database was empty but the font size was moved',
         () async {
       const result = CoreDataMigrationResult(CoreDataMigrationStatus.migrated);
       expect(
@@ -58,49 +58,49 @@ void main() {
       expect(await shownFlag(), isTrue);
     });
 
-    test('pieśni i rozmiar czcionki razem: wariant z pieśniami', () async {
+    test('songs and font size together: the songs variant', () async {
       const result = CoreDataMigrationResult(CoreDataMigrationStatus.migrated, favoritesMarked: 1);
       expect(await welcome().decide(coreDataResult: result, migratedFontSize: 24.0, isIOS: true), WelcomeVariant.songs);
     });
 
-    test('nie pokazuje, gdy migracja nic nie zastała', () async {
+    test('does not show when the migration found nothing', () async {
       const result = CoreDataMigrationResult(CoreDataMigrationStatus.migrated);
       expect(await welcome().decide(coreDataResult: result, migratedFontSize: null, isIOS: true), isNull);
       expect(await shownFlag(), isNull);
     });
 
-    test('nie pokazuje przy czystej instalacji: brak starej bazy', () async {
+    test('does not show on a clean install: no old database', () async {
       const result = CoreDataMigrationResult(CoreDataMigrationStatus.noDatabase);
       expect(await welcome().decide(coreDataResult: result, migratedFontSize: null, isIOS: true), isNull);
     });
 
-    test('nie pokazuje, gdy migracja odbyła się przy wcześniejszym uruchomieniu', () async {
+    test('does not show when the migration ran on an earlier launch', () async {
       const result = CoreDataMigrationResult(CoreDataMigrationStatus.alreadyDone);
       // Rozmiar czcionki z ponowionej migracji ustawień nie wystarcza: sesją migracji rządzi Core Data.
       expect(await welcome().decide(coreDataResult: result, migratedFontSize: 24.0, isIOS: true), isNull);
     });
 
-    test('nie pokazuje po migracji zakończonej błędem, nawet z przeniesionym rozmiarem czcionki', () async {
+    test('does not show after a failed migration, even with a moved font size', () async {
       const result = CoreDataMigrationResult(CoreDataMigrationStatus.failed, error: 'CoreDataReadException');
       expect(await welcome().decide(coreDataResult: result, migratedFontSize: 24.0, isIOS: true), isNull);
       expect(await shownFlag(), isNull);
     });
 
-    test('nie pokazuje na Androidzie, nawet przy wyniku migracji z danymi', () async {
+    test('does not show on Android, even with a migration result that has data', () async {
       expect(await welcome().decide(coreDataResult: migratedData, migratedFontSize: 24.0, isIOS: false), isNull);
       expect(await shownFlag(), isNull);
     });
 
-    test('nie pokazuje, gdy migracji nie było (runOnStartup poza iOS zwraca null)', () async {
+    test('does not show when there was no migration (runOnStartup returns null outside iOS)', () async {
       expect(await welcome().decide(coreDataResult: null, migratedFontSize: null, isIOS: true), isNull);
     });
 
-    test('nie pokazuje drugi raz, gdy flaga już jest zapisana', () async {
+    test('does not show a second time when the flag is already saved', () async {
       SharedPreferences.setMockInitialValues({PostMigrationWelcome.shownKey: true});
       expect(await welcome().decide(coreDataResult: migratedData, migratedFontSize: null, isIOS: true), isNull);
     });
 
-    test('drugie zapytanie w tej samej instalacji już nie pokazuje', () async {
+    test('a second call in the same install no longer shows', () async {
       expect(
         await welcome().decide(coreDataResult: migratedData, migratedFontSize: null, isIOS: true),
         WelcomeVariant.songs,
@@ -111,7 +111,7 @@ void main() {
 
   /// Kolejne uruchomienia z prawdziwą migracją na kopiach baz z iOS, w kolejności z main():
   /// migracja Core Data, potem decyzja. Stan (ObjectBox i SharedPreferences) przechodzi między startami.
-  group('kolejne uruchomienia z prawdziwą migracją', () {
+  group('consecutive launches with a real migration', () {
     late TestStore testStore;
     late Directory documents;
     late CoreDataReader reader;
@@ -145,7 +145,7 @@ void main() {
       return welcome().decide(coreDataResult: result, migratedFontSize: migratedFontSize, isIOS: isIOS);
     }
 
-    test('baza z danymi: pokazuje przy pierwszym starcie, przy drugim i trzecim już nie', () async {
+    test('database with data: shows on the first launch, not on the second or third', () async {
       CoreDataFixtures.copyTo('ios_with_data', documents);
 
       expect(await launch(), WelcomeVariant.songs);
@@ -153,7 +153,7 @@ void main() {
       expect(await launch(), isNull);
     });
 
-    test('baza bez ulubionych i własnych pieśni, ale z rozmiarem czcionki: wariant „tylko ustawienia”, raz',
+    test('database without favorites or user songs, but with a font size: „tylko ustawienia” variant, once',
         () async {
       CoreDataFixtures.copyTo('ios_fresh', documents);
 
@@ -161,19 +161,19 @@ void main() {
       expect(await launch(), isNull);
     });
 
-    test('baza bez ulubionych i własnych pieśni: nie pokazuje', () async {
+    test('database without favorites or user songs: does not show', () async {
       CoreDataFixtures.copyTo('ios_fresh', documents);
 
       expect(await launch(), isNull);
       expect(await launch(), isNull);
     });
 
-    test('czysta instalacja bez starej bazy: nie pokazuje ani teraz, ani później', () async {
+    test('clean install without an old database: does not show now or later', () async {
       expect(await launch(), isNull);
       expect(await launch(), isNull);
     });
 
-    test('uszkodzona baza: migracja kończy się błędem i ekranu nie ma', () async {
+    test('corrupted database: the migration fails and no screen is shown', () async {
       File(p.join(documents.path, 'Model.sqlite')).writeAsBytesSync(List.generate(8192, (i) => (i * 31) % 256));
 
       expect(await launch(migratedFontSize: 24.0), isNull);
@@ -181,7 +181,7 @@ void main() {
       expect(await launch(), isNull);
     });
 
-    test('Android z plikiem Model.sqlite w katalogu: migracja nie rusza, ekranu nie ma', () async {
+    test('Android with Model.sqlite in the directory: the migration does not run and no screen is shown', () async {
       CoreDataFixtures.copyTo('ios_with_data', documents);
 
       expect(await launch(isIOS: false), isNull);

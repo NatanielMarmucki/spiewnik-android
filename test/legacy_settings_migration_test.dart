@@ -122,7 +122,7 @@ void main() {
     expect((await prefs()).getBool(LegacySettingsMigration.doneKey), isTrue);
   });
 
-  group('kanał nie odpowiada', () {
+  group('channel does not respond', () {
     /// Kanału nie ma w ogóle: dokładnie to zobaczymy, gdyby rejestracja po migracji na UIScene
     /// spóźniła się względem wywołania z Darta.
     void noChannel() {
@@ -131,7 +131,7 @@ void main() {
           .setMockMethodCallHandler(LegacySettingsMigration.channel, null);
     }
 
-    test('nie zapisuje flagi, więc migracja spróbuje jeszcze raz', () async {
+    test('does not save the flag, so the migration will try again', () async {
       SharedPreferences.setMockInitialValues({});
       noChannel();
 
@@ -146,7 +146,7 @@ void main() {
       );
     });
 
-    test('przy następnym starcie migracja dochodzi do skutku', () async {
+    test('the migration succeeds on the next launch', () async {
       SharedPreferences.setMockInitialValues({});
       noChannel();
       await LegacySettingsMigration(logger: logger).run(isIOS: true);
@@ -160,7 +160,7 @@ void main() {
       expect((await prefs()).getBool(LegacySettingsMigration.doneKey), isTrue);
     });
 
-    test('brak klucza w starej aplikacji nadal zamyka migrację', () async {
+    test('a missing key in the old app still completes the migration', () async {
       SharedPreferences.setMockInitialValues({});
       mockChannel(null);
 

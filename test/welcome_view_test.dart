@@ -15,8 +15,8 @@ void main() {
     (widget) => widget is Text && widget.data?.replaceAll('\u00A0', ' ') == text,
   );
 
-  group('treść i wyjście', () {
-    testWidgets('pokazuje zatwierdzoną treść', (tester) async {
+  group('text and way out', () {
+    testWidgets('shows the approved text', (tester) async {
       await pumpScreen(tester, (context) => WelcomeView(onContinue: () {}));
 
       expect(approvedText('Śpiewnik w nowej odsłonie'), findsOneWidget);
@@ -36,7 +36,7 @@ void main() {
       expect(find.text('Zaczynajmy'), findsOneWidget);
     });
 
-    testWidgets('wariant „tylko ustawienia”: inny pierwszy akapit, reszta ekranu bez zmian', (tester) async {
+    testWidgets('„tylko ustawienia” variant: different first paragraph, rest of the screen unchanged', (tester) async {
       await pumpScreen(
         tester,
         (context) => WelcomeView(variant: WelcomeVariant.settingsOnly, onContinue: () {}),
@@ -52,7 +52,7 @@ void main() {
       expect(find.text('Zaczynajmy'), findsOneWidget);
     });
 
-    testWidgets('domyślny wariant mówi o ulubionych i własnych pieśniach', (tester) async {
+    testWidgets('the default variant mentions favorites and user songs', (tester) async {
       await pumpScreen(tester, (context) => WelcomeView(variant: WelcomeVariant.songs, onContinue: () {}));
 
       expect(
@@ -62,7 +62,7 @@ void main() {
       expect(approvedText('Twoje ustawienia przeniosły się razem z aplikacją.'), findsNothing);
     });
 
-    testWidgets('jednoliterowe słowa nie zostają na końcu wiersza', (tester) async {
+    testWidgets('single-letter words are not left at the end of a line', (tester) async {
       await pumpScreen(tester, (context) => WelcomeView(onContinue: () {}));
 
       expect(find.text('Tekst pieśni z\u00A0wyraźnym podziałem na zwrotki i\u00A0refren'), findsOneWidget);
@@ -71,7 +71,7 @@ void main() {
       expect(WelcomeView.typeset('Twoje ulubione'), 'Twoje ulubione', reason: 'zwykłe spacje zostają');
     });
 
-    testWidgets('ma jedno wyjście, bez „Wesprzyj” i „Zgłoś błąd”', (tester) async {
+    testWidgets('has a single exit, without „Wesprzyj” or „Zgłoś błąd”', (tester) async {
       await pumpScreen(tester, (context) => WelcomeView(onContinue: () {}));
 
       expect(find.bySubtype<ButtonStyleButton>(), findsOneWidget);
@@ -82,7 +82,7 @@ void main() {
       expect(find.textContaining('Zgłoś'), findsNothing);
     });
 
-    testWidgets('„Zaczynajmy” wywołuje wyjście', (tester) async {
+    testWidgets('„Zaczynajmy” triggers the exit', (tester) async {
       var continued = 0;
       await pumpScreen(tester, (context) => WelcomeView(onContinue: () => continued++));
 
@@ -94,7 +94,7 @@ void main() {
   group('WelcomeGate', () {
     Widget home(BuildContext context) => const Scaffold(body: Text('lista pieśni'));
 
-    testWidgets('najpierw ekran powitalny, po „Zaczynajmy” lista pieśni na stałe', (tester) async {
+    testWidgets('shows the welcome screen first, then the song list for good after „Zaczynajmy”', (tester) async {
       await pumpScreen(tester, (context) => WelcomeGate(welcome: WelcomeVariant.songs, buildHome: home));
 
       expect(find.byType(WelcomeView), findsOneWidget);
@@ -107,13 +107,13 @@ void main() {
       expect(find.text('lista pieśni'), findsOneWidget);
     });
 
-    testWidgets('przekazuje wariant do ekranu powitalnego', (tester) async {
+    testWidgets('passes the variant to the welcome screen', (tester) async {
       await pumpScreen(tester, (context) => WelcomeGate(welcome: WelcomeVariant.settingsOnly, buildHome: home));
 
       expect(approvedText(WelcomeView.settingsOnlyLead), findsOneWidget);
     });
 
-    testWidgets('bez ekranu powitalnego od razu lista pieśni', (tester) async {
+    testWidgets('without a welcome screen shows the song list right away', (tester) async {
       await pumpScreen(tester, (context) => WelcomeGate(welcome: null, buildHome: home));
 
       expect(find.byType(WelcomeView), findsNothing);
@@ -121,8 +121,8 @@ void main() {
     });
   });
 
-  group('dostępność', () {
-    testWidgets('przycisk ma polską etykietę, a nagłówek jest nagłówkiem', (tester) async {
+  group('accessibility', () {
+    testWidgets('the button has a Polish label and the title is a semantic header', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpScreen(tester, (context) => WelcomeView(onContinue: () {}));
 
@@ -138,16 +138,16 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('przycisk ma co najmniej 48 dp wysokości', (tester) async {
+    testWidgets('the button is at least 48 dp tall', (tester) async {
       await pumpScreen(tester, (context) => WelcomeView(onContinue: () {}));
 
       expect(tester.getSize(find.byType(ElevatedButton)).height, greaterThanOrEqualTo(48.0));
     });
 
-    for (final (name, theme) in [('jasny', lightTheme), ('ciemny', darkTheme)]) {
+    for (final (name, theme) in [('light', lightTheme), ('dark', darkTheme)]) {
       for (final size in [const Size(411, 915), const Size(320, 568)]) {
-        testWidgets('motyw $name, ekran ${size.width.toInt()} dp, powiększenie ×2,0: nic się nie przepełnia '
-            'i do „Zaczynajmy” da się dojść', (tester) async {
+        testWidgets('$name theme, ${size.width.toInt()} dp screen, text scale ×2.0: nothing overflows '
+            'and „Zaczynajmy” is reachable', (tester) async {
           final handle = tester.ensureSemantics();
           var continued = 0;
           await pumpScreen(
