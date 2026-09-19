@@ -1,13 +1,13 @@
-# Obraz do testów golden: ten sam Linux i ta sama wersja Fluttera co na CI.
+# Image for the golden tests: the same Linux and the same Flutter version as on CI.
 #
-# Obrazy golden zależą od rasteryzacji czcionek, więc muszą powstawać na Linuksie.
-# Wersja Fluttera jest przypięta: gotowy obraz z internetu mógłby zmienić wersję pod nami
-# i rozjechać obrazy bez żadnej zmiany w kodzie.
+# Golden images depend on font rasterization, so they have to be generated on Linux.
+# The Flutter version is pinned: a ready-made image from the internet could change the version under us
+# and break the images without any change in the code.
 #
-# Budowanie i użycie: tools/golden.sh (sam zbuduje obraz, jeśli go nie ma).
+# Building and usage: tools/golden.sh (builds the image itself if it is missing).
 
-# linux/amd64 na sztywno: runnery GitHuba są x86-64, a obrazy golden mają zgadzać się z CI.
-# Na Apple Silicon obraz chodzi pod emulacją, czyli wolniej, ale zgodnie z CI.
+# linux/amd64 hardcoded: GitHub runners are x86-64, and the golden images have to match CI.
+# On Apple Silicon the image runs under emulation, so slower, but consistent with CI.
 FROM --platform=linux/amd64 debian:bookworm-slim
 
 ARG FLUTTER_VERSION=3.47.4
@@ -28,7 +28,7 @@ RUN curl -fsSL "https://storage.googleapis.com/flutter_infra_release/releases/st
 
 ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
-# Katalog projektu jest montowany z zewnątrz i należy do innego użytkownika niż root.
+# The project directory is mounted from outside and belongs to a user other than root.
 RUN git config --global --add safe.directory /opt/flutter \
     && git config --global --add safe.directory '*' \
     && flutter --version \
