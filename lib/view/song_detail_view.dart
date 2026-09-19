@@ -94,6 +94,7 @@ class SongDetailViewState extends State<SongDetailView> {
           // The builder keeps only the shown page alive (two while dragging), not 2000.
           body: PageView.builder(
             controller: _pageController,
+            physics: const _PageTurnPhysics(),
             itemCount: songs.length,
             onPageChanged: (index) => setState(() => _index = index),
             itemBuilder: (context, index) => SongContent(
@@ -193,7 +194,19 @@ class SongDetailViewState extends State<SongDetailView> {
     if (MediaQuery.disableAnimationsOf(context)) {
       _pageController.jumpToPage(index);
     } else {
-      _pageController.animateToPage(index, duration: Durations.medium2, curve: Easing.standard);
+      _pageController.animateToPage(index, duration: Durations.short4, curve: Easing.emphasizedDecelerate);
     }
   }
+}
+
+/// Page physics with a stiffer spring than the default, critically damped: after a swipe the page settles
+/// in about 0.45 s instead of 0.9 s, without overshooting (docs/DESIGN-SYSTEM.md, section 5).
+class _PageTurnPhysics extends PageScrollPhysics {
+  const _PageTurnPhysics({super.parent});
+
+  @override
+  _PageTurnPhysics applyTo(ScrollPhysics? ancestor) => _PageTurnPhysics(parent: buildParent(ancestor));
+
+  @override
+  SpringDescription get spring => SpringDescription.withDampingRatio(mass: 0.5, stiffness: 300, ratio: 1.0);
 }

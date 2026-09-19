@@ -386,6 +386,20 @@ void main() {
       expect(find.text('5. Pieśń 5'), findsOneWidget, reason: 'ponad połowa: strona się przewraca');
     });
 
+    testWidgets('after a swipe the page settles within half a second', (tester) async {
+      await openSong(tester, 4);
+
+      await tester.fling(find.byType(SongContent), const Offset(-120, 0), 800);
+      var elapsed = Duration.zero;
+      while (tester.binding.hasScheduledFrame && elapsed < const Duration(seconds: 2)) {
+        await tester.pump(const Duration(milliseconds: 10));
+        elapsed += const Duration(milliseconds: 10);
+      }
+
+      expect(find.text('5. Pieśń 5'), findsOneWidget);
+      expect(elapsed, lessThanOrEqualTo(const Duration(milliseconds: 500)));
+    });
+
     testWidgets('the bars do not move while the text turns', (tester) async {
       await openSong(tester, 4);
       final appBar = tester.getRect(find.byType(AppBar));
@@ -401,12 +415,12 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('the arrows turn in 300 ms', (tester) async {
+    testWidgets('the arrows turn in 200 ms', (tester) async {
       await openSong(tester, 4);
 
       await tester.tap(find.byIcon(Icons.chevron_right));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 290));
+      await tester.pump(const Duration(milliseconds: 190));
       expect(find.text('treść 4'), findsOneWidget, reason: 'jeszcze w ruchu');
       await tester.pump(const Duration(milliseconds: 20));
       expect(find.text('treść 4'), findsNothing);

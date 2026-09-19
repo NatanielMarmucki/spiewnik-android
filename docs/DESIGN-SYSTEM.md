@@ -192,10 +192,12 @@ A single field handles both number and title, diacritic-insensitive search, matc
 **Moving between songs** — the song text is a page, and going to the previous or next song turns it,
 as in a book; it is not opening something new. Only the text moves, horizontally, across the full width;
 the top bar and the song bar **stay put** and only change their number and title. No fade, scale or
-parallax. A swipe follows the finger 1:1 and on release finishes the turn or springs back (platform
-page physics: a flick, or a drag past half the width). The song bar arrows turn the page in **300 ms**
-with the Material 3 **standard easing** `Cubic(0.2, 0, 0, 1)` (`Durations.medium2`, `Easing.standard`):
-a decisive start that settles softly. The next song comes in from the right, the previous one from the
+parallax. A swipe follows the finger 1:1 and on release finishes the turn or springs back (a flick, or a
+drag past half the width), on a stiffer spring than the platform default: critically damped, mass 0.5,
+stiffness 300, so the page settles in about **0.45 s** instead of 0.9 s, without overshooting. The song
+bar arrows turn the page in **200 ms** with the Material 3 **emphasized decelerate** easing
+`Cubic(0.05, 0.7, 0.1, 1)` (`Durations.short4`, `Easing.emphasizedDecelerate`): a quick start that lands
+softly. The next song comes in from the right, the previous one from the
 left. „Przejdź do numeru” (Go to number) opens the song **without animation**: that is opening the book at
 a page, not turning through the pages in between. With reduced motion (system setting) the arrows switch
 without animation too. On iOS a swipe that starts at the left edge stays the system "back to the list"
