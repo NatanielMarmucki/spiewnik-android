@@ -1,5 +1,5 @@
 name: spiewnik
-description: "A new Flutter project."
+description: "Polish hymnal app for iOS and Android: about 2000 songs, offline, no backend."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -40,7 +40,7 @@ flutter_native_splash:
   image_dark_ios: assets/splash/ios_launch_logo.png
   # After `dart run flutter_native_splash:create` restore ios/Runner/Info.plist: the generator sets
   # UIStatusBarHidden to false (fullscreen defaults to false; true would also change the Android splash).
-  # See "Znane pułapki" in README.md.
+  # See "Known pitfalls" in docs/DEVELOPMENT.md.
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
