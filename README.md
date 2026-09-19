@@ -76,7 +76,7 @@ ios/, android/ native projects
 
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md): test details, CI, the end-to-end migration test and known pitfalls.
 - [docs/RELEASING.md](docs/RELEASING.md): how a new version is released on Google Play and the App Store.
-- [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md): the visual design system the UI is built from (in Polish).
+- [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md): the visual design system the UI is built from.
 - [docs/PARITY.md](docs/PARITY.md): differences between this app and the old native iOS app (in Polish).
 - [docs/SCHEMA-ZMYSONG.md](docs/SCHEMA-ZMYSONG.md): the database schema of the old iOS app, used by the migration.
 - [docs/AUDIT.md](docs/AUDIT.md), [docs/ARCHITECTURE-PROPOSAL.md](docs/ARCHITECTURE-PROPOSAL.md): historical notes
