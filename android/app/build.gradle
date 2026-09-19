@@ -48,8 +48,9 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Always the upload key from android/key.properties (outside git), never the debug key.
+            // Without that file storeFile is null and the build stops at :app:signReleaseBundle
+            // with a bare NullPointerException: that means the file is missing, not a broken build.
             signingConfig = signingConfigs.release
             ndk {
                 debugSymbolLevel 'FULL'
