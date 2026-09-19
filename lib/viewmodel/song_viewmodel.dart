@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:spiewnik/model/polish_collation.dart';
 import 'package:spiewnik/data/repositories/song_repository.dart';
 import 'package:spiewnik/model/song_model.dart';
+import 'package:spiewnik/model/song_search.dart';
 import 'package:flutter/material.dart';
 
 class SongViewModel {
@@ -9,6 +10,7 @@ class SongViewModel {
   final ValueNotifier<List<Song>> allSongsNotifier = ValueNotifier([]);
   final ValueNotifier<List<Song>> favoriteSongsNotifier = ValueNotifier([]);
   final ValueNotifier<List<Song>> filteredSongsNotifier = ValueNotifier([]);
+  final SongSearch _search = SongSearch();
   String _searchText = '';
 
   SongViewModel(this.repository) {
@@ -73,15 +75,7 @@ class SongViewModel {
     }
 
     // Diacritics are removed from both sides, so "zrodlo" finds "źródło" and "źródło" finds "zrodlo".
-    final lowercaseSearchText = _normalizeWhitespace(removePolishDiacritics(_searchText.toLowerCase()));
-    filteredSongsNotifier.value = allSongsNotifier.value.where((song) {
-      final lowercaseContent = removePolishDiacritics(song.content.toLowerCase());
-      final cleanedContent = _removeNumber(lowercaseContent);
-
-      return _titleMatch(song, _searchText) != null ||
-          cleanedContent.contains(lowercaseSearchText) ||
-          song.number.toString().contains(_searchText);
-    }).toList();
+    filteredSongsNotifier.value = _search.filter(allSongsNotifier.value, _searchText);
   }
 
   /// Fragment of [song] title matching [query], with the original letters, or null when it does
@@ -98,19 +92,6 @@ class SongViewModel {
     // Diacritics are removed one letter for one letter, so the positions match the original title.
     return start < 0 ? null : song.title.substring(start, start + needle.length);
   }
-
-  String _removeNumber(String str) {
-    const charactersToRemove = "123456789,.;:'[]()!?-”—„x";
-    final filteredCharacters = str.split('').where((char) => !charactersToRemove.contains(char)).join();
-    return _normalizeWhitespace(filteredCharacters);
-  }
-
-  /// Collapses runs of whitespace into a single space.
-  ///
-  /// Removing the ignored characters leaves gaps inside the text: „Baranku Boży, x zmiłuj się"
-  /// became „Baranku Boży  zmiłuj się" with a double space, so the query „boży zmiłuj" did not
-  /// match, but „boży  zmiłuj" did. Both sides are now normalized the same way, so both work.
-  static String _normalizeWhitespace(String text) => text.replaceAll(RegExp(r'\s+'), ' ').trim();
 
   Song? findNextSong(int currentNumber) {
     return findSongByNumber(currentNumber + 1);
