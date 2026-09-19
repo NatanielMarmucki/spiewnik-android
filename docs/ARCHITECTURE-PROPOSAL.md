@@ -1,3 +1,8 @@
+> **Historical document, in Polish.** A proposal for restructuring the code, written in September 2026, before the
+> migration from the old iOS app and the redesign. Points 1–4 and 7 are done; points 5 and 6 are left for when that
+> code is touched anyway (see the status note below). It describes the code as it was then and is kept as the record
+> of why the current structure looks the way it does. For the current state see the README and `docs/DEVELOPMENT.md`.
+
 # Propozycja uporządkowania struktury — Śpiewnik (Flutter)
 
 > **Stan realizacji (wrzesień 2026):** punkty **1–4 zamknięte** (repozytoria, CLAUDE.md, martwy kod,
