@@ -12,16 +12,16 @@ import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
 
-/// Narzędzia do zrzutów golden: prawdziwe kroje, rozmiar telefonu, oba motywy.
+/// Tools for golden screenshots: real typefaces, phone size, both themes.
 ///
-/// Zrzuty powstają offscreen, bez urządzenia, więc są powtarzalne i nadają się do CI.
-/// Aktualizacja obrazów: `flutter test --update-goldens test/golden`.
+/// Screenshots are made offscreen, without a device, so they are repeatable and suitable for CI.
+/// Updating the images: `flutter test --update-goldens test/golden`.
 
-/// Rozmiar ekranu zrzutów: telefon 411 x 915 dp (jak Pixel) przy gęstości 3.
+/// Screenshot screen size: a 411 x 915 dp phone (like a Pixel) at density 3.
 const Size _screenSize = Size(411, 915);
 
-/// Ładuje kroje z assets oraz czcionkę ikon Material, inaczej test rysuje prostokąty
-/// zamiast liter i ikon.
+/// Loads the typefaces from assets and the Material icon font; otherwise the test draws rectangles
+/// instead of letters and icons.
 Future<void> loadAppFonts() async {
   final iconsFont = File(
     '${Platform.environment['FLUTTER_ROOT'] ?? '/Users/natanielmarmucki/development/flutter'}'
@@ -54,16 +54,16 @@ Future<void> loadAppFonts() async {
   }
 }
 
-/// Buduje ekran w obu motywach i zapisuje zrzuty do test/golden/goldens/.
+/// Builds the screen in both themes and saves the screenshots to test/golden/goldens/.
 ///
-/// [name] trafia do nazwy pliku: `<name>-light.png` i `<name>-dark.png`.
+/// [name] goes into the file name: `<name>-light.png` and `<name>-dark.png`.
 Future<void> goldenScreen(
   WidgetTester tester,
   String name,
   Widget Function(BuildContext context) build, {
   Future<void> Function(WidgetTester tester)? afterPump,
   Map<String, Object> preferences = const {'fontSize': 19.0, 'lineHeight': 1.62},
-  /// Systemowe powiększenie czcionki, osobne od rozmiaru tekstu pieśni.
+  /// System text scaling, separate from the song text size.
   double textScale = 1.0,
 }) async {
   for (final theme in [('light', lightTheme), ('dark', darkTheme)]) {
@@ -85,8 +85,8 @@ Future<void> goldenScreen(
           Provider<SettingsViewModel>(create: (_) => SettingsViewModel()),
         ],
         child: MaterialApp(
-          // Klucz na motyw: bez niego drugi przebieg trafia w to samo drzewo elementów,
-          // Navigator zachowuje stos tras i dialog otwarty w pierwszym motywie zostaje na ekranie.
+          // A key per theme: without it the second pass hits the same element tree,
+          // the Navigator keeps its route stack and a dialog opened in the first theme stays on screen.
           key: ValueKey(theme.$1),
           theme: theme.$2,
           debugShowCheckedModeBanner: false,
@@ -107,7 +107,7 @@ Future<void> goldenScreen(
   }
 }
 
-/// Pieśni ze śpiewnika do zrzutów: numery, tytuły i jedna ulubiona.
+/// Songbook songs for screenshots: numbers, titles and one favorite.
 List<Song> sampleSongs() {
   const titles = [
     'Alleluja, chwalcie Pana',
@@ -138,8 +138,8 @@ List<Song> sampleSongs() {
   ];
 }
 
-/// Dłuższa lista do zrzutu szybkiego przewijania: uchwyt pokazuje się dopiero, gdy jest co
-/// przewijać. Tytuły powtarzają się cyklicznie, numery rosną tak jak w śpiewniku.
+/// A longer list for the fast scrolling screenshot: the thumb appears only when there is something
+/// to scroll. Titles repeat cyclically, numbers increase as in the songbook.
 List<Song> manySongs({int count = 200}) {
   final titles = sampleSongs().map((song) => song.title).toList();
   return [
@@ -153,7 +153,7 @@ List<Song> manySongs({int count = 200}) {
   ];
 }
 
-/// Własna pieśń do zrzutów.
+/// A user song for screenshots.
 MySong sampleMySong() {
   final now = DateTime(2026, 9, 18, 12);
   return MySong(

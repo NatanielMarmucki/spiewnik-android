@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// Ustawienia iOS, których App Store Connect wymaga przy wysyłce builda.
+/// iOS settings that App Store Connect requires when a build is uploaded.
 void main() {
   final infoPlist = File('ios/Runner/Info.plist').readAsStringSync();
   final privacyManifest = File('ios/Runner/PrivacyInfo.xcprivacy').readAsStringSync();
   final project = File('ios/Runner.xcodeproj/project.pbxproj').readAsStringSync();
 
-  /// Wartość logiczna klucza z pliku plist w formacie XML albo null, gdy klucza nie ma.
+  /// The boolean value of a key in an XML plist, or null when the key is missing.
   bool? plistBool(String plist, String key) {
     final match = RegExp('<key>$key</key>\\s*<(true|false)/>').firstMatch(plist);
     return match == null ? null : match.group(1) == 'true';
@@ -25,7 +25,7 @@ void main() {
       expect(privacyManifest, matches(RegExp(r'<key>NSPrivacyCollectedDataTypes</key>\s*<array/>')));
     });
 
-    /// Kategoria API z wymaganym powodem i jej jedyny zadeklarowany powód.
+    /// A required-reason API category and its only declared reason.
     Matcher declares(String category, String reason) => matches(RegExp(
           '<string>NSPrivacyAccessedAPICategory$category</string>\\s*'
           '<key>NSPrivacyAccessedAPITypeReasons</key>\\s*<array>\\s*<string>${RegExp.escape(reason)}</string>\\s*</array>',

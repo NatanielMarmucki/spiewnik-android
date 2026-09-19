@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spiewnik/theme/theme.dart';
 
-/// Motyw bez cieni: docs/DESIGN-SYSTEM.md nie przewiduje ich nigdzie, także na przycisku-pastylce.
+/// A theme without shadows: docs/DESIGN-SYSTEM.md has none anywhere, including on the pill button.
 void main() {
   for (final (name, theme) in [('light', lightTheme), ('dark', darkTheme)]) {
     group('$name theme: pill button has no shadow', () {

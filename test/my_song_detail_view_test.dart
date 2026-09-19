@@ -49,7 +49,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Akcje pieśni siedzą w arkuszu pod trzema kropkami, tak jak w podglądzie pieśni ze śpiewnika.
+  /// Song actions sit in the sheet under the three dots, just like in the songbook song preview.
   Future<void> tapOption(WidgetTester tester, String label) async {
     await tester.tap(find.byTooltip('Opcje pieśni'));
     await tester.pumpAndSettle();
@@ -100,7 +100,7 @@ void main() {
 
     expect(find.byType(MySongDetailView), findsOneWidget);
     expect(find.descendant(of: find.byType(AppBar), matching: find.text('Moja pieśń')), findsOneWidget);
-    // Renderer zdejmuje numery zwrotek z toku tekstu i dzieli treść na bloki.
+    // The renderer takes verse numbers out of the text flow and splits the content into blocks.
     expect(find.textContaining('Pierwsza zwrotka'), findsOneWidget);
     expect(find.textContaining('Druga zwrotka'), findsOneWidget);
   });

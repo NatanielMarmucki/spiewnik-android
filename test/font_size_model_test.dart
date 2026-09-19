@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/model/font_size_model.dart';
 
-/// Ustawienia tekstu istniejących użytkowników: nowe domyślne obowiązują tylko przy pierwszej
-/// instalacji, a zapisane wartości spoza nowego zakresu są przycinane, nie resetowane.
+/// Text settings of existing users: the new defaults apply only on first install,
+/// and saved values outside the new range are clamped, not reset.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -21,7 +21,7 @@ void main() {
 
     expect(model.fontSize, 19.0);
     expect(model.lineHeight, 1.62);
-    // Brakujący klucz zostaje brakujący: nic nie zapisujemy przy samym odczycie.
+    // A missing key stays missing: nothing is saved on a plain read.
     expect((await prefs()).containsKey(FontSizeModel.fontSizeKey), isFalse);
     expect((await prefs()).containsKey(FontSizeModel.lineHeightKey), isFalse);
   });
@@ -52,11 +52,11 @@ void main() {
   });
 
   test('keeps a fractional value from the iOS migration without rounding', () async {
-    // isSize ze starej aplikacji potrafi być ułamkiem, np. po przeciągnięciu suwaka.
+    // isSize from the old app can be fractional, e.g. after dragging the slider.
     final model = await load({'fontSize': 25.5549418926239});
 
     expect(model.fontSize, 25.5549418926239);
-    expect(model.lineHeight, 1.62); // interlinii stara aplikacja nie migruje
+    expect(model.lineHeight, 1.62); // the old app does not migrate line height
   });
 
   test('clamps a fractional value from the iOS migration that is above the range', () async {

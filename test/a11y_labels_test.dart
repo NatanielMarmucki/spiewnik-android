@@ -16,10 +16,10 @@ import 'support/fakes/fake_song_repository.dart';
 import 'support/platform_fakes.dart';
 import 'support/screen_harness.dart';
 
-/// Krok 5a: każda ikona-akcja ma etykietę po polsku, a ikony ozdobne nie mają żadnej.
+/// Step 5a: every icon action has a Polish label, and decorative icons have none.
 ///
-/// `labeledTapTargetGuideline` pilnuje, żeby żaden cel dotknięcia nie został niemy —
-/// to jest właściwy test, bo łapie też rzeczy dodane później.
+/// `labeledTapTargetGuideline` makes sure no tap target is left silent —
+/// this is the real test, because it also catches things added later.
 void main() {
   late FakeWakelock wakelock;
   late FakeShare share;
@@ -111,7 +111,7 @@ void main() {
         (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
       );
 
-      // Przyciski paska niosą etykietę jako podpowiedź (`tooltip`), którą czytnik ekranu czyta.
+      // App bar buttons carry their label as a `tooltip`, which the screen reader reads.
       expect(find.byTooltip('Dodaj do ulubionych'), findsOneWidget);
       expect(find.byTooltip('Opcje pieśni'), findsOneWidget);
       expect(find.bySemanticsLabel('Poprzednia pieśń'), findsOneWidget, reason: 'pierwsza pieśń: bez numeru');

@@ -54,7 +54,7 @@ void main() {
     );
     expect(row.mainAxisAlignment, MainAxisAlignment.spaceBetween);
 
-    // Pasek akcji zajmuje całą szerokość wnętrza dialogu, więc wystarczy porównać się z nim.
+    // The action bar spans the full inner width of the dialog, so comparing against it is enough.
     final actions = tester.getRect(find.byType(DialogActions));
     final cancel = tester.getRect(find.widgetWithText(TextButton, 'Anuluj'));
     final confirm = tester.getRect(find.widgetWithText(TextButton, 'Usuń'));

@@ -28,7 +28,7 @@ void main() {
 
     expect(find.byType(EmptyState), findsOneWidget);
     expect(find.text('Brak wyników'), findsOneWidget);
-    // Zapytanie jest w polu i w komunikacie.
+    // The query is both in the field and in the message.
     expect(find.descendant(of: find.byType(EmptyState), matching: find.textContaining('qqqq')), findsOneWidget);
 
     await tester.tap(find.text('Wyczyść wyszukiwanie'));

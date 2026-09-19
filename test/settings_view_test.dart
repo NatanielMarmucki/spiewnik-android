@@ -63,7 +63,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Ustawienia są dłuższe niż ekran testowy, więc przed dotknięciem trzeba dojechać do celu.
+  /// The settings are taller than the test screen, so the target has to be scrolled to before tapping.
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
     await tester.ensureVisible(finder);
     await tester.pumpAndSettle();
@@ -108,7 +108,7 @@ void main() {
   group('keep screen on', () {
     testWidgets('is on by default, and turning it off releases the wakelock immediately', (tester) async {
       await pumpSettings(tester);
-      // Otwarta pieśń w tle: ustawienia są osiągalne z ekranu pieśni.
+      // A song open in the background: settings can be reached from the song screen.
       ScreenWakeLock.acquire();
       addTearDown(ScreenWakeLock.release);
       await tester.pump();

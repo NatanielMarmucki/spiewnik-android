@@ -3,13 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/theme.dart';
 
-/// Krok 5d: kontrast każdej pary kolorów w obu motywach (docs/DESIGN-SYSTEM.md, sekcja 6).
+/// Step 5d: contrast of every color pair in both themes (docs/DESIGN-SYSTEM.md, section 6).
 ///
-/// Progi WCAG 2.1: tekst 4,5:1, duży tekst (≥ 18,66 dp półgruby lub ≥ 24 dp) 3:1,
-/// elementy interfejsu i stany nieaktywne 3:1. Stan wyłączony ma być **widoczny, ale
-/// odróżnialny**, więc nie zwalnia z progu 3:1 — sprawdzamy go osobno.
+/// WCAG 2.1 thresholds: text 4.5:1, large text (≥ 18.66 dp semibold or ≥ 24 dp) 3:1,
+/// UI components and inactive states 3:1. The disabled state must be **visible, but
+/// distinguishable**, so it is not exempt from the 3:1 threshold — we check it separately.
 double contrast(Color foreground, Color background) {
-  // Kolor półprzezroczysty liczy się po nałożeniu na tło, nie sam z siebie.
+  // A semi-transparent color is measured after blending it over the background, not on its own.
   final over = Color.alphaBlend(foreground, background);
   final a = over.computeLuminance();
   final b = background.computeLuminance();
@@ -54,7 +54,7 @@ void main() {
       (what: 'hairline on background', foreground: app.line, background: surface, min: 1.0),
       (what: 'index dots on background', foreground: app.indexDots, background: surface, min: 1.0),
       (what: 'pressed row against background', foreground: app.pressedSurface, background: surface, min: 1.0),
-      // Stany nieaktywne: mają być widoczne, ale odróżnialne od aktywnych.
+      // Inactive states: they must be visible, but distinguishable from active ones.
       (what: 'DISABLED song bar arrow', foreground: app.textTertiary, background: surface, min: 3.0),
       (what: 'INACTIVE navigation tab', foreground: app.textTertiary, background: surface, min: 3.0),
       (what: 'DISABLED „Przejdź” button in the dialog (on the line color)',

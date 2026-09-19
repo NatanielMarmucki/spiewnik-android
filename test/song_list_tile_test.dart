@@ -27,7 +27,7 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 
-  /// Tytuł bywa rozbity na kilka `Text`ów, po jednym na wiersz — skleja je z powrotem.
+  /// The title may be split into several `Text`s, one per line — joins them back together.
   String renderedTitle(WidgetTester tester) {
     return tester
         .widgetList<Text>(find.descendant(of: find.byType(SongListTile), matching: find.byType(Text)))
@@ -36,7 +36,7 @@ void main() {
         .trim();
   }
 
-  /// Sprawdza, że każdy wiersz tytułu zmieścił się w swoim pudełku, czyli nic nie zostało ucięte.
+  /// Checks that every title line fit in its box, that is, nothing was cut off.
   void expectNothingClipped(WidgetTester tester, {double scale = 1.0}) {
     final texts = find.descendant(of: find.byType(SongListTile), matching: find.byType(Text));
     for (var i = 0; i < tester.widgetList<Text>(texts).length; i++) {
@@ -140,8 +140,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(renderedTitle(tester), contains('chwalcie Pana'));
-      // Wielokropek jest sprawą rysowania: w spanie tekst zostaje w całości, więc sprawdzamy,
-      // czy pudełko ostatniego wiersza pomieściło tekst, zamiast szukać znaku „…”.
+      // The ellipsis is a matter of painting: the span keeps the full text, so we check
+      // whether the box of the last line fit the text instead of looking for the "…" character.
       expectNothingClipped(tester, scale: 2.0);
     });
 
@@ -235,8 +235,8 @@ void main() {
     await pumpTile(tester, SongListTile(title: 'Pieśń', number: 1, onTap: () => taps++));
 
     final rect = tester.getRect(find.byType(SongListTile));
-    await tester.tapAt(Offset(rect.right - 4, rect.center.dy)); // pusty obszar przy numerze
-    await tester.tapAt(Offset(rect.left + 4, rect.center.dy)); // pusty obszar przy krawędzi
+    await tester.tapAt(Offset(rect.right - 4, rect.center.dy)); // empty area next to the number
+    await tester.tapAt(Offset(rect.left + 4, rect.center.dy)); // empty area at the edge
 
     expect(taps, 2);
   });

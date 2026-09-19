@@ -6,7 +6,7 @@ import 'package:spiewnik/view/welcome_view.dart';
 
 import 'support/screen_harness.dart';
 
-/// Ekran powitalny po migracji: zatwierdzona treść, jedno wyjście, dostępność i oba motywy.
+/// Welcome screen after migration: approved copy, a single exit, accessibility and both themes.
 void main() {
   Finder continueButton() => find.bySemanticsLabel(WelcomeView.continueSemanticsLabel);
 

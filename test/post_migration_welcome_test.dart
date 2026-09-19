@@ -13,7 +13,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'support/core_data_fixtures.dart';
 import 'support/test_store.dart';
 
-/// Ekran powitalny po migracji: raz, tylko dla kogoś, czyje dane właśnie przenieśliśmy.
+/// The post-migration welcome screen: once, and only for someone whose data we just moved.
 void main() {
   final logger = Logger(level: Level.off);
 
@@ -76,7 +76,7 @@ void main() {
 
     test('does not show when the migration ran on an earlier launch', () async {
       const result = CoreDataMigrationResult(CoreDataMigrationStatus.alreadyDone);
-      // Rozmiar czcionki z ponowionej migracji ustawień nie wystarcza: sesją migracji rządzi Core Data.
+      // A font size from a retried settings migration is not enough: Core Data decides the migration session.
       expect(await welcome().decide(coreDataResult: result, migratedFontSize: 24.0, isIOS: true), isNull);
     });
 
@@ -109,8 +109,8 @@ void main() {
     });
   });
 
-  /// Kolejne uruchomienia z prawdziwą migracją na kopiach baz z iOS, w kolejności z main():
-  /// migracja Core Data, potem decyzja. Stan (ObjectBox i SharedPreferences) przechodzi między startami.
+  /// Consecutive launches with a real migration on copies of iOS databases, in the order used by main():
+  /// the Core Data migration, then the decision. State (ObjectBox and SharedPreferences) carries over between launches.
   group('consecutive launches with a real migration', () {
     late TestStore testStore;
     late Directory documents;

@@ -53,7 +53,7 @@ void main() {
     await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), input);
-    await tester.pumpAndSettle(); // podgląd tytułu odblokowuje przycisk
+    await tester.pumpAndSettle(); // the title preview enables the button
     await tester.tap(find.text('Przejdź'));
     await tester.pumpAndSettle();
   }
@@ -145,7 +145,7 @@ void main() {
       expect(find.byType(SongBottomBar), findsOneWidget);
       expect(find.byIcon(Icons.chevron_left), findsOneWidget);
       expect(find.byIcon(Icons.chevron_right), findsOneWidget);
-      // Numery to 1, 2, 4, 5: przed czwórką jest dziura, więc lewa strzałka nie ma numeru.
+      // The numbers are 1, 2, 4, 5: there is a gap before 4, so the left arrow has no number.
       expect(find.text('5'), findsOneWidget, reason: 'numer następnej pieśni');
 
       await tester.tap(find.byIcon(Icons.chevron_right));
@@ -159,7 +159,7 @@ void main() {
     });
 
     testWidgets('at the end the arrow stays in place but is disabled', (tester) async {
-      await openSong(tester, 5); // ostatnia pieśń
+      await openSong(tester, 5); // last song
 
       expect(find.byIcon(Icons.chevron_right), findsOneWidget, reason: 'strzałka zawsze w tym samym miejscu');
 
@@ -170,7 +170,7 @@ void main() {
     });
 
     testWidgets('a disabled arrow stays visible in the tertiary text color', (tester) async {
-      await openSong(tester, 1); // pierwsza pieśń: nie ma poprzedniej
+      await openSong(tester, 1); // first song: there is no previous one
 
       final appColors = Theme.of(tester.element(find.byType(SongBottomBar))).extension<AppColors>()!;
       final arrow = tester.widget<Icon>(find.byIcon(Icons.chevron_left));
@@ -184,7 +184,7 @@ void main() {
       await openSong(tester, 4);
 
       expect(find.byType(GoToNumberIcon), findsOneWidget);
-      // Numer bieżącej pieśni stoi tylko w pasku górnym, obok tytułu.
+      // The current song number appears only in the top bar, next to the title.
       expect(find.text('4. Pieśń 4'), findsOneWidget);
       expect(
         find.descendant(of: find.byType(SongBottomBar), matching: find.text('4')),
@@ -203,8 +203,8 @@ void main() {
       final bar = tester.getSize(find.byType(SongBottomBar)).height;
       final screen = tester.getSize(find.byType(Scaffold)).height;
 
-      // Lupa rysowana CustomPaintem potrafi rozepchnąć pasek, jeśli pozwolić jej wziąć
-      // całą wysokość od Scaffolda.
+      // A magnifier drawn with CustomPaint can stretch the bar if it is allowed to take
+      // the full height from the Scaffold.
       expect(bar, lessThan(screen / 4));
       expect(bar, greaterThanOrEqualTo(SongBottomBar.minHeight));
     });
@@ -222,7 +222,7 @@ void main() {
       expect(find.text('4. Pieśń 4'), findsOneWidget);
       expect(ScreenWakeLock.holders, 1);
 
-      // Zamknięcie ekranu: zamiast przycisku wstecz (tu nie ma nad czym wracać) niszczymy drzewo.
+      // Closing the screen: instead of the back button (there is nothing to go back to here) we tear down the tree.
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpAndSettle();
       expect(ScreenWakeLock.holders, 0, reason: 'po wyjściu licznik schodzi do zera');
@@ -322,7 +322,7 @@ void main() {
   });
 
   testWidgets('swiping does nothing at a gap in the numbering', (tester) async {
-    // Numery to 1, 2, 4, 5: po dwójce nie ma trójki, więc nie ma dokąd przejść.
+    // The numbers are 1, 2, 4, 5: there is no 3 after 2, so there is nowhere to go.
     await openSong(tester, 2);
 
     await tester.drag(find.byType(SongContent), const Offset(-300, 0));

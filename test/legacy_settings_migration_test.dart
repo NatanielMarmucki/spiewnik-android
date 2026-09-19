@@ -123,8 +123,8 @@ void main() {
   });
 
   group('channel does not respond', () {
-    /// Kanału nie ma w ogóle: dokładnie to zobaczymy, gdyby rejestracja po migracji na UIScene
-    /// spóźniła się względem wywołania z Darta.
+    /// No channel at all: exactly what we would see if, after the move to UIScene, the channel
+    /// were registered later than the call from Dart.
     void noChannel() {
       calls = [];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -151,7 +151,7 @@ void main() {
       noChannel();
       await LegacySettingsMigration(logger: logger).run(isIOS: true);
 
-      // Drugie uruchomienie, tym razem kanał odpowiada.
+      // Second launch, this time the channel responds.
       mockChannel(24.0);
       final result = await LegacySettingsMigration(logger: logger).run(isIOS: true);
 
@@ -195,6 +195,6 @@ void main() {
     await model.loaded;
 
     expect(model.fontSize, 26.0);
-    expect(model.lineHeight, FontSizeModel.defaultLineHeight); // interlinii stara aplikacja nie migruje
+    expect(model.lineHeight, FontSizeModel.defaultLineHeight); // the old app does not migrate line height
   });
 }

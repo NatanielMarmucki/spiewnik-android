@@ -23,14 +23,14 @@ import '../support/fakes/fake_song_repository.dart';
 import '../support/golden_harness.dart';
 import '../support/platform_fakes.dart';
 
-/// Zrzuty wszystkich ekranów w obu motywach, renderowane bez urządzenia.
+/// Screenshots of every screen in both themes, rendered without a device.
 ///
-/// Obrazy powstają na Linuksie, bo rasteryzacja czcionek różni się między platformami.
-/// Na innych systemach testy są pomijane, żeby lokalne `flutter test` zostało szybkie
-/// i zielone; sprawdzasz je przez `tools/golden.sh` (kontener z Linuksem).
+/// The images are made on Linux, because font rasterization differs between platforms.
+/// On other systems the tests are skipped so that a local `flutter test` stays fast
+/// and green; you check them with `tools/golden.sh` (a Linux container).
 void main() {
-  // Obrazy w repozytorium pochodzą z Linuksa i tylko tam zgadzają się co do piksela.
-  // Na macOS i Windowsie testy są pomijane; sprawdzasz je przez tools/golden.sh.
+  // The images in the repository come from Linux and match pixel for pixel only there.
+  // On macOS and Windows the tests are skipped; you check them with tools/golden.sh.
   final bool skipOnOtherPlatforms = !Platform.isLinux;
 
   late FakeWakelock wakelock;
@@ -39,7 +39,7 @@ void main() {
   setUpAll(loadAppFonts);
 
   setUp(() {
-    // Ekrany szczegółów wołają kanały platformy; bez atrap test wywraca się na MissingPluginException.
+    // The detail screens call platform channels; without fakes the test fails with MissingPluginException.
     wakelock = FakeWakelock()..install();
     share = FakeShare()..install();
   });
@@ -67,7 +67,7 @@ void main() {
   }, skip: skipOnOtherPlatforms);
 
   testWidgets('song list: fast scrolling', (tester) async {
-    // Uchwyt pokazuje się dopiero przy liście dłuższej niż dwa ekrany, więc tu jest ich więcej.
+    // The thumb appears only for a list longer than two screens, so this one has more songs.
     final viewModel = SongViewModel(FakeSongRepository(manySongs()));
     await goldenScreen(
       tester,
@@ -188,8 +188,8 @@ void main() {
       afterPump: (tester) async {
         await tester.enterText(find.byType(TextFormField).first, 'Nowa');
         await tester.pumpAndSettle();
-        // Formularz jest tu ekranem startowym, więc nie ma przycisku wstecz:
-        // wyjście wywołujemy tak, jak robi to gest systemowy.
+        // The form is the home screen here, so there is no back button:
+        // we trigger leaving the way the system gesture does.
         await tester.state<NavigatorState>(find.byType(Navigator)).maybePop();
         await tester.pumpAndSettle();
       },
@@ -221,8 +221,8 @@ void main() {
       '13-dialog-przejdz-do-piesni',
       (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
       afterPump: (tester) async {
-        // warnIfMissed: ikona leży w InkWellu w pasku; ostrzeżenie o trafieniu jest mylące,
-        // dialog otwiera się poprawnie.
+        // warnIfMissed: the icon sits in an InkWell in the bar; the hit warning is misleading,
+        // the dialog opens correctly.
         await tester.tap(find.ancestor(of: find.byType(GoToNumberIcon), matching: find.byType(InkWell)).first);
         await tester.pumpAndSettle();
       },
@@ -251,8 +251,8 @@ void main() {
       '14-arkusz-opcji',
       (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
       afterPump: (tester) async {
-        // warnIfMissed: ikona leży w przycisku paska; ostrzeżenie o trafieniu jest mylące,
-        // arkusz otwiera się poprawnie.
+        // warnIfMissed: the icon sits in a bar button; the hit warning is misleading,
+        // the sheet opens correctly.
         await tester.tap(find.byIcon(Icons.more_vert), warnIfMissed: false);
         await tester.pumpAndSettle();
       },
@@ -272,7 +272,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  // Systemowe powiększenie ×2,0 (sekcja 6 dokumentu) na kluczowych ekranach.
+  // System text scaling ×2.0 (section 6 of the document) on the key screens.
   testWidgets('song list: text scale x2', (tester) async {
     final viewModel = songs();
     await goldenScreen(
@@ -305,7 +305,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  // Ekran powitalny po migracji ze starej aplikacji iOS (issue #37).
+  // Welcome screen after migrating from the old iOS app (issue #37).
   testWidgets('welcome screen', (tester) async {
     await goldenScreen(tester, '21-powitanie', (context) => WelcomeView(onContinue: () {}));
   }, skip: skipOnOtherPlatforms);

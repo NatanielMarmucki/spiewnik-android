@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spiewnik/theme/app_text_theme.dart';
 import 'package:spiewnik/theme/song_text_scale.dart';
 
-/// Wartości z tabeli „Skala pieśni — proporcje od S” w docs/DESIGN-SYSTEM.md.
+/// Values from the „Skala pieśni — proporcje od S” table in docs/DESIGN-SYSTEM.md.
 void main() {
   group('proportions derived from S', () {
     test('S = 10 (smallest slider size)', () {
@@ -21,11 +21,11 @@ void main() {
     test('S = 19 (default size, values from the document)', () {
       const scale = SongTextScale(size: 19.0);
 
-      expect(scale.lineHeight, closeTo(30.78, 0.001)); // dokument: 30,8
-      expect(scale.blockGap, closeTo(23.94, 0.001)); // dokument: 24
-      expect(scale.refrainIndent, closeTo(14.06, 0.001)); // dokument: 14
-      expect(scale.initialSize, closeTo(41.04, 0.001)); // dokument: 41
-      expect(scale.verseNumberSize, closeTo(14.06, 0.001)); // dokument: 14
+      expect(scale.lineHeight, closeTo(30.78, 0.001)); // document: 30.8
+      expect(scale.blockGap, closeTo(23.94, 0.001)); // document: 24
+      expect(scale.refrainIndent, closeTo(14.06, 0.001)); // document: 14
+      expect(scale.initialSize, closeTo(41.04, 0.001)); // document: 41
+      expect(scale.verseNumberSize, closeTo(14.06, 0.001)); // document: 14
       expect(scale.maxColumnWidth, closeTo(646.0, 0.001));
     });
 

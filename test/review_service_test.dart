@@ -3,14 +3,14 @@ import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/review_service.dart';
 
-/// Prośba o ocenę: rzadko, na progach uruchomień i najwyżej raz na wersję.
+/// The review request: rarely, at launch thresholds and at most once per version.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late List<String> asked;
   late bool available;
 
-  /// Usługa bez prawdziwego in_app_review: zapisujemy, o co została poproszona.
+  /// A service without the real in_app_review: we record what it was asked to do.
   ReviewService service({String version = '12.0.0+1'}) {
     return ReviewService(
       logger: Logger(level: Level.off),
@@ -29,7 +29,7 @@ void main() {
   Future<int> launchCount() async =>
       (await SharedPreferences.getInstance()).getInt(ReviewService.launchCountKey) ?? 0;
 
-  /// Uruchamia aplikację [times] razy i zwraca numery uruchomień, przy których padła prośba.
+  /// Launches the app [times] times and returns the numbers of the launches that made the request.
   Future<List<int>> runLaunches(int times, {String version = '12.0.0+1'}) async {
     final askedAt = <int>[];
     for (var i = 1; i <= times; i++) {
@@ -74,7 +74,7 @@ void main() {
       await runLaunches(49);
       expect(asked, hasLength(1));
 
-      // Aktualizacja aplikacji: kolejny próg (50) znów jest w grze.
+      // App update: the next threshold (50) is back in play.
       final afterUpdate = await service(version: '12.1.0+2').onLaunch();
 
       expect(afterUpdate, isTrue);

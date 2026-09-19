@@ -11,12 +11,12 @@ import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/settings_view.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
 
-/// Nieudane otwarcie linku albo poczty ma być widoczne dla użytkownika (B3 z docs/PARITY.md).
+/// A failure to open a link or email must be visible to the user (B3 in docs/PARITY.md).
 void main() {
   late SettingsViewModel viewModel;
   late List<Uri> attempts;
 
-  /// View model, który zawsze twierdzi, że systemowi nie udało się otworzyć adresu.
+  /// A view model that always reports that the system failed to open the address.
   SettingsViewModel failing() {
     attempts = [];
     return SettingsViewModel(
@@ -55,7 +55,7 @@ void main() {
   }
 
   Future<void> tapRow(WidgetTester tester, String label) async {
-    // Wiersz bywa poza ekranem, a lista buduje tylko to, co widać.
+    // The row may be off screen, and the list builds only what is visible.
     await tester.scrollUntilVisible(find.text(label), 200.0);
     await tester.pumpAndSettle();
     await tester.tap(find.text(label));

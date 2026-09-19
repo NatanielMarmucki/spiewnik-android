@@ -4,15 +4,15 @@ import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/widgets/song_scroll_bar.dart';
 
-/// Krok „szybkie przewijanie": uchwyt przy prawej krawędzi i etykieta z numerem pieśni.
+/// The "fast scrolling" step: a thumb at the right edge and a label with the song number.
 void main() {
   late ScrollController controller;
 
   setUp(() => controller = ScrollController());
   tearDown(() => controller.dispose());
 
-  /// Lista 2000 wierszy o **różnej** wysokości — co dziesiąty jest wyższy, tak jak wiersz
-  /// z zawiniętym tytułem. Gdyby kod liczył pozycję ze stałej wysokości, tu by się wywrócił.
+  /// A list of 2000 rows of **different** heights — every tenth one is taller, like a row
+  /// with a wrapped title. If the code computed the position from a fixed height, it would fail here.
   Future<void> pumpList(
     WidgetTester tester, {
     bool enabled = true,
@@ -49,7 +49,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Przeciąga uchwyt do podanego ułamka toru.
+  /// Drags the thumb to the given fraction of the track.
   Future<void> dragThumbTo(WidgetTester tester, double fraction) async {
     final bar = tester.getRect(find.byType(SongScrollBar));
     final start = Offset(bar.right - SongScrollBar.hitWidth / 2, bar.top + SongScrollBar.thumbHeight / 2);
@@ -57,7 +57,7 @@ void main() {
     await tester.pump();
     await gesture.moveTo(Offset(start.dx, bar.top + bar.height * fraction));
     await tester.pumpAndSettle();
-    // Gest zostaje wciśnięty: etykieta pokazuje się tylko w trakcie przeciągania.
+    // The gesture stays pressed: the label shows only while dragging.
   }
 
   testWidgets('dragging the thumb scrolls the list', (tester) async {
@@ -79,7 +79,7 @@ void main() {
 
     await dragThumbTo(tester, 0.5);
 
-    // Numer bierzemy z modelu przez labelForIndex, a indeks z listy — nie z dzielenia offsetu.
+    // We take the number from the model through labelForIndex and the index from the list — not from dividing the offset.
     final label = find.descendant(of: find.byType(SongScrollBar), matching: find.byType(Text));
     final numbers = tester
         .widgetList<Text>(label)
@@ -117,7 +117,7 @@ void main() {
   testWidgets('the thumb disappears during an active search', (tester) async {
     await pumpList(tester, enabled: false);
 
-    // Zostaje sama lista: przy wynikach wyszukiwania uchwyt nic nie wnosi.
+    // Only the list remains: with search results the thumb adds nothing.
     expect(find.byType(ListView), findsOneWidget);
     final bar = tester.getRect(find.byType(SongScrollBar));
     final hit = Offset(bar.right - SongScrollBar.hitWidth / 2, bar.top + SongScrollBar.thumbHeight / 2);
@@ -193,7 +193,7 @@ void main() {
 
   testWidgets('a row cut down to a few pixels does not count as visible', (tester) async {
     await pumpList(tester);
-    // Ustawiamy się tuż pod granicą wiersza 10: z poprzedniego zostaje ułamek piksela.
+    // We scroll to just below the boundary of row 10: a fraction of a pixel of the previous row remains.
     controller.jumpTo(96.0 + 48.0 * 9 - 1.0);
     await tester.pumpAndSettle();
 
@@ -213,8 +213,8 @@ void main() {
     });
 
     testWidgets('without a list in the tree, the label does not show and the screen keeps working', (tester) async {
-      // SingleChildScrollView nie ma RenderSliverMultiBoxAdaptor — dokładnie przypadek,
-      // w którym odczyt musi odpuścić.
+      // SingleChildScrollView has no RenderSliverMultiBoxAdaptor — exactly the case
+      // in which the lookup has to give up.
       await tester.pumpWidget(
         MaterialApp(
           theme: lightTheme,

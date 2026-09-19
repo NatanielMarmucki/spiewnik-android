@@ -5,7 +5,7 @@ import 'package:spiewnik/json_manager.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/model/song_text.dart';
 
-/// Parser na prawdziwych pieśniach z assetu, nie na wymyślonych ciągach.
+/// The parser on real songs from the asset, not on made-up strings.
 void main() {
   const parser = SongTextParser();
   late Map<int, Song> songs;
@@ -133,7 +133,7 @@ void main() {
 
   group('typos in the data', () {
     test('an unpaired mark stays plain text, not a marker', () {
-      // Pieśń 169: w danych jest „[Czym prędzej pośpiesz Doń!:]” — otwarcie zgubiło dwukropek.
+      // Song 169: the data has „[Czym prędzej pośpiesz Doń!:]” — the opening mark lost its colon.
       final blocks = parseSong(169);
       final withStray = blocks.firstWhere((block) => block.text.contains('Czym prędzej'));
 
@@ -151,9 +151,9 @@ void main() {
   });
 
   group('data quality', () {
-    /// Bloki, w których znaki powtórzenia się nie równoważą. To literówki w treściach pieśni
-    /// (patrz issue o poprawce danych). Liczba ma nie rosnąć: przy edycji assetu łatwo dołożyć
-    /// kolejne, a parser pokaże je wtedy jako zwykły tekst, czyli po cichu.
+    /// Blocks in which the repeat marks do not balance. These are typos in the song lyrics
+    /// (see the issue about the data fix). The number must not grow: editing the asset can easily add
+    /// more, and the parser would then show them as plain text, that is, silently.
     const knownUnpairedBlocks = 14;
 
     test('the number of blocks with unpaired marks does not grow', () {

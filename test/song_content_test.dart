@@ -59,7 +59,7 @@ void main() {
   }
 
   testWidgets('a verse that starts with a repeat mark gets no drop cap', (tester) async {
-    // 98 pieśni w assecie zaczyna się od „[:”; powiększony nawias wyglądał jak błąd.
+    // 98 songs in the asset start with „[:”; an enlarged bracket looked like a bug.
     await pumpContent(tester, content: '1. [:Barankowi cześć,:] Barankowi cześć.');
 
     final spans = flatten(spanOf(tester, 'Barankowi cześć')).cast<TextSpan>();
@@ -148,7 +148,7 @@ void main() {
     await pumpContent(tester, textScaler: const TextScaler.linear(2.0));
 
     final body = tester.widget<Text>(find.textContaining('Chwalcie wszystkie Go narody'));
-    // W stylu zostaje S, mnożnik dokłada warstwa tekstu.
+    // The style keeps S; the text layer applies the multiplier.
     expect(body.style?.fontSize, 19.0);
     final scaler = MediaQuery.textScalerOf(tester.element(find.byType(SongContent)));
     expect(scaler.scale(19.0), 38.0);

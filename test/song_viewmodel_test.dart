@@ -164,7 +164,7 @@ void main() {
       viewModel.toggleFavoriteStatus(viewModel.allSongsNotifier.value.first);
       await Future<void>.delayed(Duration.zero);
 
-      // Prośba o ocenę wisi na progach uruchomień w ReviewService, nie na ulubionych.
+      // The review request depends on launch count thresholds in ReviewService, not on favorites.
       expect(inAppReview.calls, isEmpty);
     });
 
@@ -214,8 +214,8 @@ void main() {
     });
 
     test('a character removed from the middle of the content does not break search', () {
-      // „Baranku Boży, x zmiłuj się" po usunięciu przecinka i x zostawiało podwójną spację,
-      // więc naturalne zapytanie nie pasowało, a nienaturalne pasowało (docs/PARITY.md).
+      // „Baranku Boży, x zmiłuj się" left a double space after the comma and the x were removed,
+      // so a natural query did not match and an unnatural one did (docs/PARITY.md).
       viewModel.searchText = 'boży zmiłuj';
       expect(numbers(viewModel.filteredSongsNotifier.value), [2]);
     });
