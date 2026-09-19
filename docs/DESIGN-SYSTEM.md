@@ -189,6 +189,19 @@ different heights and grow with the font (rules 1 and 6 in section 7).
 „Szukaj” (Search), a clear cross when there is input (48 dp target). Focus: 2 dp outline in the accent.
 A single field handles both number and title, diacritic-insensitive search, match highlighted in the title.
 
+**Moving between songs** — the song text is a page, and going to the previous or next song turns it,
+as in a book; it is not opening something new. Only the text moves, horizontally, across the full width;
+the top bar and the song bar **stay put** and only change their number and title. No fade, scale or
+parallax. A swipe follows the finger 1:1 and on release finishes the turn or springs back (platform
+page physics: a flick, or a drag past half the width). The song bar arrows turn the page in **300 ms**
+with the Material 3 **standard easing** `Cubic(0.2, 0, 0, 1)` (`Durations.medium2`, `Easing.standard`):
+a decisive start that settles softly. The next song comes in from the right, the previous one from the
+left. „Przejdź do numeru” (Go to number) opens the song **without animation**: that is opening the book at
+a page, not turning through the pages in between. With reduced motion (system setting) the arrows switch
+without animation too. On iOS a swipe that starts at the left edge stays the system "back to the list"
+gesture; only swipes that start away from the edge turn the page. Decided during implementation, after
+the page transition went the wrong way for the previous song.
+
 **Top bar** — 48 dp, hairline instead of a shadow. On a list: screen title (Newsreader 20) plus
 add and settings. In a song: back, number in the accent, title with ellipsis, heart, and three-dot
 menu in 40 × 48 dp targets.
