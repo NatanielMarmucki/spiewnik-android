@@ -30,8 +30,8 @@ class SongListTile extends StatefulWidget {
   /// The currently open song: number in the accent color.
   final bool isSelected;
 
-  /// Part of the title to highlight, e.g. a search match.
-  final String? highlight;
+  /// Parts of the title to highlight, e.g. the words of a search.
+  final List<String> highlights;
 
   final VoidCallback? onTap;
 
@@ -42,7 +42,7 @@ class SongListTile extends StatefulWidget {
     this.badge,
     this.isFavorite = false,
     this.isSelected = false,
-    this.highlight,
+    this.highlights = const [],
     this.onTap,
   });
 
@@ -99,7 +99,7 @@ class _SongListTileState extends State<SongListTile> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: _IndexLine(
             title: widget.title,
-            highlight: widget.highlight,
+            highlights: widget.highlights,
             isFavorite: widget.isFavorite,
             trailingText: widget.badge ?? (widget.number == null ? null : '${widget.number}'),
             trailingStyle: widget.badge != null ? theme.textTheme.labelMedium : numberStyle,
@@ -117,14 +117,14 @@ class _SongListTileState extends State<SongListTile> {
 /// text takes the full width, so nothing would be left for the dots.
 class _IndexLine extends StatelessWidget {
   final String title;
-  final String? highlight;
+  final List<String> highlights;
   final bool isFavorite;
   final String? trailingText;
   final TextStyle? trailingStyle;
 
   const _IndexLine({
     required this.title,
-    required this.highlight,
+    required this.highlights,
     required this.isFavorite,
     required this.trailingText,
     required this.trailingStyle,
@@ -244,30 +244,32 @@ class _IndexLine extends StatelessWidget {
     return ranges.isEmpty ? [TextRange(start: 0, end: title.length)] : ranges;
   }
 
-  /// Part of the title with the search match highlighted, if the match falls in this line.
+  /// Part of the title with the search matches highlighted, where they fall in this line.
   List<TextSpan> _spans(BuildContext context, TextRange line, TextStyle style) {
     final text = title.substring(line.start, line.end).trimRight();
-    final query = highlight;
-    if (query == null || query.isEmpty) {
-      return [TextSpan(text: text)];
-    }
-    final start = title.toLowerCase().indexOf(query.toLowerCase());
-    if (start < 0) {
-      return [TextSpan(text: text)];
-    }
-    final end = start + query.length;
-    // The match is computed over the whole title, so we clip it to this line.
-    final from = (start - line.start).clamp(0, text.length);
-    final to = (end - line.start).clamp(0, text.length);
-    if (from >= to) {
-      return [TextSpan(text: text)];
+    // Matches are found over the whole title and clipped to this line; overlapping ones merge.
+    final lowerTitle = title.toLowerCase();
+    final marked = List<bool>.filled(text.length, false);
+    for (final fragment in highlights) {
+      final start = fragment.isEmpty ? -1 : lowerTitle.indexOf(fragment.toLowerCase());
+      if (start < 0) {
+        continue;
+      }
+      final from = (start - line.start).clamp(0, text.length);
+      final to = (start + fragment.length - line.start).clamp(0, text.length);
+      marked.fillRange(from, to, true);
     }
     final highlighted = style.copyWith(color: context.appColors.accent);
-    return [
-      if (from > 0) TextSpan(text: text.substring(0, from)),
-      TextSpan(text: text.substring(from, to), style: highlighted),
-      if (to < text.length) TextSpan(text: text.substring(to)),
-    ];
+    final spans = <TextSpan>[];
+    var runStart = 0;
+    for (var i = 1; i <= text.length; i++) {
+      if (i == text.length || marked[i] != marked[runStart]) {
+        final part = text.substring(runStart, i);
+        spans.add(marked[runStart] ? TextSpan(text: part, style: highlighted) : TextSpan(text: part));
+        runStart = i;
+      }
+    }
+    return spans.isEmpty ? [TextSpan(text: text)] : spans;
   }
 }
 

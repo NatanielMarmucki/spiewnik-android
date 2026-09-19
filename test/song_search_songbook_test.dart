@@ -23,44 +23,108 @@ void main() {
     return [for (final song in viewModel.filteredSongsNotifier.value) song.number];
   }
 
-  group('normalized text kept in memory', () {
-    // Real queries: common short words, inflected forms, phrases, numbers, punctuation and extra spaces.
-    const queries = [
-      'a', 'na', 'pan', 'chwała', 'chwala', 'zbawien', 'baranek', 'boży zmiłuj', 'alleluja!', 'matko',
-      '12', '1', '0', 'x', '  jezu   ufam  ', 'ŚWIĘTY', 'duch święty', 'o', 'nie ma',
-    ];
+  group('several words', () {
+    // Independent of the search code: word starts found with a regular expression on the plain text.
+    List<int> containingAll(List<String> wordStarts) => [
+          for (final song in songbook)
+            if (wordStarts.every((start) => RegExp('(?<![a-z])$start')
+                .hasMatch(removePolishDiacritics('${song.title} ${song.content}'.toLowerCase()))))
+              song.number,
+        ];
 
-    test('finds exactly what the search without it finds', () {
-      for (final query in queries) {
-        expect(search(query), _reference(songbook, query), reason: 'query "$query"');
-      }
+    test('finds a song by words in a different order than in the text', () {
+      // Song 9: "Chwałę daj Panu, o duszo moja!" - the phrase "duszo chwałę" appears in no song.
+      expect(search('duszo chwałę'), contains(9));
     });
 
-    test('still finds the same after a favorite reloads the songs', () {
-      viewModel.toggleFavoriteStatus(songbook.first);
-      for (final query in queries) {
-        expect(search(query), _reference(viewModel.allSongsNotifier.value, query), reason: 'query "$query"');
-      }
+    test('every word must occur, not any of them', () {
+      // "duszo" and "chwałę" are searched by their stems "dusz" and "chwal" (see "inflected forms").
+      expect(search('duszo chwałę'), unorderedEquals(containingAll(['dusz', 'chwal'])));
+      expect(search('duszo chwałę').length, lessThan(containingAll(['dusz']).length));
+    });
+
+    test('extra spaces between the words do not matter', () {
+      expect(search('  duszo    chwałę '), search('duszo chwałę'));
+    });
+
+    test('highlights every word found in the title, with its original letters', () {
+      viewModel.searchText = 'panu chwałę';
+      final song = viewModel.filteredSongsNotifier.value.firstWhere((song) => song.number == 9);
+
+      expect(viewModel.titleMatches(song), ['Panu', 'Chwałę']);
+    });
+
+    test('punctuation in the query is ignored, as in the text', () {
+      expect(search('alleluja!'), search('alleluja'));
+      expect(search('alleluja!'), hasLength(84));
+    });
+  });
+
+  group('ranking', () {
+    bool before(List<int> results, int first, int second) => results.indexOf(first) < results.indexOf(second);
+
+    test('a song with the word in its title comes before one with it only in its last verse', () {
+      // 52 "Na krzyżu Jezu zmarłeś" vs 28 "Jak mam powitać", which has "krzyż" only in its last verse.
+      final results = search('krzyż');
+      expect(results, containsAll([28, 52]));
+      expect(before(results, 52, 28), isTrue);
+    });
+
+    test('the exact form comes before a form found by its stem', () {
+      // 35 "Chwała Bogu chwała" vs 1 "Alleluja, chwalcie Pana": both match "chwał" in the title.
+      final results = search('chwała');
+      expect(before(results, 35, 1), isTrue);
+    });
+
+    test('words next to each other, in the order of the query, come before scattered ones', () {
+      // 11 "Dajcie Panu chwałę" has them in order; 9 "Chwałę daj Panu" has them the other way round.
+      final results = search('panu chwałę');
+      expect(before(results, 11, 9), isTrue);
+    });
+
+    test('equal matches keep the order of numbers', () {
+      // All four have the exact word "chwała" in the title and nothing else ranks them apart.
+      final results = search('chwała');
+      final equal = results.where([35, 374, 876, 1030].contains).toList();
+      expect(equal, [35, 374, 876, 1030]);
+    });
+
+    test('a query of digits keeps the order of numbers', () {
+      final results = search('12');
+      expect(results, [...results]..sort());
+      expect(results.first, 12);
+    });
+
+    test('without a query the list is the whole songbook in the order of numbers', () {
+      expect(search(''), [for (final song in songbook) song.number]..sort());
+    });
+  });
+
+  group('inflected forms', () {
+    test('"chwała" finds a song that only has "chwały"', () {
+      // Song 3 "Bądź Panu cześć": "chwały", no form of "chwała" that contains it.
+      expect(search('chwała'), contains(3));
+      expect(search('chwala'), contains(3));
+    });
+
+    test('"matko" finds a song that only has "matka"', () {
+      expect(search('matko'), contains(1000)); // "Pewna matka bardzo"
+    });
+
+    test('"zbawien" finds "zbawienia"', () {
+      expect(search('zbawien'), contains(3));
+    });
+
+    test('a word matches the beginning of words in the text, not their middle', () {
+      // Song 24 has "pan" only inside "wspaniałości".
+      expect(search('pan'), isNot(contains(24)));
+      expect(search('pan'), contains(9)); // "Chwałę daj Panu"
+    });
+
+    test('a one- or two-letter word matches whole words only, so it does not return everything', () {
+      expect(search('o'), contains(9)); // "o duszo moja"
+      expect(search('o').length, lessThan(songbook.length ~/ 2));
     });
   });
 }
 
-/// The search as it was before the normalized text was kept in memory: everything recomputed per query.
-List<int> _reference(List<Song> songs, String query) {
-  String normalizeWhitespace(String text) => text.replaceAll(RegExp(r'\s+'), ' ').trim();
-  String removeNumber(String str) {
-    const charactersToRemove = "123456789,.;:'[]()!?-”—„x";
-    return normalizeWhitespace(str.split('').where((char) => !charactersToRemove.contains(char)).join());
-  }
-
-  if (query.isEmpty) return [for (final song in songs) song.number];
-  final needle = normalizeWhitespace(removePolishDiacritics(query.toLowerCase()));
-  final titleNeedle = removePolishDiacritics(query.toLowerCase());
-  return [
-    for (final song in songs)
-      if ((titleNeedle.isNotEmpty && removePolishDiacritics(song.title.toLowerCase()).contains(titleNeedle)) ||
-          removeNumber(removePolishDiacritics(song.content.toLowerCase())).contains(needle) ||
-          song.number.toString().contains(query))
-        song.number,
-  ];
-}

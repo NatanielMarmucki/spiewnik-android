@@ -112,7 +112,7 @@ class SongListViewState extends State<SongListView> {
                       title: song.title,
                       number: song.number,
                       isFavorite: song.favorite,
-                      highlight: widget.viewModel.titleMatch(song),
+                      highlights: widget.viewModel.titleMatches(song),
                       onTap: () {
                         Navigator.push(
                           context,

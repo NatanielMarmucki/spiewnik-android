@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:spiewnik/model/polish_collation.dart';
 import 'package:spiewnik/data/repositories/song_repository.dart';
 import 'package:spiewnik/model/song_model.dart';
 import 'package:spiewnik/model/song_search.dart';
@@ -78,20 +77,9 @@ class SongViewModel {
     filteredSongsNotifier.value = _search.filter(allSongsNotifier.value, _searchText);
   }
 
-  /// Fragment of [song] title matching [query], with the original letters, or null when it does
-  /// not match. Used by the list to highlight the hit (docs/DESIGN-SYSTEM.md, section 5).
-  String? titleMatch(Song song) => _searchText.isEmpty ? null : _titleMatch(song, _searchText);
-
-  String? _titleMatch(Song song, String query) {
-    final title = removePolishDiacritics(song.title.toLowerCase());
-    final needle = removePolishDiacritics(query.toLowerCase());
-    if (needle.isEmpty) {
-      return null;
-    }
-    final start = title.indexOf(needle);
-    // Diacritics are removed one letter for one letter, so the positions match the original title.
-    return start < 0 ? null : song.title.substring(start, start + needle.length);
-  }
+  /// Parts of [song]'s title matching the words of the search, with the original letters; empty when
+  /// nothing matches. Used by the list to highlight the hits (docs/DESIGN-SYSTEM.md, section 5).
+  List<String> titleMatches(Song song) => _searchText.isEmpty ? const [] : _search.titleMatches(song, _searchText);
 
   Song? findNextSong(int currentNumber) {
     return findSongByNumber(currentNumber + 1);
