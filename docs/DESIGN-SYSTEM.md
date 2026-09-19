@@ -1,325 +1,326 @@
-# Psałterz — system wizualny
+# Psałterz (Psalter) — visual design system
 
-Referencja dla implementacji. Źródło: projekt w Claude Design („Psałterz — system wizualny
-śpiewnika"). Ten plik jest jedynym źródłem prawdy dla kodu — projekt w Claude Design nie jest
-czytelny dla agenta.
+Implementation reference. Source: the Claude Design project („Psałterz — system wizualny
+śpiewnika" (Psalter — hymnal visual design system)). This file is the single source of truth for
+the code — the Claude Design project is not readable by an agent.
 
-Zasada nadrzędna: **tekst pieśni jest interfejsem**, reszta aplikacji tylko do niego prowadzi.
-Żadnych kart, kolorowych kółek ani cieni — hierarchię niosą krój, odstęp i jedna barwa akcentu.
+Overriding principle: **the song text is the interface**; the rest of the app only leads to it.
+No cards, colored circles, or shadows — hierarchy is carried by typeface, spacing, and a single
+accent hue.
 
 ---
 
-## 1. Kolory
+## 1. Colors
 
-Kontrast policzony wobec tła, na którym element **rzeczywiście leży**, nie wobec czerni.
+Contrast is calculated against the background the element **actually sits on**, not against black.
 
-### Motyw ciemny (pierwszorzędny) — wobec tła `#191A1D`
+### Dark theme (primary) — against background `#191A1D`
 
-| Rola | Hex | Kontrast | Zastosowanie |
+| Role | Hex | Contrast | Usage |
 |---|---|---|---|
-| tło | `#191A1D` | — | ekrany, pasek górny, nawigacja |
-| powierzchnia | `#212328` | — | pole szukania, wiersz wciśnięty |
-| powierzchnia +2 | `#262930` | — | dialog, arkusz, snackbar |
-| linia | `#2E3138` | — | hairline 1 dp |
-| linia — kropki indeksu | `#45494F` | — | linia wiodąca w wierszu listy |
-| tekst (ciepła biel) | `#F4EFE6` | 15,0:1 | treść pieśni, tytuły |
-| tekst drugi | `#A8A29B` | 6,8:1 | numer pieśni, opisy |
-| tekst trzeci | `#938F87` | 5,3:1 | nieaktywna zakładka |
-| akcent — szafran | `#E2B872` | 9,3:1 | inicjał, wersaliki, znaki powtórzenia, aktywna zakładka |
-| niszczący | `#F29186` | 7,5:1 | usuwanie |
-| ulubiona | `#E39AAF` | 7,8:1 | serce |
+| background | `#191A1D` | — | screens, top bar, navigation |
+| surface | `#212328` | — | search field, pressed row |
+| surface +2 | `#262930` | — | dialog, sheet, snackbar |
+| line | `#2E3138` | — | 1 dp hairline |
+| line — index dots | `#45494F` | — | dotted leader line in a list row |
+| text (warm white) | `#F4EFE6` | 15.0:1 | song text, titles |
+| secondary text | `#A8A29B` | 6.8:1 | song number, descriptions |
+| tertiary text | `#938F87` | 5.3:1 | inactive tab |
+| accent — saffron | `#E2B872` | 9.3:1 | drop cap, uppercase labels, repeat marks, active tab |
+| destructive | `#F29186` | 7.5:1 | deletion |
+| favorite | `#E39AAF` | 7.8:1 | heart |
 
-### Motyw jasny (równorzędny) — wobec tła `#F7F4EE`
+### Light theme (equal priority) — against background `#F7F4EE`
 
-| Rola | Hex | Kontrast | Zastosowanie |
+| Role | Hex | Contrast | Usage |
 |---|---|---|---|
-| tło — papier kostny | `#F7F4EE` | — | nie biel ekranowa |
-| powierzchnia | `#FFFDF8` | — | pole szukania, dialog, arkusz |
-| wciśnięta | `#EFEAE0` | — | reakcja na dotknięcie wiersza |
-| linia | `#E2DCD1` | — | hairline 1 dp |
-| linia — kropki indeksu | `#C9C2B5` | — | linia wiodąca |
-| tekst | `#1B1A17` | 15,9:1 | atrament |
-| tekst drugi | `#5C5852` | 6,4:1 | |
-| tekst trzeci | `#6E6A62` | 4,9:1 | |
-| akcent — szafran ciemny | `#7A5518` | 6,1:1 | |
-| niszczący | `#A3231B` | 6,8:1 | |
-| ulubiona | `#8C2F4F` | 7,3:1 | |
+| background — bone paper | `#F7F4EE` | — | not screen white |
+| surface | `#FFFDF8` | — | search field, dialog, sheet |
+| pressed | `#EFEAE0` | — | feedback when a row is tapped |
+| line | `#E2DCD1` | — | 1 dp hairline |
+| line — index dots | `#C9C2B5` | — | dotted leader line |
+| text | `#1B1A17` | 15.9:1 | ink |
+| secondary text | `#5C5852` | 6.4:1 | |
+| tertiary text | `#6E6A62` | 4.9:1 | |
+| accent — dark saffron | `#7A5518` | 6.1:1 | |
+| destructive | `#A3231B` | 6.8:1 | |
+| favorite | `#8C2F4F` | 7.3:1 | |
 
-### Pozostałe
+### Other
 
-- Przyciemnienie pod dialogiem: ciemny `rgba(0,0,0,.60)`, jasny `rgba(27,26,23,.45)`
-- Fokus: obwódka 2 dp w kolorze akcentu
-- Akcent to **jedna barwa (szafran ≈ 40°) w dwóch tonach** — jeden ton nie utrzyma 4,5:1
-  wobec obu teł naraz
+- Scrim under a dialog: dark `rgba(0,0,0,.60)`, light `rgba(27,26,23,.45)`
+- Focus: 2 dp outline in the accent color
+- The accent is **one hue (saffron ≈ 40°) in two tones** — a single tone cannot hold 4.5:1
+  against both backgrounds at once
 
-### Co to naprawia
+### What this fixes
 
-Obecna wersja ma białe cyfry na `#9bd8ff` = **1,5:1**. Numer traci tło i staje się tekstem
-drugoplanowym na tle ekranu = **6,8:1**, cyframi tabelarycznymi.
-
----
-
-## 2. Typografia
-
-Dwa kroje z Google Fonts, oba z pełnym `latin-ext` (ą ć ę ł ń ó ś ź ż).
-
-- **Newsreader** (200/300/400) — tekst pieśni, tytuły, numery. Szeryf z rozmiarem optycznym;
-  przy 10–30 pt trzyma rytm i nie rozjeżdża się na diakrytykach.
-- **Schibsted Grotesk** (400/500/600) — interfejs: wersaliki, etykiety, przyciski, nawigacja.
-  Cyfry tabelaryczne.
-
-Nie Inter i nie Roboto.
-
-### Skala interfejsu (dp)
-
-| Rola | Rozmiar / interlinia | Krój |
-|---|---|---|
-| tytuł ekranu | 20 / 1,05 | Newsreader |
-| tytuł pieśni na liście | 17 / 1,2 | Newsreader |
-| numer na liście (tabelarycznie) | 15 / 1 | Newsreader |
-| tytuł dialogu | 19 / 1,3 | Grotesk 500 |
-| treść dialogu, arkusz, stan pusty | 15 / 1,5 | Grotesk 400 |
-| przycisk tekstowy | 15 / 1,2 | Grotesk 600 |
-| etykieta zakładki | 10,5 / 1 | Grotesk 500 |
-| wersalik sekcji („Refren") | 8,5 · letter-spacing +0.26em | Grotesk 500 |
-
-### Skala pieśni — proporcje od S
-
-`S` = rozmiar ustawiony suwakiem (10–30 pt, **domyślnie 19**). Wszystko inne liczone z S.
-
-| Miara | Wzór | Przy S = 19 |
-|---|---|---|
-| interlinia | 1,62 × S | 30,8 |
-| odstęp między blokami | 1,26 × S | 24 |
-| wcięcie refrenu | 0,74 × S | 14 |
-| inicjał pierwszej zwrotki | 2,16 × S | 41 |
-| numer kolejnej zwrotki | 0,74 × S | 14 |
-| margines boczny kolumny | 22 dp (stałe) | 22 |
-| maks. szerokość kolumny | 34 × S | 646 |
-
-Interlinia zostaje mnożnikiem, ale suwak dostaje zakres **1,4–1,8** zamiast 1,0–3,0
-(domyślnie 1,62).
+The current version has white digits on `#9bd8ff` = **1.5:1**. The number loses its background and
+becomes secondary text on the screen background = **6.8:1**, in tabular figures.
 
 ---
 
-## 3. Renderer tekstu pieśni
+## 2. Typography
 
-Baza daje jeden ciąg znaków ze znacznikami. Renderer **zdejmuje znaczniki z toku tekstu**
-i zamienia je na typografię — bez ikon i bez kolorowych plam.
+Two typefaces from Google Fonts, both with full `latin-ext` (ą ć ę ł ń ó ś ź ż).
 
-| Wzorzec | Znaczenie | Renderowanie |
+- **Newsreader** (200/300/400) — song text, titles, numbers. A serif with optical sizing;
+  at 10–30 pt it keeps its rhythm and does not fall apart on diacritics.
+- **Schibsted Grotesk** (400/500/600) — interface: uppercase labels, labels, buttons, navigation.
+  Tabular figures.
+
+Not Inter and not Roboto.
+
+### Interface scale (dp)
+
+| Role | Size / line height | Typeface |
 |---|---|---|
-| `^\d+\.\s` | numer zwrotki | pierwsza: inicjał 2,16 × S; kolejne: cyfra 0,74 × S z linią |
-| `^Refren:\s` | refren | wersalik „Refren" z linią + wcięcie 0,74 × S. **Bez kursywy** |
-| `[: … :]` | powtórzenie | dwa znaki w kolorze akcentu, przyklejone do pierwszego i ostatniego słowa frazy — trzymają się jej także przy zawinięciu akapitu |
-| `\n\n` | granica bloku | odstęp 1,26 × S, **nigdy puste wiersze** |
+| screen title | 20 / 1.05 | Newsreader |
+| song title in a list | 17 / 1.2 | Newsreader |
+| number in a list (tabular) | 15 / 1 | Newsreader |
+| dialog title | 19 / 1.3 | Grotesk 500 |
+| dialog body, sheet, empty state | 15 / 1.5 | Grotesk 400 |
+| text button | 15 / 1.2 | Grotesk 600 |
+| tab label | 10.5 / 1 | Grotesk 500 |
+| section uppercase label („Refren") | 8.5 · letter-spacing +0.26em | Grotesk 500 |
 
-Podziału na wiersze w danych nie ma i nie da się go odtworzyć bezbłędnie (łamanie po
-interpunkcji wywraca się na „Nućcie Jemu chwałę, / cześć!"). Zwrotka płynie jak akapit
-i zawija się sama.
+### Song text scale — proportions derived from S
 
-Renderer przyjmuje opcjonalne `\n` wewnątrz bloku — gdyby dane kiedyś odzyskały łamania,
-ten sam ekran zacznie je pokazywać bez przeprojektowania.
+`S` = the size set with the slider (10–30 pt, **default 19**). Everything else is derived from S.
 
-### Wymiary dopowiedziane przy wdrożeniu
-
-Dwie wartości, których projekt nie określał, a kod ich potrzebował:
-
-| Miara | Wartość | Dlaczego tak |
+| Measure | Formula | At S = 19 |
 |---|---|---|
-| linia obok cyfry zwrotki i wersalika „REFREN” | `1,5 × S`, stała | Linia wiodąca przez całą szerokość znaczy co innego — w wierszu listy prowadzi wzrok do numeru pieśni. Powielanie jej w tekście pieśni myli, więc tutaj jest tylko krótka kreska przy etykiecie |
-| odstęp między etykietą bloku a jego treścią | `1,26 × S ÷ 3`, czyli jedna trzecia odstępu międzyblokowego | Etykieta ma trzymać się swojej zwrotki; pełny odstęp blokowy odrywałby ją od tekstu |
+| line height | 1.62 × S | 30.8 |
+| spacing between blocks | 1.26 × S | 24 |
+| chorus indent | 0.74 × S | 14 |
+| drop cap of the first verse | 2.16 × S | 41 |
+| number of each subsequent verse | 0.74 × S | 14 |
+| column side margin | 22 dp (fixed) | 22 |
+| max column width | 34 × S | 646 |
 
-**Niesparowane znaki powtórzenia.** W danych zdarzają się literówki w rodzaju `[Czym prędzej
-pośpiesz Doń!:]`, gdzie otwarcie zgubiło dwukropek. Parser zostawia taki pojedynczy znak jako
-zwykły tekst, zamiast udawać powtórzenie.
+Line height remains a multiplier, but the slider gets a range of **1.4–1.8** instead of 1.0–3.0
+(default 1.62).
 
 ---
 
-## 4. Odstępy i kształty
+## 3. Song text renderer
 
-Baza 4 dp, sześć wartości:
+The database provides a single string with markers. The renderer **removes the markers from the
+text flow** and turns them into typography — no icons and no colored patches.
 
-| Wartość | Zastosowanie |
+| Pattern | Meaning | Rendering |
+|---|---|---|
+| `^\d+\.\s` | verse number | first: drop cap 2.16 × S; subsequent: digit 0.74 × S with a line |
+| `^Refren:\s` | chorus | uppercase label „Refren" with a line + indent 0.74 × S. **No italics** |
+| `[: … :]` | repeat | two marks in the accent color, attached to the first and last word of the phrase — they stay with it even when the paragraph wraps |
+| `\n\n` | block boundary | spacing 1.26 × S, **never empty lines** |
+
+The data has no line breaks, and they cannot be reconstructed without errors (breaking after
+punctuation fails on „Nućcie Jemu chwałę, / cześć!"). A verse flows like a paragraph
+and wraps on its own.
+
+The renderer accepts an optional `\n` inside a block — if the data ever regains its line breaks,
+the same screen will start showing them without a redesign.
+
+### Dimensions added during implementation
+
+Two values the design did not specify but the code needed:
+
+| Measure | Value | Rationale |
+|---|---|---|
+| line next to the verse digit and the uppercase label „REFREN” | `1.5 × S`, fixed | A full-width leader line means something else — in a list row it leads the eye to the song number. Repeating it in the song text is confusing, so here it is only a short dash next to the label |
+| spacing between a block label and its content | `1.26 × S ÷ 3`, i.e. one third of the between-block spacing | The label should stay with its verse; full block spacing would detach it from the text |
+
+**Unpaired repeat marks.** The data contains typos such as `[Czym prędzej
+pośpiesz Doń!:]`, where the opening mark lost its colon. The parser leaves such a lone mark as
+plain text instead of pretending it is a repeat.
+
+---
+
+## 4. Spacing and shapes
+
+4 dp base, six values:
+
+| Value | Usage |
 |---|---|
-| 4 | ikona ↔ podpis zakładki |
-| 8 | tytuł ↔ serce ulubionej |
-| 12 | wnętrze pola, odstęp akcji |
-| 16 | margines boczny listy i pasków |
-| 24 | wnętrze dialogu, odstęp bloków pieśni |
-| 32 | bloki ustawień, stan pusty |
+| 4 | icon ↔ tab label |
+| 8 | title ↔ favorite heart |
+| 12 | field padding, spacing between actions |
+| 16 | side margin of lists and bars |
+| 24 | dialog padding, spacing between song blocks |
+| 32 | settings blocks, empty state |
 
-Dwa promienie: **12 dp** (dialog, arkusz, blok) i **pastylka** (pole szukania, przycisk).
-Wiersz listy nie ma promienia, bo nie ma tła — rozdziela go hairline.
+Two radii: **12 dp** (dialog, sheet, block) and **pill** (search field, button).
+A list row has no radius because it has no background — a hairline separates it.
 
-Znikają: 1, 2, 10, 15 i 30 dp razem z kartami.
-
----
-
-## 5. Komponenty
-
-**Wiersz listy** — 48 dp, jeden wariant dla trzech list. Tytuł (Newsreader 17), linia wiodąca
-z kropek, numer na prawej krawędzi (Newsreader 15, tabelarycznie). Serce ulubionej 11 dp
-**przy tytule, nie na końcu wiersza** — nie ginie przy długim tytule. Własna pieśń: wersalik
-`MOJA` zamiast numeru. Stany: spoczynek, wciśnięty (powierzchnia), wybrany (numer w akcencie).
-Cały wiersz jest celem dotknięcia.
-
-Tytuł jest widoczny **w całości**: nie skraca się wielokropkiem, tylko zawija do kolejnych wierszy,
-a linia wiodąca biegnie od końca ostatniego wiersza do numeru. Wiersz rośnie wtedy w pionie —
-48 dp to minimum, nie wysokość stała. Ustalone przy wdrożeniu kroku 5, zastępuje wcześniejszy
-tytuł w jednej linii.
-
-**Szybkie przewijanie listy** — uchwyt-pastylka **6 × 48 dp** przy prawej krawędzi listy pieśni,
-w kolorze kropek indeksu, w akcencie podczas przeciągania. Cel dotknięcia **48 × 48 dp**: rysunek
-jest wąski, żeby nie wchodzić na treść wiersza, ale palec trafia w pełne 48 dp. Przy przeciąganiu
-po lewej stronie uchwytu pojawia się **etykieta z numerem pieśni**: pastylka na powierzchni +2
-z hairline'em, Newsreader 17, cyfry tabelaryczne — ten sam zapis co numer w wierszu listy. Etykieta
-stoi nad linią wiodącą z kropek, nigdy nad tytułem ani sercem ulubionej.
-
-Uchwyt pokazuje się **tylko na pełnej liście** i tylko wtedy, gdy treści jest więcej niż dwa ekrany.
-Przy aktywnym wyszukiwaniu znika razem z etykietą: wyniki są krótkie, a numer pieśni i tak nie
-odpowiadałby pozycji na liście.
-
-Pozycję uchwytu liczy ułamek `maxScrollExtent`, a numer w etykiecie pochodzi z **pierwszego naprawdę
-widocznego wiersza**, nie z dzielenia offsetu przez wysokość wiersza — wiersze mają różną wysokość
-i rosną z czcionką (reguły 1 i 6 z sekcji 7).
-
-**Pole wyszukiwania** — 44 dp, pastylka, **widoczne zawsze**. Lupa 15 dp, podpowiedź
-„Szukaj", przy treści krzyżyk czyszczenia (cel 48 dp). Fokus: obwódka 2 dp w akcencie.
-Jedno pole obsługuje numer i tytuł, szukanie bez diakrytyków, trafienie podświetlone w tytule.
-
-**Pasek górny** — 48 dp, hairline zamiast cienia. Na liście: tytuł ekranu (Newsreader 20) plus
-dodawanie i ustawienia. W pieśni: powrót, numer w akcencie, tytuł z ellipsis, serce i trzy kropki
-w celach 40 × 48 dp.
-
-**Dolna nawigacja** — Material 3 `NavigationBar`, trzy zakładki, wysokość 48 dp: ikona kreskowa
-17 dp i podpis w jednej linii. Aktywna: kreska 2 dp w akcencie, ikona w akcencie, podpis w kolorze
-tekstu, waga 600. Nieaktywna: tekst trzeci.
-
-**Dialog** — promień 12 dp, wnętrze 24 dp. Tytuł 19, treść 15. Dwie akcje **rozsunięte do
-krawędzi**: wycofanie przy lewej, potwierdzenie przy prawej, każda na własnym kolorze ściszonym
-do 12% — **nigdy jako wypełniony przycisk**. Akcja niszcząca w kolorze niszczącym, „Anuluj"
-w tekście drugim, przestaje być niebieskie. Akcja zablokowana zostaje widoczna jako kształt — neutralne tło w kolorze linii i tekst trzeci —
-żeby nie wyglądała na zniknięty przycisk.
-Ustalone przy wdrożeniu kroku 5, zastępuje wcześniejsze „dwie akcje po prawej".
-
-**Arkusz** — uchwyt 34 × 3 dp, pozycje 52 dp, sekcja niszcząca odcięta hairline'em.
-
-**Stan pusty** — ikona kreskowa 26 dp w kolorze linii, nagłówek Newsreader 21, zdanie 14/1,55
-mówiące co zrobić, opcjonalnie jedno wyjście jako przycisk-pastylka 48 dp. Trzy wystąpienia:
-brak wyników, brak ulubionych, brak własnych pieśni. Nigdy duża ilustracja.
-
-**Ekran powitalny po migracji** — pokazywany raz użytkownikowi, którego dane przeniosła migracja
-ze starej aplikacji iOS (issue #37). Pełny ekran bez paska, jedno wyjście: przycisk-pastylka
-„Zaczynajmy” na całą szerokość kolumny, min. 48 dp, przy dolnej krawędzi. Nagłówek **Newsreader
-300, 30 / 1,15** — jedyny rozmiar spoza skali interfejsu, dopowiedziany przy wdrożeniu, bo tytuł
-ekranu (20) na pustym ekranie ginie. Reszta ze skali: treść 15 / 1,5, podtytuł „Co się zmieniło:”
-jak przycisk tekstowy (15 / 1,2, Grotesk 600), punkty listy w akcencie. Marginesy 24 dp, odstępy
-16 / 32 / 12 / 8 z sekcji 4, kolumna najwyżej 34 × 19 dp jak tekst pieśni przy domyślnym S. Treść
-przewija się, gdy przy powiększeniu się nie mieści. Jednoliterowe słowa („i”, „w”, „z”) są
-przyklejone do następnego twardą spacją, żeby nie zostawały na końcu wiersza.
-
-**Suwak** — tor 3 dp, uchwyt 20 dp w celu 48 dp, poświata 6 dp przy dotknięciu. Wartość zawsze
-wypisana liczbą obok nazwy. Pod suwakiem rozmiaru tekstu stoi próbka pieśni zmieniająca się
-na żywo.
+Removed: 1, 2, 10, 15, and 30 dp, along with the cards.
 
 ---
 
-## 6. Dostępność
+## 5. Components
 
-- Obszary dotyku: ikona 16–17 dp w celu **min. 40 × 48 dp**
-- Reakcja na dotknięcie: przyciemnienie tła wiersza na 80 ms i powrót (zamiast globalnie
-  wyłączonego splash)
-- Każda ikona-akcja ma `Semantics(label:)` **po polsku**
-- Wszystko działa przy systemowym powiększeniu czcionki ×1,3 i ×2,0
+**List row** — 48 dp, one variant for all three lists. Title (Newsreader 17), dotted leader
+line, number at the right edge (Newsreader 15, tabular). An 11 dp favorite heart
+**next to the title, not at the end of the row** — it does not get lost with a long title. User song:
+uppercase label `MOJA` (Mine) instead of a number. States: resting, pressed (surface), selected
+(number in the accent). The whole row is the tap target.
 
-### Kontrast zmierzony przy wdrożeniu (krok 5d)
+The title is shown **in full**: it is not truncated with an ellipsis but wraps onto further lines,
+and the leader line runs from the end of the last line to the number. The row then grows vertically —
+48 dp is a minimum, not a fixed height. Decided during implementation of step 5; replaces the earlier
+single-line title.
 
-Liczone z tokenów, kolory półprzezroczyste po nałożeniu na tło. Pilnuje tego
-`test/contrast_test.dart`, więc zmiana tokenu oblewa test zamiast cicho psuć kontrast.
+**List fast scrolling** — a **6 × 48 dp** pill thumb at the right edge of the song list,
+in the index-dot color, in the accent while dragging. Tap target **48 × 48 dp**: the drawing
+is narrow so it does not overlap the row content, but the finger hits the full 48 dp. While dragging,
+a **song number label** appears to the left of the thumb: a pill on surface +2
+with a hairline, Newsreader 17, tabular figures — the same format as the number in a list row. The label
+sits over the dotted leader line, never over the title or the favorite heart.
 
-| Para | Jasny | Ciemny | Próg |
+The thumb appears **only on the full list**, and only when the content is longer than two screens.
+During an active search it disappears along with the label: results are short, and the song number
+would not correspond to the position in the list anyway.
+
+The thumb position is computed as a fraction of `maxScrollExtent`, and the number in the label comes
+from the **first actually visible row**, not from dividing the offset by the row height — rows have
+different heights and grow with the font (rules 1 and 6 in section 7).
+
+**Search field** — 44 dp, pill, **always visible**. 15 dp magnifier, hint
+„Szukaj” (Search), a clear cross when there is input (48 dp target). Focus: 2 dp outline in the accent.
+A single field handles both number and title, diacritic-insensitive search, match highlighted in the title.
+
+**Top bar** — 48 dp, hairline instead of a shadow. On a list: screen title (Newsreader 20) plus
+add and settings. In a song: back, number in the accent, title with ellipsis, heart, and three-dot
+menu in 40 × 48 dp targets.
+
+**Bottom navigation** — Material 3 `NavigationBar`, three tabs, 48 dp height: 17 dp outline icon
+and label on one line. Active: 2 dp bar in the accent, icon in the accent, label in the text
+color, weight 600. Inactive: tertiary text.
+
+**Dialog** — 12 dp radius, 24 dp padding. Title 19, body 15. Two actions **pushed apart to the
+edges**: dismiss on the left, confirm on the right, each on its own color toned down
+to 12% — **never as a filled button**. A destructive action uses the destructive color; „Anuluj” (Cancel)
+uses secondary text and is no longer blue. A disabled action stays visible as a shape — neutral
+background in the line color and tertiary text — so it does not look like a missing button.
+Decided during implementation of step 5; replaces the earlier "two actions on the right".
+
+**Sheet** — 34 × 3 dp drag handle, 52 dp items, destructive section separated by a hairline.
+
+**Empty state** — 26 dp outline icon in the line color, Newsreader 21 heading, a 14/1.55 sentence
+saying what to do, optionally one way out as a 48 dp pill button. Three occurrences:
+no results, no favorites, no user songs. Never a large illustration.
+
+**Post-migration welcome screen** — shown once to a user whose data was carried over by the migration
+from the old iOS app (issue #37). Full screen without a bar, one way out: a pill button
+„Zaczynajmy” (Let's begin) spanning the column width, min. 48 dp, at the bottom edge. Heading **Newsreader
+300, 30 / 1.15** — the only size outside the interface scale, added during implementation because the
+screen title (20) gets lost on an empty screen. The rest comes from the scale: body 15 / 1.5, subheading
+„Co się zmieniło:” (What changed:) styled like a text button (15 / 1.2, Grotesk 600), list bullets in the accent. 24 dp margins, spacing
+16 / 32 / 12 / 8 from section 4, column at most 34 × 19 dp, like song text at the default S. The content
+scrolls when it does not fit under magnification. One-letter words („i”, „w”, „z”) are
+bound to the following word with a non-breaking space so they do not stay at the end of a line.
+
+**Slider** — 3 dp track, 20 dp thumb in a 48 dp target, 6 dp halo on touch. The value is always
+written out as a number next to the name. Below the text size slider there is a song sample that updates
+live.
+
+---
+
+## 6. Accessibility
+
+- Touch areas: 16–17 dp icon in a target of **min. 40 × 48 dp**
+- Tap feedback: the row background darkens for 80 ms and returns (instead of the globally
+  disabled splash)
+- Every action icon has `Semantics(label:)` **in Polish**
+- Everything works at system font scaling ×1.3 and ×2.0
+
+### Contrast measured during implementation (step 5d)
+
+Calculated from the tokens, with semi-transparent colors composited over the background. Enforced by
+`test/contrast_test.dart`, so changing a token fails the test instead of silently breaking contrast.
+
+| Pair | Light | Dark | Threshold |
 |---|---|---|---|
-| tekst główny na tle | 15,85:1 | 15,19:1 | 4,5 |
-| tekst drugi na tle | 6,43:1 | 6,88:1 | 4,5 |
-| tekst trzeci na tle | 4,90:1 | 5,40:1 | 3 |
-| akcent na tle (trafienie wyszukiwania, wybrany wiersz) | 6,09:1 | 9,39:1 | 4,5 |
-| tekst na akcencie (przycisk-pastylka) | 6,58:1 | 9,39:1 | 4,5 |
-| kolor niszczący na tle | 6,80:1 | 7,60:1 | 4,5 |
-| akcent na własnym tle 12% | 4,74:1 | 6,09:1 | 4,5 |
-| tekst drugi na własnym tle 12% | 5,00:1 | 4,67:1 | 4,5 |
-| kolor niszczący na własnym tle 12% | 5,13:1 | 5,13:1 | 4,5 |
-| serce ulubionej na tle | 7,26:1 | 7,88:1 | 3 |
-| tekst główny w arkuszu i dialogu | 14,51:1 | 12,71:1 | 4,5 |
-| tekst drugi w arkuszu | 5,89:1 | 5,76:1 | 4,5 |
-| tekst w polu wyszukiwania | 17,12:1 | 13,73:1 | 4,5 |
-| podpowiedź w polu wyszukiwania | 5,30:1 | 4,88:1 | 3 |
-| hairline na tle | 1,24:1 | 1,34:1 | — |
-| kropki indeksu na tle | 1,61:1 | 1,92:1 | — |
-| wiersz wciśnięty wobec tła | 1,09:1 | 1,11:1 | — |
-| **nieaktywna strzałka paska pieśni** | 4,90:1 | 5,40:1 | 3 |
-| **nieaktywna zakładka nawigacji** | 4,90:1 | 5,40:1 | 3 |
-| **zablokowany przycisk „Przejdź”** (na tle linii) | 3,95:1 | 4,04:1 | 3 |
+| primary text on background | 15.85:1 | 15.19:1 | 4.5 |
+| secondary text on background | 6.43:1 | 6.88:1 | 4.5 |
+| tertiary text on background | 4.90:1 | 5.40:1 | 3 |
+| accent on background (search match, selected row) | 6.09:1 | 9.39:1 | 4.5 |
+| text on accent (pill button) | 6.58:1 | 9.39:1 | 4.5 |
+| destructive color on background | 6.80:1 | 7.60:1 | 4.5 |
+| accent on its own 12% background | 4.74:1 | 6.09:1 | 4.5 |
+| secondary text on its own 12% background | 5.00:1 | 4.67:1 | 4.5 |
+| destructive color on its own 12% background | 5.13:1 | 5.13:1 | 4.5 |
+| favorite heart on background | 7.26:1 | 7.88:1 | 3 |
+| primary text in sheet and dialog | 14.51:1 | 12.71:1 | 4.5 |
+| secondary text in sheet | 5.89:1 | 5.76:1 | 4.5 |
+| text in search field | 17.12:1 | 13.73:1 | 4.5 |
+| hint in search field | 5.30:1 | 4.88:1 | 3 |
+| hairline on background | 1.24:1 | 1.34:1 | — |
+| index dots on background | 1.61:1 | 1.92:1 | — |
+| pressed row against background | 1.09:1 | 1.11:1 | — |
+| **inactive arrow in the song bar** | 4.90:1 | 5.40:1 | 3 |
+| **inactive navigation tab** | 4.90:1 | 5.40:1 | 3 |
+| **disabled „Przejdź” (Go) button** (on line background) | 3.95:1 | 4.04:1 | 3 |
 
-Linie, kropki i tło wciśniętego wiersza to celowo słaby kontrast: nie niosą treści ani stanu,
-a ich zadaniem jest nie przeszkadzać. Wszystko, co coś znaczy, siedzi nad swoim progiem.
+Lines, dots, and the pressed-row background have deliberately low contrast: they carry no content or state,
+and their job is to stay out of the way. Everything that means something is above its threshold.
 
-**Stany nieaktywne** przeszły dwie poprawki przy pomiarze: strzałka na krańcu śpiewnika szła
-w kolorze linii (1,24:1 — praktycznie niewidoczna), a zablokowany przycisk „Przejdź” brał
-domyślny kolor Materiala `onSurface` 38% (2,31:1 w jasnym motywie). Oba idą teraz tekstem
-trzecim; że są nieaktywne, widać po braku numeru obok strzałki i po tym, że aktywne akcje
-są w akcencie albo w tekście drugim.
-
----
-
-## 7. Reguły, które muszą zostać w kodzie
-
-1. Żadnej stałej wysokości na elemencie z tekstem — tylko `minHeight`.
-2. Kontrast liczony wobec tła, na którym element leży, nie wobec czerni.
-3. Każda ikona-akcja ma `Semantics(label:)` po polsku.
-4. Kolory wyłącznie z `Theme.of(context)` — **zero literałów w widokach i zero sprawdzania
-   jasności motywu**.
-5. Tekst pieśni skalowany przez S z ustawień, mnożony dodatkowo przez systemowy `textScaler`,
-   **nigdy zamiast niego**.
-6. Lista 2000 pozycji zawsze przez `ListView.builder` z `itemExtent` **null** (wiersz rośnie
-   z czcionką).
+**Inactive states** went through two fixes during measurement: the arrow at the end of the hymnal used
+the line color (1.24:1 — practically invisible), and the disabled „Przejdź” (Go) button took
+Material's default `onSurface` at 38% (2.31:1 in the light theme). Both now use tertiary
+text; that they are inactive is shown by the missing number next to the arrow and by the active actions
+being in the accent or in secondary text.
 
 ---
 
-## 8. Ikony
+## 7. Rules that must stay in the code
 
-Podglądy w Claude Design rysują kreski SVG — w Flutterze wchodzą odpowiedniki z Material Icons
-w rozmiarze 24 dp: `menu_book`, `favorite`, `favorite_border`, `edit_note`, `search`, `share`,
+1. No fixed height on an element containing text — only `minHeight`.
+2. Contrast is calculated against the background the element sits on, not against black.
+3. Every action icon has `Semantics(label:)` in Polish.
+4. Colors come only from `Theme.of(context)` — **zero literals in views and zero checks of
+   theme brightness**.
+5. Song text is scaled by S from the settings and additionally multiplied by the system `textScaler`,
+   **never instead of it**.
+6. The 2000-item list always uses `ListView.builder` with `itemExtent` **null** (the row grows
+   with the font).
+
+---
+
+## 8. Icons
+
+The Claude Design previews draw SVG strokes — in Flutter, their Material Icons equivalents are used
+at 24 dp: `menu_book`, `favorite`, `favorite_border`, `edit_note`, `search`, `share`,
 `more_vert`, `settings`.
 
 ---
 
-## 9. Kolejność wdrożenia
+## 9. Implementation order
 
-| Krok | Zakres |
+| Step | Scope |
 |---|---|
-| 1 | **Tokeny i motyw** — dwa `ColorScheme`, dwa kroje, skala odstępów, dwa promienie, usunięcie literałów kolorów z widoków. Sam ten krok kasuje błąd 1,5:1. |
-| 2 | **Wiersz i listy** — jeden komponent wiersza 48 dp dla trzech list, stała wyszukiwarka, sortowanie po numerze, reakcja na dotknięcie, stany puste. |
-| 3 | **Renderer pieśni** — parser znaczników, inicjał, wersalik refrenu, znaki powtórzenia, margines 22 dp i limit kolumny, skala od S. |
-| 4 | **Nawigacja i okna** — pasek pieśń wstecz / numer / pieśń w przód, modal „Przejdź do pieśni" z klawiaturą systemową, arkusz opcji, dialogi z tokenów. |
-| 5 | **Dostępność** — etykiety dla czytnika ekranu, audyt obszarów dotyku, test przy ×1,3 i ×2,0, kontrola kontrastu każdej pary w obu motywach. |
+| 1 | **Tokens and theme** — two `ColorScheme`s, two typefaces, spacing scale, two radii, removal of color literals from views. This step alone eliminates the 1.5:1 bug. |
+| 2 | **Row and lists** — one 48 dp row component for all three lists, persistent search field, sorting by number, tap feedback, empty states. |
+| 3 | **Song renderer** — marker parser, drop cap, chorus uppercase label, repeat marks, 22 dp margin and column limit, scale derived from S. |
+| 4 | **Navigation and dialogs** — song bar with previous song / number / next song, „Przejdź do pieśni" (Go to song) modal with the system keyboard, options sheet, dialogs from tokens. |
+| 5 | **Accessibility** — screen reader labels, tap target audit, test at ×1.3 and ×2.0, contrast check of every pair in both themes. |
 
 ---
 
-## 10. Decyzje do podjęcia przed wdrożeniem
+## 10. Decisions to make before implementation
 
-Rzeczy, które system zmienia poza samym wyglądem — wymagają świadomej zgody:
+Things the system changes beyond appearance alone — they require explicit sign-off:
 
-1. **Migracja ustawień istniejących użytkowników.** Zakres interlinii zmienia się z 1,0–3,0
-   na 1,4–1,8, domyślne z 16/1,5 na 19/1,62. Zapisane wartości spoza nowego zakresu trzeba
-   **przyciąć, nie zresetować**; nowe domyślne obowiązują tylko przy pierwszej instalacji.
-2. **Gest przeciągnięcia między pieśniami** — zostaje obok nowego dolnego paska ze strzałkami,
-   czy znika?
-3. **Pasek szybkiego przewijania z etykietą numeru** znika razem z `itemExtent`. To usuwa
-   `draggable_scrollbar` z issue #17 przez wykreślenie funkcji, nie zamianę.
-4. **Nowe funkcje w arkuszu opcji**: „Kopiuj tekst", „Nie gaś ekranu", **„Zgłoś błąd w tekście"**
-   (nowa funkcja — wymaga decyzji o zakresie).
-5. **Przełącznik motywu w ustawieniach** — dziś aplikacja idzie wyłącznie za systemem.
-6. **Trzy kroje w pliku HTML, dwa w aplikacji.** IBM Plex Mono służy tylko dokumentacji.
-   Newsreader i Schibsted Grotesk trzeba wciągnąć jako assety z podzbiorem latin + latin-ext,
-   żeby nie rozdąć pakietu.
+1. **Migrating existing users' settings.** The line height range changes from 1.0–3.0
+   to 1.4–1.8, the defaults from 16/1.5 to 19/1.62. Saved values outside the new range must be
+   **clamped, not reset**; the new defaults apply only on first install.
+2. **Swipe gesture between songs** — does it stay alongside the new bottom bar with arrows,
+   or is it removed?
+3. **The fast scrolling bar with a number label** goes away along with `itemExtent`. This removes
+   `draggable_scrollbar` from issue #17 by dropping the feature, not by replacing it.
+4. **New features in the options sheet**: „Kopiuj tekst" (Copy text), „Nie gaś ekranu" (Keep screen on),
+   **„Zgłoś błąd w tekście"** (Report a text error) (a new feature — requires a decision on scope).
+5. **Theme switch in settings** — today the app follows the system only.
+6. **Three typefaces in the HTML file, two in the app.** IBM Plex Mono is used only for documentation.
+   Newsreader and Schibsted Grotesk must be bundled as assets subset to latin + latin-ext,
+   so as not to bloat the package.
