@@ -187,7 +187,9 @@ different heights and grow with the font (rules 1 and 6 in section 7).
 
 **Search field** — 44 dp, pill, **always visible**. 15 dp magnifier, hint
 „Szukaj” (Search), a clear cross when there is input (48 dp target). Focus: 2 dp outline in the accent.
-A single field handles both number and title, diacritic-insensitive search, match highlighted in the title.
+A single field handles number, title and lyrics, diacritic-insensitive. The words of a query count in any order,
+each from the start of a word, the longer ones by their stem („chwała” finds „chwały”). Results are ranked,
+title matches first; every word found is highlighted in the title. A query of digits lists by number.
 
 **Moving between songs** — the song text is a page, and going to the previous or next song turns it,
 as in a book; it is not opening something new. Only the text moves, horizontally, across the full width;
