@@ -60,6 +60,46 @@ void main() {
     });
   });
 
+  group('ranking', () {
+    bool before(List<int> results, int first, int second) => results.indexOf(first) < results.indexOf(second);
+
+    test('a song with the word in its title comes before one with it only in its last verse', () {
+      // 52 "Na krzyżu Jezu zmarłeś" vs 28 "Jak mam powitać", which has "krzyż" only in its last verse.
+      final results = search('krzyż');
+      expect(results, containsAll([28, 52]));
+      expect(before(results, 52, 28), isTrue);
+    });
+
+    test('the exact form comes before a form found by its stem', () {
+      // 35 "Chwała Bogu chwała" vs 1 "Alleluja, chwalcie Pana": both match "chwał" in the title.
+      final results = search('chwała');
+      expect(before(results, 35, 1), isTrue);
+    });
+
+    test('words next to each other, in the order of the query, come before scattered ones', () {
+      // 11 "Dajcie Panu chwałę" has them in order; 9 "Chwałę daj Panu" has them the other way round.
+      final results = search('panu chwałę');
+      expect(before(results, 11, 9), isTrue);
+    });
+
+    test('equal matches keep the order of numbers', () {
+      // All four have the exact word "chwała" in the title and nothing else ranks them apart.
+      final results = search('chwała');
+      final equal = results.where([35, 374, 876, 1030].contains).toList();
+      expect(equal, [35, 374, 876, 1030]);
+    });
+
+    test('a query of digits keeps the order of numbers', () {
+      final results = search('12');
+      expect(results, [...results]..sort());
+      expect(results.first, 12);
+    });
+
+    test('without a query the list is the whole songbook in the order of numbers', () {
+      expect(search(''), [for (final song in songbook) song.number]..sort());
+    });
+  });
+
   group('inflected forms', () {
     test('"chwała" finds a song that only has "chwały"', () {
       // Song 3 "Bądź Panu cześć": "chwały", no form of "chwała" that contains it.
