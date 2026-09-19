@@ -14,11 +14,12 @@ UI po polsku; kod, komentarze, commity i opisy PR po angielsku.
 - `lib/json_manager.dart` — parsowanie assetu (`SongsData`), aktualizacja pieśni z zachowaniem ulubionych, `dataVersion`.
 - `lib/migration/` — jednorazowe migracje ze starej aplikacji iOS: czytnik bazy Core Data i zapis do ObjectBoksa,
   osobno rozmiar czcionki przez kanał platformy z `ios/Runner/AppDelegate.swift`. **Migracja jest skończona i przetestowana
-  end-to-end** — nie zmieniaj jej bez ponownego testu (procedura w README).
+  end-to-end** — nie zmieniaj jej bez ponownego testu (procedura w `docs/DEVELOPMENT.md`).
 - `lib/viewmodel/` — view modele: zwykłe klasy z `ValueNotifier`, zależności przez konstruktor.
 - `lib/view/` — ekrany. `ScreenWakeLock` (`view/screen_wake_lock.dart`) liczy otwarte ekrany szczegółów.
 - `ios/`, `android/` — projekty natywne. Wtyczki iOS idą przez Swift Package Manager; w CocoaPods został tylko ObjectBox.
-- Dokumenty: `README.md` (testy, pułapki, test migracji E2E), `docs/PARITY.md` (różnice wobec starej aplikacji iOS),
+- Dokumenty: `README.md` (opis, uruchomienie, testy w skrócie), `docs/DEVELOPMENT.md` (szczegóły testów, CI,
+  test migracji E2E, pułapki), `docs/PARITY.md` (różnice wobec starej aplikacji iOS),
   `docs/DESIGN-SYSTEM.md` (system wizualny), `SCHEMA-ZMYSONG.md` (schemat bazy iOS), `test/fixtures/README.md`.
   Materiały historyczne, opisujące stan sprzed migracji i redesignu: `docs/AUDIT.md`,
   `docs/ARCHITECTURE-PROPOSAL.md` — czytaj je jako źródło decyzji, nie jako opis obecnego kodu.
@@ -27,8 +28,8 @@ UI po polsku; kod, komentarze, commity i opisy PR po angielsku.
 
 - **Przed pierwszym commitem w sesji sprawdź gałąź: `git branch --show-current`.** Jeśli to `main`,
   załóż nową gałąź (`git switch -c feature/...`) i dopiero commituj. Nigdy nie commituj bezpośrednio
-  na `main`, nawet drobiazgu: prywatne repo na planie Free nie ma ochrony gałęzi, więc nic cię nie
-  zatrzyma, a zmiana ominie review. Po scaleniu PR-a sprawdź gałąź ponownie — merge może cię
+  na `main`, nawet drobiazgu: `main` jest chroniony (zmiany tylko przez PR z zielonym CI, bez force pusha),
+  więc push na `main` i tak zostanie odrzucony. Po scaleniu PR-a sprawdź gałąź ponownie — merge może cię
   przestawić na `main`.
 - Nowa funkcja: widok w `lib/view/`, logika w view modelu, dane przez repozytorium (po PR-ach 2 i 3).
   `Store` i `Box` tylko w `lib/data/`, `lib/migration/`, `lib/json_manager.dart` i `lib/main.dart` — nigdy w widokach ani view modelach.
@@ -65,7 +66,7 @@ flutter analyze
 - `openStore()` w `testWidgets` nigdy nie kończy działania (path_provider bez implementacji). Zawsze `TestStore.open()`.
 - Pierwsze `flutter test` pobiera przez build hook bibliotekę SQLite (potrzebna sieć).
 - `dart run flutter_native_splash:create` nadpisuje `ios/Runner/Info.plist` (ustawia `UIStatusBarHidden` na `false`)
-  i zasoby splasha Androida. Po uruchomieniu przywróć — szczegóły w README.
+  i zasoby splasha Androida. Po uruchomieniu przywróć — szczegóły w `docs/DEVELOPMENT.md`.
 - `flutter test integration_test -d <urządzenie>` **odinstalowuje aplikację i kasuje jej dane**. Nie uruchamiaj go na
   symulatorze przygotowanym do testu migracji.
 - Migracja z iOS działa raz (flaga `coreDataMigrationDone`), po błędzie nie ponawia, nigdy nie rzuca i nigdy nie usuwa
