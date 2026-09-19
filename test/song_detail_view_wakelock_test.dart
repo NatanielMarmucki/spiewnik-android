@@ -65,7 +65,7 @@ void main() {
     await tester.tap(find.byType(GoToNumberIcon));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '2');
-    await tester.pumpAndSettle(); // podgląd tytułu odblokowuje przycisk
+    await tester.pumpAndSettle(); // the title preview enables the button
     await tester.tap(find.text('Przejdź'));
     await tester.pumpAndSettle();
 

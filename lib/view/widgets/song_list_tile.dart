@@ -3,33 +3,34 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 
-/// Wiersz listy z docs/DESIGN-SYSTEM.md, sekcja 5. Jeden wariant dla trzech list:
-/// pieśni, ulubionych i własnych pieśni.
+/// List row from docs/DESIGN-SYSTEM.md, section 5. One variant for three lists:
+/// songs, favorites and user songs.
 ///
-/// Tytuł przy lewej krawędzi, numer przy prawej, a puste miejsce między nimi wypełnia linia
-/// wiodąca z kropek — jak w spisie treści. **Tytuł jest widoczny w całości**: długi zawija się
-/// do kolejnych wierszy, a kropki biegną od końca ostatniego wiersza do numeru. Serce ulubionej
-/// stoi przy końcu tytułu, żeby nie ginęło. Własna pieśń dostaje wersalik `MOJA` zamiast numeru.
+/// Title at the left edge, number at the right, and the empty space between them is filled by a
+/// dotted leader line — as in a table of contents. **The title is shown in full**: a long one wraps
+/// onto further lines, and the dots run from the end of the last line to the number. A favorite's
+/// heart sits at the end of the title so it does not get lost. A user song gets the uppercase `MOJA`
+/// instead of a number.
 ///
-/// Wysokość to **minimum** 48 dp, więc wiersz rośnie razem z systemowym powiększeniem czcionki
-/// i razem z liczbą wierszy tytułu (reguła 1 i 6 z sekcji 7 dokumentu).
+/// The height is a **minimum** of 48 dp, so the row grows with the system font scaling
+/// and with the number of title lines (rules 1 and 6 in section 7 of the document).
 class SongListTile extends StatefulWidget {
-  /// Tytuł pieśni.
+  /// Song title.
   final String title;
 
-  /// Numer pieśni pokazywany na prawej krawędzi. Null dla własnych pieśni.
+  /// Song number shown at the right edge. Null for user songs.
   final int? number;
 
-  /// Tekst zamiast numeru, np. `MOJA` dla własnej pieśni.
+  /// Text shown instead of the number, e.g. `MOJA` for a user song.
   final String? badge;
 
-  /// Rysuje serce przy tytule.
+  /// Draws a heart next to the title.
   final bool isFavorite;
 
-  /// Pieśń otwarta w tej chwili: numer w kolorze akcentu.
+  /// The currently open song: number in the accent color.
   final bool isSelected;
 
-  /// Fragment tytułu do podświetlenia, np. trafienie wyszukiwania.
+  /// Part of the title to highlight, e.g. a search match.
   final String? highlight;
 
   final VoidCallback? onTap;
@@ -45,10 +46,10 @@ class SongListTile extends StatefulWidget {
     this.onTap,
   });
 
-  /// Wysokość minimalna wiersza.
+  /// Minimum row height.
   static const double minHeight = 48.0;
 
-  /// Czas przyciemnienia tła przy dotknięciu (sekcja 6 dokumentu).
+  /// Duration of the background darkening on touch (section 6 of the document).
   static const Duration pressDuration = Duration(milliseconds: 80);
 
   @override
@@ -75,7 +76,7 @@ class _SongListTileState extends State<SongListTile> {
     return Semantics(
       button: widget.onTap != null,
       selected: widget.isSelected,
-      // Jeden węzeł na wiersz: numer, tytuł i „ulubiona” czytane razem, zamiast osobnych ikon.
+      // One node per row: number, title and „ulubiona” (favorite) read together, instead of separate icons.
       container: true,
       excludeSemantics: true,
       onTap: widget.onTap,
@@ -86,7 +87,7 @@ class _SongListTileState extends State<SongListTile> {
         if (widget.isFavorite) 'ulubiona',
       ].join(', '),
       child: GestureDetector(
-        behavior: HitTestBehavior.opaque, // cały wiersz jest celem dotknięcia
+        behavior: HitTestBehavior.opaque, // the whole row is the touch target
         onTap: widget.onTap,
         onTapDown: (_) => _setPressed(true),
         onTapUp: (_) => _setPressed(false),
@@ -109,11 +110,11 @@ class _SongListTileState extends State<SongListTile> {
   }
 }
 
-/// Wiersz spisu treści: tytuł, kropki i numer.
+/// Table-of-contents line: title, dots and number.
 ///
-/// Tytuł mierzymy sami [TextPainter]em i dzielimy na wiersze, bo kropki mają zaczynać się tam,
-/// gdzie kończy się **ostatni** wiersz tytułu. Zwykły `Row` tego nie umie: zawinięty tekst zajmuje
-/// całą szerokość, więc na kropki nie zostałoby nic.
+/// We measure the title ourselves with a [TextPainter] and split it into lines, because the dots
+/// have to start where the **last** line of the title ends. A plain `Row` cannot do that: wrapped
+/// text takes the full width, so nothing would be left for the dots.
 class _IndexLine extends StatelessWidget {
   final String title;
   final String? highlight;
@@ -129,16 +130,16 @@ class _IndexLine extends StatelessWidget {
     required this.trailingStyle,
   });
 
-  /// Odstęp po obu stronach kropek.
+  /// Gap on both sides of the dots.
   static const double _gap = 12.0;
 
-  /// Najkrótsza linia wiodąca, jaką zostawiamy: poniżej tego kropki przestają czytelnie prowadzić.
+  /// The shortest leader line we leave: below this the dots no longer clearly guide the eye.
   static const double _minDots = 12.0;
 
   static const double _favoriteIcon = 11.0;
   static const double _favoriteGap = 8.0;
 
-  /// Przy skrajnie wąskim wierszu tytuł i tak dostaje tyle miejsca; niżej nie ma co dzielić.
+  /// In an extremely narrow row the title still gets this much space; below it there is nothing to split.
   static const double _minTitleWidth = 24.0;
 
   @override
@@ -157,7 +158,7 @@ class _IndexLine extends StatelessWidget {
           textScaler,
         );
         final favoriteWidth = isFavorite ? textScaler.scale(_favoriteIcon) + _favoriteGap : 0.0;
-        // Tyle miejsca zostaje na tekst tytułu po numerze, sercu, odstępach i kropkach.
+        // The space left for the title text after the number, heart, gaps and dots.
         final available = math.max(
           _minTitleWidth,
           constraints.maxWidth - trailingWidth - favoriteWidth - 2 * _gap - _minDots,
@@ -171,8 +172,9 @@ class _IndexLine extends StatelessWidget {
             for (final line in lines.take(lines.length - 1)) _text(context, line, titleStyle),
             Row(
               children: [
-                // Twarde ograniczenie zamiast Flexible: Flexible dzieliłby wolne miejsce po połowie
-                // z Expanded od kropek i ucinał tytuł wielokropkiem, choć zmierzył się na tę szerokość.
+                // A hard constraint instead of Flexible: Flexible would split the free space in half
+                // with the dots' Expanded and cut the title with an ellipsis, even though it was measured
+                // for this width.
                 ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: available),
                   child: _text(context, lines.last, titleStyle),
@@ -214,7 +216,7 @@ class _IndexLine extends StatelessWidget {
     return painter.width;
   }
 
-  /// Zakresy kolejnych wierszy tytułu przy danej szerokości. Zawsze co najmniej jeden.
+  /// Ranges of the successive title lines at the given width. Always at least one.
   List<TextRange> _splitIntoLines(
     TextStyle style,
     TextDirection direction,
@@ -234,7 +236,7 @@ class _IndexLine extends StatelessWidget {
     var offset = 0;
     while (offset < title.length) {
       final line = painter.getLineBoundary(TextPosition(offset: offset));
-      // Zabezpieczenie przed pętlą, gdyby granica nie posunęła się do przodu.
+      // Guard against an infinite loop in case the boundary does not move forward.
       final end = line.end > offset ? line.end : title.length;
       ranges.add(TextRange(start: offset, end: end));
       offset = end;
@@ -242,7 +244,7 @@ class _IndexLine extends StatelessWidget {
     return ranges.isEmpty ? [TextRange(start: 0, end: title.length)] : ranges;
   }
 
-  /// Fragment tytułu z podświetlonym trafieniem wyszukiwania, jeśli wpada w ten wiersz.
+  /// Part of the title with the search match highlighted, if the match falls in this line.
   List<TextSpan> _spans(BuildContext context, TextRange line, TextStyle style) {
     final text = title.substring(line.start, line.end).trimRight();
     final query = highlight;
@@ -254,7 +256,7 @@ class _IndexLine extends StatelessWidget {
       return [TextSpan(text: text)];
     }
     final end = start + query.length;
-    // Trafienie liczone w całym tytule, więc przycinamy je do tego wiersza.
+    // The match is computed over the whole title, so we clip it to this line.
     final from = (start - line.start).clamp(0, text.length);
     final to = (end - line.start).clamp(0, text.length);
     if (from >= to) {
@@ -269,7 +271,7 @@ class _IndexLine extends StatelessWidget {
   }
 }
 
-/// Linia wiodąca z kropek między tytułem a numerem.
+/// Dotted leader line between the title and the number.
 class _LeaderDotsPainter extends CustomPainter {
   final Color color;
 

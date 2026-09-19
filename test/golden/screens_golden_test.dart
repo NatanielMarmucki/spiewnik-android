@@ -23,14 +23,14 @@ import '../support/fakes/fake_song_repository.dart';
 import '../support/golden_harness.dart';
 import '../support/platform_fakes.dart';
 
-/// Zrzuty wszystkich ekranów w obu motywach, renderowane bez urządzenia.
+/// Screenshots of every screen in both themes, rendered without a device.
 ///
-/// Obrazy powstają na Linuksie, bo rasteryzacja czcionek różni się między platformami.
-/// Na innych systemach testy są pomijane, żeby lokalne `flutter test` zostało szybkie
-/// i zielone; sprawdzasz je przez `tools/golden.sh` (kontener z Linuksem).
+/// The images are made on Linux, because font rasterization differs between platforms.
+/// On other systems the tests are skipped so that a local `flutter test` stays fast
+/// and green; you check them with `tools/golden.sh` (a Linux container).
 void main() {
-  // Obrazy w repozytorium pochodzą z Linuksa i tylko tam zgadzają się co do piksela.
-  // Na macOS i Windowsie testy są pomijane; sprawdzasz je przez tools/golden.sh.
+  // The images in the repository come from Linux and match pixel for pixel only there.
+  // On macOS and Windows the tests are skipped; you check them with tools/golden.sh.
   final bool skipOnOtherPlatforms = !Platform.isLinux;
 
   late FakeWakelock wakelock;
@@ -39,7 +39,7 @@ void main() {
   setUpAll(loadAppFonts);
 
   setUp(() {
-    // Ekrany szczegółów wołają kanały platformy; bez atrap test wywraca się na MissingPluginException.
+    // The detail screens call platform channels; without fakes the test fails with MissingPluginException.
     wakelock = FakeWakelock()..install();
     share = FakeShare()..install();
   });
@@ -60,14 +60,14 @@ void main() {
     return MySongViewModel(repository);
   }
 
-  testWidgets('lista pieśni', (tester) async {
+  testWidgets('song list', (tester) async {
     await goldenScreen(tester, '01-lista-piesni', (context) {
       return Scaffold(appBar: AppBar(title: const Text('Śpiewnik')), body: SongListView(viewModel: songs()));
     });
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('lista pieśni: szybkie przewijanie', (tester) async {
-    // Uchwyt pokazuje się dopiero przy liście dłuższej niż dwa ekrany, więc tu jest ich więcej.
+  testWidgets('song list: fast scrolling', (tester) async {
+    // The thumb appears only for a list longer than two screens, so this one has more songs.
     final viewModel = SongViewModel(FakeSongRepository(manySongs()));
     await goldenScreen(
       tester,
@@ -90,7 +90,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('lista pieśni: wynik wyszukiwania', (tester) async {
+  testWidgets('song list: search results', (tester) async {
     await goldenScreen(
       tester,
       '02-wyszukiwanie-wyniki',
@@ -102,7 +102,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('lista pieśni: brak wyników', (tester) async {
+  testWidgets('song list: no search results', (tester) async {
     await goldenScreen(
       tester,
       '03-wyszukiwanie-brak-wynikow',
@@ -114,7 +114,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('ulubione', (tester) async {
+  testWidgets('favorites', (tester) async {
     await goldenScreen(
       tester,
       '04-ulubione',
@@ -122,7 +122,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('ulubione: pusta lista', (tester) async {
+  testWidgets('favorites: empty list', (tester) async {
     await goldenScreen(
       tester,
       '04b-ulubione-puste',
@@ -133,7 +133,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('moje pieśni', (tester) async {
+  testWidgets('user songs', (tester) async {
     await goldenScreen(
       tester,
       '05-moje-piesni',
@@ -141,7 +141,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('moje pieśni: pusta lista', (tester) async {
+  testWidgets('user songs: empty list', (tester) async {
     await goldenScreen(
       tester,
       '05b-moje-piesni-puste',
@@ -152,7 +152,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('dialog usuwania własnej pieśni', (tester) async {
+  testWidgets('user song delete dialog', (tester) async {
     await goldenScreen(
       tester,
       '06-usuwanie-dialog',
@@ -164,11 +164,11 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('formularz: puste pola', (tester) async {
+  testWidgets('form: empty fields', (tester) async {
     await goldenScreen(tester, '07-formularz-pusty', (context) => MySongFormView(viewModel: mySongs(empty: true)));
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('formularz: walidacja', (tester) async {
+  testWidgets('form: validation errors', (tester) async {
     await goldenScreen(
       tester,
       '08-formularz-walidacja',
@@ -180,7 +180,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('formularz: dialog odrzucenia zmian', (tester) async {
+  testWidgets('form: discard changes dialog', (tester) async {
     await goldenScreen(
       tester,
       '09-formularz-odrzuc-zmiany',
@@ -188,15 +188,15 @@ void main() {
       afterPump: (tester) async {
         await tester.enterText(find.byType(TextFormField).first, 'Nowa');
         await tester.pumpAndSettle();
-        // Formularz jest tu ekranem startowym, więc nie ma przycisku wstecz:
-        // wyjście wywołujemy tak, jak robi to gest systemowy.
+        // The form is the home screen here, so there is no back button:
+        // we trigger leaving the way the system gesture does.
         await tester.state<NavigatorState>(find.byType(Navigator)).maybePop();
         await tester.pumpAndSettle();
       },
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('podgląd własnej pieśni', (tester) async {
+  testWidgets('user song preview', (tester) async {
     final viewModel = mySongs();
     await goldenScreen(
       tester,
@@ -205,7 +205,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('szczegóły pieśni', (tester) async {
+  testWidgets('song details', (tester) async {
     final viewModel = songs();
     await goldenScreen(
       tester,
@@ -214,22 +214,22 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('szczegóły pieśni: dialog przejścia do numeru', (tester) async {
+  testWidgets('song details: go to number dialog', (tester) async {
     final viewModel = songs();
     await goldenScreen(
       tester,
       '13-dialog-przejdz-do-piesni',
       (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
       afterPump: (tester) async {
-        // warnIfMissed: ikona leży w InkWellu w pasku; ostrzeżenie o trafieniu jest mylące,
-        // dialog otwiera się poprawnie.
+        // warnIfMissed: the icon sits in an InkWell in the bar; the hit warning is misleading,
+        // the dialog opens correctly.
         await tester.tap(find.ancestor(of: find.byType(GoToNumberIcon), matching: find.byType(InkWell)).first);
         await tester.pumpAndSettle();
       },
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('szczegóły pieśni: modal z wpisanym numerem', (tester) async {
+  testWidgets('song details: go to number dialog with a number entered', (tester) async {
     final viewModel = songs();
     await goldenScreen(
       tester,
@@ -244,26 +244,26 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('szczegóły pieśni: arkusz opcji', (tester) async {
+  testWidgets('song details: options sheet', (tester) async {
     final viewModel = songs();
     await goldenScreen(
       tester,
       '14-arkusz-opcji',
       (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
       afterPump: (tester) async {
-        // warnIfMissed: ikona leży w przycisku paska; ostrzeżenie o trafieniu jest mylące,
-        // arkusz otwiera się poprawnie.
+        // warnIfMissed: the icon sits in a bar button; the hit warning is misleading,
+        // the sheet opens correctly.
         await tester.tap(find.byIcon(Icons.more_vert), warnIfMissed: false);
         await tester.pumpAndSettle();
       },
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('ustawienia', (tester) async {
+  testWidgets('settings', (tester) async {
     await goldenScreen(tester, '16-ustawienia', (context) => const SettingsView());
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('ustawienia: największy tekst', (tester) async {
+  testWidgets('settings: largest text', (tester) async {
     await goldenScreen(
       tester,
       '16b-ustawienia-max',
@@ -272,8 +272,8 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  // Systemowe powiększenie ×2,0 (sekcja 6 dokumentu) na kluczowych ekranach.
-  testWidgets('lista pieśni: powiększenie x2', (tester) async {
+  // System text scaling ×2.0 (section 6 of the document) on the key screens.
+  testWidgets('song list: text scale x2', (tester) async {
     final viewModel = songs();
     await goldenScreen(
       tester,
@@ -286,7 +286,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('szczegóły pieśni: powiększenie x2', (tester) async {
+  testWidgets('song details: text scale x2', (tester) async {
     final viewModel = songs();
     await goldenScreen(
       tester,
@@ -296,7 +296,7 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('ustawienia: powiększenie x2', (tester) async {
+  testWidgets('settings: text scale x2', (tester) async {
     await goldenScreen(
       tester,
       '19-ustawienia-x2',
@@ -305,16 +305,16 @@ void main() {
     );
   }, skip: skipOnOtherPlatforms);
 
-  // Ekran powitalny po migracji ze starej aplikacji iOS (issue #37).
-  testWidgets('ekran powitalny', (tester) async {
+  // Welcome screen after migrating from the old iOS app (issue #37).
+  testWidgets('welcome screen', (tester) async {
     await goldenScreen(tester, '21-powitanie', (context) => WelcomeView(onContinue: () {}));
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('ekran powitalny: powiększenie x2', (tester) async {
+  testWidgets('welcome screen: text scale x2', (tester) async {
     await goldenScreen(tester, '22-powitanie-x2', (context) => WelcomeView(onContinue: () {}), textScale: 2.0);
   }, skip: skipOnOtherPlatforms);
 
-  testWidgets('ekran powitalny: powiększenie x2, przewinięty do przycisku', (tester) async {
+  testWidgets('welcome screen: text scale x2, scrolled to the button', (tester) async {
     await goldenScreen(
       tester,
       '22b-powitanie-x2-przycisk',

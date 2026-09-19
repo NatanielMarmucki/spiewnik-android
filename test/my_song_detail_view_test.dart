@@ -49,7 +49,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Akcje pieśni siedzą w arkuszu pod trzema kropkami, tak jak w podglądzie pieśni ze śpiewnika.
+  /// Song actions sit in the sheet under the three dots, just like in the songbook song preview.
   Future<void> tapOption(WidgetTester tester, String label) async {
     await tester.tap(find.byTooltip('Opcje pieśni'));
     await tester.pumpAndSettle();
@@ -57,7 +57,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('akcje pieśni siedzą w arkuszu, a w pasku zostają same trzy kropki', (tester) async {
+  testWidgets('song actions sit in the options sheet and only the three dots remain in the app bar', (tester) async {
     viewModel.addSong(title: 'Moja pieśń', content: 'treść');
     await pumpList(tester);
     await openSong(tester, 'Moja pieśń');
@@ -75,7 +75,7 @@ void main() {
     expect(find.text('Usuń pieśń'), findsOneWidget);
   });
 
-  testWidgets('usuwanie jest odcięte hairline\'em i w kolorze niszczącym', (tester) async {
+  testWidgets('delete is separated by a hairline and uses the destructive color', (tester) async {
     viewModel.addSong(title: 'Moja pieśń', content: 'treść');
     await pumpList(tester);
     await openSong(tester, 'Moja pieśń');
@@ -100,7 +100,7 @@ void main() {
 
     expect(find.byType(MySongDetailView), findsOneWidget);
     expect(find.descendant(of: find.byType(AppBar), matching: find.text('Moja pieśń')), findsOneWidget);
-    // Renderer zdejmuje numery zwrotek z toku tekstu i dzieli treść na bloki.
+    // The renderer takes verse numbers out of the text flow and splits the content into blocks.
     expect(find.textContaining('Pierwsza zwrotka'), findsOneWidget);
     expect(find.textContaining('Druga zwrotka'), findsOneWidget);
   });

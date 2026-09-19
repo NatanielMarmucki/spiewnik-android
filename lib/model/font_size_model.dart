@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/theme/song_text_scale.dart';
 
-/// Rozmiar tekstu pieśni i interlinia, trzymane w SharedPreferences.
+/// Song text size and line height, kept in SharedPreferences.
 ///
-/// Zakresy i domyślne pochodzą z [SongTextScale] (docs/DESIGN-SYSTEM.md, sekcja 2).
-/// Domyślne obowiązują **tylko przy pierwszej instalacji**: zapisane wartości zostają,
-/// a te spoza zakresu są przycinane, nigdy resetowane. Dzięki temu użytkownik, który miał
-/// 16 i 1,5, zachowuje swoje ustawienia, a ten, który miał interlinię 2,4, dostaje 1,8.
+/// Ranges and defaults come from [SongTextScale] (docs/DESIGN-SYSTEM.md, section 2).
+/// The defaults apply **only on first install**: saved values stay, and those out of range
+/// are clamped, never reset. So a user who had 16 and 1.5 keeps their settings, and one who
+/// had a line height of 2.4 gets 1.8.
 class FontSizeModel with ChangeNotifier {
   static const String fontSizeKey = 'fontSize';
   static const String lineHeightKey = 'lineHeight';
@@ -23,13 +23,13 @@ class FontSizeModel with ChangeNotifier {
   double _fontSize = defaultFontSize;
   double _lineHeight = defaultLineHeight;
 
-  /// Kończy się, gdy ustawienia są wczytane. Przydatne w testach.
+  /// Completes when the settings are loaded. Useful in tests.
   late final Future<void> loaded;
 
   double get fontSize => _fontSize;
   double get lineHeight => _lineHeight;
 
-  /// Skala tekstu pieśni dla obecnych ustawień.
+  /// Song text scale for the current settings.
   SongTextScale get songTextScale => SongTextScale(size: _fontSize, lineHeightMultiplier: _lineHeight);
 
   FontSizeModel() {
@@ -44,8 +44,8 @@ class FontSizeModel with ChangeNotifier {
     _fontSize = storedFontSize == null ? defaultFontSize : storedFontSize.clamp(minFontSize, maxFontSize);
     _lineHeight = storedLineHeight == null ? defaultLineHeight : storedLineHeight.clamp(minLineHeight, maxLineHeight);
 
-    // Zapisane wartości spoza zakresu zostają przycięte także na dysku, żeby stan w pamięci
-    // i w ustawieniach się nie rozjeżdżał. Brakujący klucz zostaje brakującym.
+    // Saved values out of range are clamped on disk too, so the state in memory and in the
+    // settings does not drift apart. A missing key stays missing.
     if (storedFontSize != null && storedFontSize != _fontSize) {
       await prefs.setDouble(fontSizeKey, _fontSize);
     }

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Buduje kroje pisma dla aplikacji: statyczne odmiany z podzbiorem latin + latin-ext.
+"""Builds the app's typefaces: static instances subset to latin + latin-ext.
 
-Źródło: zmienne pliki z repozytorium google/fonts (licencja OFL, kopie licencji leżą
-w assets/fonts/). Pakiet google_fonts nie jest używany celowo: aplikacja działa offline,
-więc kroje są w pakiecie zamiast pobierania w czasie działania.
+Source: the variable fonts from the google/fonts repository (OFL license, copies of the license are
+in assets/fonts/). The google_fonts package is deliberately not used: the app works offline,
+so the fonts ship in the bundle instead of being downloaded at runtime.
 
-Wymaga: pip3 install fonttools brotli
-Użycie: python3 tools/build_fonts.py            # zapisuje do assets/fonts/
+Requires: pip3 install fonttools brotli
+Usage: python3 tools/build_fonts.py            # writes to assets/fonts/
 """
 
 import sys
@@ -22,7 +22,7 @@ SOURCES = {
     "SchibstedGrotesk.ttf": "https://raw.githubusercontent.com/google/fonts/main/ofl/schibstedgrotesk/SchibstedGrotesk%5Bwght%5D.ttf",
 }
 
-# Zakresy podzbiorów latin i latin-ext z Google Fonts.
+# The latin and latin-ext subset ranges from Google Fonts.
 LATIN = (
     "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,"
     "U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
@@ -32,7 +32,7 @@ LATIN_EXT = (
     "U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF"
 )
 
-# opsz 18 to domyślny rozmiar optyczny Newsreadera; tekst pieśni ma 10-30 pt.
+# opsz 18 is Newsreader's default optical size; song text is 10-30 pt.
 JOBS = [
     ("Newsreader.ttf", "Newsreader", {"wght": 200, "opsz": 18}, "ExtraLight"),
     ("Newsreader.ttf", "Newsreader", {"wght": 300, "opsz": 18}, "Light"),
@@ -42,7 +42,7 @@ JOBS = [
     ("SchibstedGrotesk.ttf", "SchibstedGrotesk", {"wght": 600}, "SemiBold"),
 ]
 
-# Znaki, bez których teksty pieśni i interfejsu wyglądałyby źle.
+# Characters without which the song texts and the UI would look wrong.
 REQUIRED = "ąćęłńóśźżĄĆĘŁŃÓŚŹŻ„”—…0123456789[]:"
 
 
@@ -67,7 +67,7 @@ def main():
     for name, url in SOURCES.items():
         target = work / name
         if not target.exists():
-            print(f"pobieram {name}")
+            print(f"downloading {name}")
             urllib.request.urlretrieve(url, target)
 
     codes = set(unicodes(LATIN)) | set(unicodes(LATIN_EXT))
@@ -75,7 +75,7 @@ def main():
     for source, family, axes, style in JOBS:
         font = instancer.instantiateVariableFont(TTFont(work / source), axes, inplace=False, updateFontNames=False)
         options = Options()
-        options.layout_features = ["*"]  # zachowuje m.in. tnum, czyli cyfry tabelaryczne
+        options.layout_features = ["*"]  # keeps tnum (tabular figures), among others
         options.name_IDs = ["*"]
         options.notdef_outline = True
         subsetter = Subsetter(options=options)
@@ -85,7 +85,7 @@ def main():
         cmap = font.getBestCmap()
         missing = [c for c in REQUIRED if ord(c) not in cmap]
         if missing:
-            raise SystemExit(f"{family}-{style}: brak znaków {missing}")
+            raise SystemExit(f"{family}-{style}: missing characters {missing}")
 
         path = out_dir / f"{family}-{style}.ttf"
         font.save(path)

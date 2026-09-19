@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Uruchamia testy golden w kontenerze z Linuksem, czyli na tej samej platformie co CI.
+# Runs the golden tests in a Linux container, that is on the same platform as CI.
 #
-#   tools/golden.sh              # sprawdza, czy wygląd zgadza się z obrazami w repozytorium
-#   tools/golden.sh --update     # zapisuje nowe obrazy po zamierzonej zmianie wyglądu
+#   tools/golden.sh              # checks that the UI matches the images in the repository
+#   tools/golden.sh --update     # writes new images after an intended UI change
 #
-# Obrazy golden zależą od rasteryzacji czcionek, a ta różni się między macOS a Linuksem,
-# dlatego obrazy powstają wyłącznie tutaj. Na macOS `flutter test` pomija te testy.
+# Golden images depend on font rasterization, which differs between macOS and Linux,
+# so the images are generated only here. On macOS `flutter test` skips these tests.
 set -euo pipefail
 
 readonly IMAGE="spiewnik-golden:3.47.4"
@@ -18,39 +18,39 @@ update=false
 if [[ "${1:-}" == "--update" ]]; then
   update=true
 elif [[ $# -gt 0 ]]; then
-  echo "Użycie: tools/golden.sh [--update]" >&2
+  echo "Usage: tools/golden.sh [--update]" >&2
   exit 1
 fi
 
 if ! command -v docker >/dev/null 2>&1; then
-  echo "Error: docker nie jest dostępny." >&2
+  echo "Error: docker is not available." >&2
   exit 1
 fi
 
 if ! docker image inspect "${IMAGE}" >/dev/null 2>&1; then
-  echo "Buduję obraz ${IMAGE} (tylko za pierwszym razem, kilka minut)..."
+  echo "Building image ${IMAGE} (first time only, a few minutes)..."
   docker build --platform linux/amd64 -f "${DOCKERFILE}" -t "${IMAGE}" .
 fi
 
 if [[ "${update}" == true ]]; then
   command=(flutter test --update-goldens test/golden)
-  echo "Regeneruję obrazy golden w kontenerze..."
+  echo "Regenerating golden images in the container..."
 else
   command=(flutter test test/golden)
-  echo "Sprawdzam obrazy golden w kontenerze..."
+  echo "Checking golden images in the container..."
 fi
 
-# Kontener robi `flutter pub get` na tym samym katalogu, więc .dart_tool/package_config.json
-# zostaje ze ścieżkami z Linuksa i `flutter test` na hoście przestaje się kompilować.
-# Trap, nie zwykła linijka na końcu: przy oblanych testach `set -e` ucina skrypt wcześniej
-# i host zostawał z konfiguracją z kontenera.
+# The container runs `flutter pub get` in the same directory, so .dart_tool/package_config.json
+# is left with Linux paths and `flutter test` on the host stops compiling.
+# A trap, not a plain line at the end: when tests fail, `set -e` cuts the script short
+# and the host used to be left with the container's configuration.
 restore_host_packages() {
-  echo "Przywracam konfigurację pakietów hosta..."
+  echo "Restoring the host package configuration..."
   flutter pub get >/dev/null
 }
 trap restore_host_packages EXIT
 
-# Katalogi budowania hosta (macOS) nie nadają się dla Linuksa, więc kontener ma własne.
+# The host's (macOS) build directories are no good for Linux, so the container has its own.
 docker run --rm \
   --platform linux/amd64 \
   -v "${repo_root}:/app" \
@@ -62,5 +62,5 @@ docker run --rm \
 
 
 if [[ "${update}" == true ]]; then
-  echo "Gotowe. Przejrzyj zmiany w test/golden/goldens/ przed commitem."
+  echo "Done. Review the changes in test/golden/goldens/ before committing."
 fi

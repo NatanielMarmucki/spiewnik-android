@@ -5,12 +5,13 @@ import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/widgets/dialog_actions.dart';
 import 'package:spiewnik/viewmodel/song_viewmodel.dart';
 
-/// Modal „Przejdź do pieśni” z docs/DESIGN-SYSTEM.md, sekcja 5.
+/// The „Przejdź do pieśni” (Go to song) modal from docs/DESIGN-SYSTEM.md, section 5.
 ///
-/// Pole numeryczne z **klawiaturą systemową**, podpowiedź z zakresem liczonym z bazy i tytuł
-/// pieśni pokazywany od razu pod polem. Enter działa jak „Przejdź”. Kolory i kształt idą z tokenów.
+/// A numeric field with the **system keyboard**, a hint with the range computed from the database,
+/// and the song title shown right below the field. Enter works like „Przejdź” (Go). Colors and
+/// shape come from the tokens.
 ///
-/// Zwraca wybraną pieśń albo null, gdy użytkownik zrezygnował.
+/// Returns the chosen song, or null when the user cancels.
 Future<Song?> showGoToSongDialog(BuildContext context, SongViewModel viewModel) {
   return showDialog<Song>(
     context: context,
@@ -50,7 +51,7 @@ class _GoToSongDialogState extends State<_GoToSongDialog> {
     }
   }
 
-  /// Podgląd pod polem: tytuł trafionej pieśni albo powód, dla którego nic nie znaleziono.
+  /// Preview below the field: the title of the matched song or the reason nothing was found.
   Widget _preview(BuildContext context) {
     final appColors = context.appColors;
     final textTheme = Theme.of(context).textTheme;
@@ -92,7 +93,7 @@ class _GoToSongDialogState extends State<_GoToSongDialog> {
           TextField(
             controller: _controller,
             autofocus: true,
-            // Klawiatura systemowa, bez własnego keypada.
+            // System keyboard, no custom keypad.
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.go,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],

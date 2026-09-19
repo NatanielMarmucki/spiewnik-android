@@ -19,7 +19,7 @@ class MySongDetailView extends StatefulWidget {
 }
 
 class MySongDetailViewState extends State<MySongDetailView> {
-  /// Kotwica arkusza udostępniania na iPadzie, gdzie jest to dymek przy przycisku.
+  /// Anchor for the share sheet on iPad, where it is a popover next to the button.
   final GlobalKey _optionsButtonKey = GlobalKey();
 
   @override
@@ -65,9 +65,9 @@ class MySongDetailViewState extends State<MySongDetailView> {
     Navigator.pop(context);
   }
 
-  /// Arkusz opcji spod trzech kropek, tak samo jak w podglądzie pieśni ze śpiewnika.
-  /// Pozycje zamykają arkusz **przed** akcją, żeby systemowy arkusz udostępniania ani formularz
-  /// nie otwierały się na naszym.
+  /// Options sheet from the three dots, the same as in the songbook song view.
+  /// Items close the sheet **before** the action, so neither the system share sheet nor the form
+  /// opens on top of ours.
   Future<void> _showOptions() async {
     await showModalBottomSheet<void>(
       context: context,

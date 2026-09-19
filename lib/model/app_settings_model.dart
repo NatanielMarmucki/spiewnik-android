@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/view/screen_wake_lock.dart';
 
-/// Ustawienia aplikacji spoza czytania: motyw i blokada wygaszania ekranu.
+/// App settings outside reading: theme and keep-screen-on (wakelock).
 ///
-/// Trzymane osobno od [FontSizeModel], bo „Przywróć ustawienia domyślne” dotyczy **tylko**
-/// rozmiaru tekstu i interlinii — motyw i blokada ekranu mają z niego wyjść nietknięte.
+/// Kept separate from [FontSizeModel], because „Przywróć ustawienia domyślne” (restore defaults)
+/// applies **only** to text size and line height — theme and keep-screen-on must come out of it untouched.
 ///
-/// Klucze są nowe (`themeMode`, `keepScreenOn`), więc nic nie nadpisują na urządzeniach
-/// użytkowników. Brak klucza oznacza wartość domyślną: motyw systemowy i blokada włączona,
-/// czyli dotychczasowe zachowanie aplikacji.
+/// The keys are new (`themeMode`, `keepScreenOn`), so they overwrite nothing on users' devices.
+/// A missing key means the default value: system theme and keep-screen-on enabled,
+/// which is how the app has behaved so far.
 class AppSettingsModel with ChangeNotifier {
   static const String themeModeKey = 'themeMode';
   static const String keepScreenOnKey = 'keepScreenOn';
@@ -20,7 +20,7 @@ class AppSettingsModel with ChangeNotifier {
   ThemeMode _themeMode = defaultThemeMode;
   bool _keepScreenOn = defaultKeepScreenOn;
 
-  /// Kończy się, gdy ustawienia są wczytane. Przydatne w testach.
+  /// Completes when the settings are loaded. Useful in tests.
   late final Future<void> loaded;
 
   ThemeMode get themeMode => _themeMode;
@@ -47,14 +47,14 @@ class AppSettingsModel with ChangeNotifier {
 
   Future<void> setKeepScreenOn(bool value) async {
     _keepScreenOn = value;
-    // Działa od razu, także gdy ustawienia otwarto z otwartej pieśni.
+    // Takes effect right away, also when the settings were opened from an open song.
     ScreenWakeLock.enabled = value;
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(keepScreenOnKey, value);
   }
 
-  /// Nieznana albo brakująca nazwa daje motyw systemowy zamiast wyjątku.
+  /// An unknown or missing name gives the system theme instead of an exception.
   static ThemeMode _themeModeFromName(String? name) {
     return ThemeMode.values.firstWhere((mode) => mode.name == name, orElse: () => defaultThemeMode);
   }

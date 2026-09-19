@@ -109,8 +109,8 @@ void main() async {
     ),
   );
 
-  // Poza `build`: prośba o ocenę to skutek uboczny uruchomienia, nie część rysowania ekranu
-  // (punkt 7 z ARCHITECTURE-PROPOSAL.md). Bez `await`, żeby nie opóźniać pierwszej klatki.
+  // Outside `build`: the review prompt is a side effect of launching, not part of drawing the screen
+  // (point 7 of ARCHITECTURE-PROPOSAL.md). No `await`, so the first frame is not delayed.
   unawaited(ReviewService(logger: logger).onLaunch());
 }
 

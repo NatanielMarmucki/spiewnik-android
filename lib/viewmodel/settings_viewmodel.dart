@@ -5,13 +5,13 @@ import 'package:spiewnik/migration/core_data_migration.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsViewModel {
-  /// Adres, pod który idą zgłoszenia błędów i kontakt. **Jedyne miejsce w kodzie z adresem** —
-  /// podmiana aliasu przed wydaniem dotyczy tej stałej i niczego więcej.
+  /// Address that bug reports and contact messages go to. **The only place in the code with the address** —
+  /// swapping the alias before release means changing this constant and nothing else.
   static const String contactEmail = 'n.marmucki@icloud.com';
 
   final Logger logger;
 
-  /// Otwieranie linków wstrzykiwane, żeby test mógł udać, że system nie ma czym ich otworzyć.
+  /// Link opening is injected, so a test can pretend the system has nothing to open them with.
   final Future<bool> Function(Uri url) openUrl;
 
   SettingsViewModel({Logger? logger, Future<bool> Function(Uri url)? openUrl})
@@ -39,8 +39,8 @@ class SettingsViewModel {
     return prefs.getString(CoreDataMigration.errorKey) ?? 'Brak szczegółów błędu.';
   }
 
-  /// Otwiera stronę. Zwraca false, gdy się nie udało — widok pokazuje wtedy komunikat,
-  /// zamiast zostawiać użytkownika z niczym.
+  /// Opens a web page. Returns false when that failed — the view then shows a message
+  /// instead of leaving the user with nothing.
   Future<bool> launchURL(String url) async {
     try {
       final opened = await openUrl(Uri.parse(url));
@@ -55,7 +55,7 @@ class SettingsViewModel {
   }
 
   /// Opens an email to report a bug. [details] are added to the message body when given.
-  /// Zwraca false, gdy nie udało się otworzyć poczty.
+  /// Returns false when the mail app could not be opened.
   Future<bool> sendEmail(String version, {String? details}) async {
     final subject = 'subject=Zgłoszenie błędu w aplikacji Śpiewnik ($version)';
     final Uri params = Uri(

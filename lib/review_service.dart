@@ -3,14 +3,14 @@ import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Prośba o ocenę aplikacji: rzadko, przy okrągłych uruchomieniach i **najwyżej raz na wersję**.
+/// Asks for an app review: rarely, at round launch counts and **at most once per version**.
 ///
-/// Zastępuje `ReviewModel` i `LaunchCounter`. Poprzednie progi zaczynały się od piątego
-/// uruchomienia i dochodziły prośby po pierwszym dodaniu ulubionej — łącznie zbyt natarczywie,
-/// zwłaszcza że system i tak limituje te okna po swojemu. Zależności są wstrzykiwane, żeby dało
-/// się to przetestować bez prawdziwego `in_app_review`.
+/// Replaces `ReviewModel` and `LaunchCounter`. The previous thresholds started at the fifth
+/// launch, plus prompts after the first favorite was added — too pushy overall, especially
+/// since the system limits these prompts in its own way anyway. Dependencies are injected so
+/// this can be tested without the real `in_app_review`.
 class ReviewService {
-  /// Uruchomienia, przy których pytamy. Gęściej na początku, potem coraz rzadziej.
+  /// Launches at which we ask. More often at first, then less and less often.
   static const List<int> launchThresholds = [
     20,
     50,
@@ -28,11 +28,11 @@ class ReviewService {
     1940,
   ];
 
-  /// Klucz z licznikiem uruchomień. **Istnieje na urządzeniach użytkowników** — nie zmieniać.
+  /// Key holding the launch count. **It exists on users' devices** — do not change it.
   static const String launchCountKey = 'launch_count';
 
-  /// Wersja, przy której ostatnio pytaliśmy. Klucz nowy, więc u dotychczasowych użytkowników
-  /// pierwsze pytanie w 12.0.0 może paść mimo wcześniejszych próśb.
+  /// The version in which we last asked. The key is new, so existing users may get the first
+  /// prompt in 12.0.0 despite earlier prompts.
   static const String lastAskedVersionKey = 'reviewAskedVersion';
 
   final Future<bool> Function() isAvailable;
@@ -55,8 +55,8 @@ class ReviewService {
     return '${info.version}+${info.buildNumber}';
   }
 
-  /// Liczy uruchomienie i pyta o ocenę, jeśli wypada. Zwraca true, gdy prośba poszła.
-  /// Nigdy nie rzuca: nieudana prośba o ocenę nie ma prawa popsuć startu aplikacji.
+  /// Counts the launch and asks for a review when it is due. Returns true when the prompt was sent.
+  /// Never throws: a failed review prompt must not break the app start.
   Future<bool> onLaunch() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -76,7 +76,7 @@ class ReviewService {
         return false;
       }
       await requestReview();
-      // Zapisujemy po prośbie: gdy system odmówi, spróbujemy przy kolejnym progu.
+      // Saved after the prompt: when the system refuses, we try again at the next threshold.
       await prefs.setString(lastAskedVersionKey, version);
       logger.i('Review: asked at launch $launchCount in $version.');
       return true;

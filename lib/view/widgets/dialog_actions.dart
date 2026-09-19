@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 
-/// Wnętrze dialogu: 24 dp dookoła (docs/DESIGN-SYSTEM.md, sekcja 5). Tytuł i treść trzymają je
-/// same, bo `DialogThemeData` nie ma na nie pól; akcje biorą swój margines z motywu.
+/// Dialog interior: 24 dp all around (docs/DESIGN-SYSTEM.md, section 5). The title and content hold
+/// it themselves, because `DialogThemeData` has no fields for them; the actions take their margin
+/// from the theme.
 const EdgeInsets kDialogTitlePadding = EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 12.0);
 const EdgeInsets kDialogContentPadding = EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 20.0);
 
-/// Akcje dialogu (docs/DESIGN-SYSTEM.md, sekcja 5): **jedna przy lewej krawędzi, druga przy
-/// prawej**, każda na własnym tle 12% — wycofanie się w kolorze tekstu drugiego, potwierdzenie
-/// w akcencie, akcja niszcząca w kolorze niszczącym. Nigdy jako wypełniony przycisk.
+/// Dialog actions (docs/DESIGN-SYSTEM.md, section 5): **one at the left edge, the other at the
+/// right**, each on its own 12% background — backing out in the secondary text color, confirmation
+/// in the accent, a destructive action in the destructive color. Never as a filled button.
 ///
-/// Wysokość celu to 48 dp z `minimumSize`, więc przycisk rośnie z czcionką zamiast się przycinać.
+/// The target height is 48 dp from `minimumSize`, so the button grows with the font instead of
+/// being clipped.
 class DialogActions extends StatelessWidget {
   final List<Widget> children;
 
@@ -18,8 +20,8 @@ class DialogActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Na całą szerokość dialogu, inaczej spaceBetween rozsuwa akcje tylko w obrębie
-    // ich własnej szerokości i obie lądują po prawej.
+    // Full dialog width; otherwise spaceBetween spreads the actions only within
+    // their own width and both end up on the right.
     return SizedBox(
       width: double.infinity,
       child: Row(
@@ -30,13 +32,13 @@ class DialogActions extends StatelessWidget {
   }
 }
 
-/// Tło akcji: jej własny kolor ściszony do 12%, ten sam chwyt dla wszystkich trzech wariantów.
+/// Action background: its own color toned down to 12%, the same trick for all three variants.
 ButtonStyle _actionStyle(BuildContext context, Color color) {
   return TextButton.styleFrom(
     foregroundColor: color,
     backgroundColor: color.withValues(alpha: 0.12),
-    // Wyłączona akcja zostaje widoczna jako kształt, ale na neutralnym tle linii i w tekście
-    // trzecim — bez tego wyglądała, jakby przycisku w ogóle nie było.
+    // A disabled action stays visible as a shape, but on the neutral line background and in
+    // tertiary text — without this it looked as if there were no button at all.
     disabledForegroundColor: context.appColors.textTertiary,
     disabledBackgroundColor: context.appColors.line,
     minimumSize: const Size(0.0, 48.0),
@@ -45,7 +47,7 @@ ButtonStyle _actionStyle(BuildContext context, Color color) {
   );
 }
 
-/// Wycofanie się z dialogu: tekst drugi.
+/// Backing out of the dialog: secondary text.
 Widget dialogQuietButton(BuildContext context, {required String label, required VoidCallback? onPressed}) {
   return TextButton(
     onPressed: onPressed,
@@ -54,7 +56,7 @@ Widget dialogQuietButton(BuildContext context, {required String label, required 
   );
 }
 
-/// Potwierdzenie zwykłej akcji: akcent.
+/// Confirming a regular action: accent.
 Widget dialogAccentButton(BuildContext context, {required String label, required VoidCallback? onPressed}) {
   return TextButton(
     onPressed: onPressed,
@@ -63,7 +65,7 @@ Widget dialogAccentButton(BuildContext context, {required String label, required
   );
 }
 
-/// Akcja niszcząca: kolor niszczący, nie wypełnienie.
+/// Destructive action: the destructive color, not a fill.
 Widget dialogDestructiveButton(
   BuildContext context, {
   required String label,

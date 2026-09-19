@@ -1,5 +1,12 @@
 # song_merge — scalanie tekstów pieśni z trzech źródeł
 
+> **In English:** a one-off tool that merged the song texts from three sources (the database in the old iOS app's
+> repository, the old iOS app's database from a real device and the old Android app's JSON), with a Markdown file
+> per differing song where the right version was chosen by hand. Its output became `assets/songs_data.json`.
+> It stays in Polish on purpose: the decision files it reads have Polish section headers (`## DECYZJA`,
+> `## MANUAL-TREŚĆ`), which are part of the data format, and the job is done. Run it again only to rebuild
+> the song data.
+
 ## Wejście
 
 Katalog źródeł (`--src`) musi zawierać:

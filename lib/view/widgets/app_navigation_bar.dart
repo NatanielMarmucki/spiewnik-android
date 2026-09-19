@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/app_text_theme.dart';
 
-/// Dolna nawigacja z docs/DESIGN-SYSTEM.md, sekcja 5.
+/// Bottom navigation from docs/DESIGN-SYSTEM.md, section 5.
 ///
-/// Trzy zakładki, ikona kreskowa 17 dp i podpis w jednej linii. Aktywna: kreska 2 dp w akcencie
-/// nad pozycją, ikona w akcencie, podpis w kolorze tekstu i w wadze 600. Nieaktywna: tekst trzeci.
+/// Three tabs, a 17 dp line icon and a single-line label. Active: a 2 dp accent line above the
+/// item, accent icon, label in the text color at weight 600. Inactive: tertiary text.
 ///
-/// Wysokość to **minimum** 48 dp, a nie wartość stała: podpis rośnie razem z systemowym
-/// powiększeniem czcionki (reguła 1 z sekcji 7 dokumentu).
+/// The height is a **minimum** of 48 dp, not a fixed value: the label grows with the system
+/// font scaling (rule 1 in section 7 of the document).
 class AppNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
@@ -80,10 +80,10 @@ class _Destination extends StatelessWidget {
       button: true,
       selected: isSelected,
       label: destination.label,
-      // Akcja musi być na węźle: excludeSemantics ucina ją z InkWella, a czytnik ekranu
-      // aktywuje wtedy pustkę.
+      // The action has to be on the node: excludeSemantics strips it from the InkWell, and the screen
+      // reader would then activate nothing.
       onTap: onTap,
-      // Jeden węzeł na zakładkę: czytnik ekranu czyta podpis raz, nie osobno ikonę i tekst.
+      // One node per tab: the screen reader reads the label once, not the icon and the text separately.
       container: true,
       excludeSemantics: true,
       child: InkWell(
@@ -92,7 +92,7 @@ class _Destination extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Kreska aktywnej zakładki; nieaktywna trzyma tę samą wysokość, żeby nic nie skakało.
+            // Indicator line of the active tab; an inactive tab keeps the same height so nothing jumps.
             Container(
               height: AppNavigationBar.indicatorHeight,
               color: isSelected ? appColors.accent : colors.surface,

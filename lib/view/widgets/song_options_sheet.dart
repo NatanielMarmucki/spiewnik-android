@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 
-/// Arkusz opcji z docs/DESIGN-SYSTEM.md, sekcja 5: uchwyt 34 × 3 dp, pozycje 52 dp,
-/// sekcja niszcząca odcięta hairline'em.
+/// Options sheet from docs/DESIGN-SYSTEM.md, section 5: a 34 × 3 dp handle, 52 dp items,
+/// the destructive section set off by a hairline.
 ///
-/// Wysokość pozycji jest **minimalna**, więc rośnie razem z czcionką systemową.
+/// The item height is a **minimum**, so it grows with the system font.
 class SongOptionsSheet extends StatelessWidget {
   final List<SongOption> options;
 
@@ -35,8 +35,8 @@ class SongOptionsSheet extends StatelessWidget {
             ),
           ),
           for (var i = 0; i < options.length; i++) ...[
-            // Hairline odcina sekcję niszczącą od reszty, żeby usunięcie nie stało w jednym ciągu
-            // z udostępnianiem.
+            // A hairline sets the destructive section off from the rest, so deleting does not sit in
+            // one run with sharing.
             if (options[i].destructive && (i == 0 || !options[i - 1].destructive))
               Divider(color: appColors.line, height: 1.0),
             _Option(option: options[i]),
@@ -48,13 +48,13 @@ class SongOptionsSheet extends StatelessWidget {
   }
 }
 
-/// Pozycja arkusza: ikona, tytuł i opcjonalna wartość po prawej (np. bieżący rozmiar tekstu).
+/// Sheet item: icon, title and an optional value on the right (e.g. the current text size).
 class SongOption {
   final IconData icon;
   final String label;
   final String? value;
 
-  /// Akcja nieodwracalna: kolor niszczący i hairline odcinający ją od reszty.
+  /// Irreversible action: the destructive color and a hairline setting it off from the rest.
   final bool destructive;
 
   final VoidCallback onTap;

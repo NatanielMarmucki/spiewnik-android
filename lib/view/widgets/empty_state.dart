@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/app_text_theme.dart';
 
-/// Stan pusty z docs/DESIGN-SYSTEM.md, sekcja 5: ikona kreskowa 26 dp w kolorze linii,
-/// nagłówek Newsreader 21, zdanie 14/1,55 mówiące co zrobić i opcjonalnie jedno wyjście
-/// jako przycisk-pastylka. Nigdy duża ilustracja.
+/// Empty state from docs/DESIGN-SYSTEM.md, section 5: a 26 dp line icon in the line color,
+/// a Newsreader 21 heading, a 14/1.55 sentence saying what to do and optionally one way out
+/// as a pill button. Never a large illustration.
 class EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
   final String message;
 
-  /// Opcjonalne wyjście, np. „Wyczyść wyszukiwanie”.
+  /// Optional way out, e.g. „Wyczyść wyszukiwanie” (Clear search).
   final String? actionLabel;
   final VoidCallback? onAction;
 
@@ -36,7 +36,7 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Ikona tylko ozdabia: całą treść niesie nagłówek i zdanie pod nim.
+            // The icon is decorative only: the heading and the sentence below it carry all the content.
             ExcludeSemantics(child: Icon(icon, size: iconSize, color: appColors.line)),
             const SizedBox(height: 16.0),
             Text(

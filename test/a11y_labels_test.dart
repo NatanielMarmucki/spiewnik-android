@@ -16,10 +16,10 @@ import 'support/fakes/fake_song_repository.dart';
 import 'support/platform_fakes.dart';
 import 'support/screen_harness.dart';
 
-/// Krok 5a: każda ikona-akcja ma etykietę po polsku, a ikony ozdobne nie mają żadnej.
+/// Step 5a: every icon action has a Polish label, and decorative icons have none.
 ///
-/// `labeledTapTargetGuideline` pilnuje, żeby żaden cel dotknięcia nie został niemy —
-/// to jest właściwy test, bo łapie też rzeczy dodane później.
+/// `labeledTapTargetGuideline` makes sure no tap target is left silent —
+/// this is the real test, because it also catches things added later.
 void main() {
   late FakeWakelock wakelock;
   late FakeShare share;
@@ -48,8 +48,8 @@ void main() {
     return MySongViewModel(repository);
   }
 
-  group('każdy cel dotknięcia ma etykietę', () {
-    testWidgets('lista pieśni', (tester) async {
+  group('every tap target has a label', () {
+    testWidgets('song list', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(tester, (context) => Scaffold(body: SongListView(viewModel: viewModel)));
@@ -60,7 +60,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('szczegóły pieśni z arkuszem opcji', (tester) async {
+    testWidgets('song detail with the options sheet', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(
@@ -76,7 +76,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('moje pieśni, podgląd i formularz', (tester) async {
+    testWidgets('user songs list, preview and form', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = mySongs();
       await pumpScreen(tester, (context) => Scaffold(body: MySongsView(viewModel: viewModel)));
@@ -93,7 +93,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('ustawienia', (tester) async {
+    testWidgets('settings', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpScreen(tester, (context) => const SettingsView());
 
@@ -102,8 +102,8 @@ void main() {
     });
   });
 
-  group('etykiety są po polsku i mówią, co robi akcja', () {
-    testWidgets('pasek i dolny pasek pieśni', (tester) async {
+  group('labels are in Polish and say what the action does', () {
+    testWidgets('song app bar and bottom bar', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(
@@ -111,7 +111,7 @@ void main() {
         (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
       );
 
-      // Przyciski paska niosą etykietę jako podpowiedź (`tooltip`), którą czytnik ekranu czyta.
+      // App bar buttons carry their label as a `tooltip`, which the screen reader reads.
       expect(find.byTooltip('Dodaj do ulubionych'), findsOneWidget);
       expect(find.byTooltip('Opcje pieśni'), findsOneWidget);
       expect(find.bySemanticsLabel('Poprzednia pieśń'), findsOneWidget, reason: 'pierwsza pieśń: bez numeru');
@@ -120,7 +120,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('pozycje arkusza opcji', (tester) async {
+    testWidgets('options sheet items', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(
@@ -137,7 +137,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('akcje własnej pieśni', (tester) async {
+    testWidgets('user song actions', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = mySongs();
       await pumpScreen(
@@ -155,7 +155,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('wiersz listy czyta numer, tytuł i ulubioną jako jedno', (tester) async {
+    testWidgets('list row reads number, title and favorite as one label', (tester) async {
       final handle = tester.ensureSemantics();
       final viewModel = songs();
       await pumpScreen(tester, (context) => Scaffold(body: SongListView(viewModel: viewModel)));
@@ -165,7 +165,7 @@ void main() {
     });
   });
 
-  testWidgets('ikona stanu pustego jest ozdobna, nie czyta się osobno', (tester) async {
+  testWidgets('empty state icon is decorative and is not read separately', (tester) async {
     final handle = tester.ensureSemantics();
     final viewModel = MySongViewModel(FakeMySongRepository());
     await pumpScreen(tester, (context) => Scaffold(body: MySongsView(viewModel: viewModel)));

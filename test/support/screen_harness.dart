@@ -7,10 +7,10 @@ import 'package:spiewnik/model/font_size_model.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
 
-/// Stawia ekran w prawdziwym motywie i z modelami, których widoki oczekują z Providera.
+/// Pumps a screen in the real theme, with the models that the views expect from Provider.
 ///
-/// Używane przez testy dostępności: etykiety, cele dotknięcia i powiększenie czcionki.
-/// [textScale] odpowiada systemowemu powiększeniu tekstu, nie ustawieniu rozmiaru pieśni.
+/// Used by the accessibility tests: labels, tap targets and text scaling.
+/// [textScale] corresponds to system text scaling, not to the song text size setting.
 Future<void> pumpScreen(
   WidgetTester tester,
   Widget Function(BuildContext context) build, {

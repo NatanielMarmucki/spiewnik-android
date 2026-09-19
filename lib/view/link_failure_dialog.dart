@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:spiewnik/view/widgets/dialog_actions.dart';
 
-/// Komunikat, gdy nie udało się otworzyć strony albo poczty.
+/// Message shown when a web page or the mail app could not be opened.
 ///
-/// Wcześniej takie niepowodzenie kończyło się `print`em w konsoli i użytkownik nie wiedział, że
-/// cokolwiek poszło nie tak. Stara aplikacja iOS pokazywała w tym miejscu alert z możliwością
-/// skopiowania adresu — to samo robimy tutaj, w kształcie dialogów z systemu wizualnego.
+/// Before, such a failure ended with a `print` in the console and the user did not know that
+/// anything went wrong. The old iOS app showed an alert here with an option to copy the
+/// address — we do the same here, in the shape of the dialogs from the design system.
 Future<void> showLinkFailureDialog(
   BuildContext context, {
   required String message,
@@ -44,7 +44,7 @@ Future<void> showLinkFailureDialog(
   );
 }
 
-/// Komunikat dla nieudanego zgłoszenia błędu: adres zostaje do skopiowania ręcznie.
+/// Message for a failed bug report: the address is left to copy by hand.
 Future<void> showEmailFailureDialog(BuildContext context, String email) {
   return showLinkFailureDialog(
     context,
@@ -54,7 +54,7 @@ Future<void> showEmailFailureDialog(BuildContext context, String email) {
   );
 }
 
-/// Komunikat dla nieudanego otwarcia strony.
+/// Message for a web page that failed to open.
 Future<void> showPageFailureDialog(BuildContext context, String url) {
   return showLinkFailureDialog(
     context,

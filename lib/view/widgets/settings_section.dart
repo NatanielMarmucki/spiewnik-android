@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 
-/// Elementy ekranu ustawień z docs/DESIGN-SYSTEM.md: sekcja z nagłówkiem, wiersz 48 dp,
-/// przełącznik i suwak z wartością wypisaną liczbą obok nazwy (sekcja 5).
+/// Settings screen elements from docs/DESIGN-SYSTEM.md: a section with a header, a 48 dp row,
+/// a switch, and a slider with its value written as a number next to the name (section 5).
 ///
-/// Nic tu nie ma stałej wysokości: wszystko rośnie razem z systemową czcionką.
+/// Nothing here has a fixed height: everything grows with the system font.
 class SettingsSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
@@ -36,12 +36,12 @@ class SettingsSection extends StatelessWidget {
   }
 }
 
-/// Wiersz ustawień: opcjonalna ikona, nazwa i wartość albo strzałka.
+/// Settings row: an optional icon, the name, and a value or an arrow.
 class SettingsRow extends StatelessWidget {
   final IconData? icon;
   final String label;
 
-  /// Wartość po prawej, np. numer wersji.
+  /// Value on the right, e.g. the version number.
   final String? value;
 
   final bool selected;
@@ -80,7 +80,7 @@ class SettingsRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 12.0),
             child: Row(
               children: [
-                // Miejsce na ikonę jest zawsze, żeby podpisy stały w jednej kolumnie.
+                // The icon slot is always there so the labels line up in one column.
                 SizedBox(
                   width: iconSize + 14.0,
                   child: icon == null
@@ -107,7 +107,7 @@ class SettingsRow extends StatelessWidget {
   }
 }
 
-/// Wiersz z przełącznikiem i zdaniem wyjaśniającym, co robi.
+/// A row with a switch and a sentence explaining what it does.
 class SettingsSwitch extends StatelessWidget {
   final String label;
   final String? description;
@@ -169,7 +169,7 @@ class SettingsSwitch extends StatelessWidget {
   }
 }
 
-/// Suwak z nazwą i wartością wypisaną liczbą obok niej.
+/// A slider with a name and its value written as a number next to it.
 class SettingsSlider extends StatelessWidget {
   final String label;
   final double value;

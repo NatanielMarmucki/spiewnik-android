@@ -26,7 +26,7 @@ class SongDetailView extends StatefulWidget {
 class SongDetailViewState extends State<SongDetailView> {
   late Song song;
 
-  /// Kotwica arkusza udostępniania na iPadzie, gdzie jest to dymek przy przycisku.
+  /// Anchor for the share sheet on iPad, where it is a popover next to the button.
   final GlobalKey _optionsButtonKey = GlobalKey();
 
   @override
@@ -97,8 +97,8 @@ class SongDetailViewState extends State<SongDetailView> {
     );
   }
 
-  /// Arkusz opcji spod trzech kropek. Pozycje zamykają arkusz **przed** swoją akcją,
-  /// żeby systemowy arkusz udostępniania nie otwierał się na naszym.
+  /// Options sheet from the three dots. Items close the sheet **before** their action,
+  /// so the system share sheet does not open on top of ours.
   Future<void> _showOptions() async {
     final fontSizeModel = context.read<FontSizeModel>();
 
@@ -143,7 +143,7 @@ class SongDetailViewState extends State<SongDetailView> {
       ShareParams(
         text: '${song.number}. ${song.title}\n\n${song.content}',
         subject: '${song.number}. ${song.title}',
-        // Wymagane na iPadzie: arkusz systemowy jest dymkiem zaczepionym o przycisk.
+        // Required on iPad, where the system sheet is a popover anchored to the button.
         sharePositionOrigin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
       ),
     );

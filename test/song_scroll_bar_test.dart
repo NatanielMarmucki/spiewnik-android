@@ -4,15 +4,15 @@ import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/theme.dart';
 import 'package:spiewnik/view/widgets/song_scroll_bar.dart';
 
-/// Krok „szybkie przewijanie": uchwyt przy prawej krawędzi i etykieta z numerem pieśni.
+/// The "fast scrolling" step: a thumb at the right edge and a label with the song number.
 void main() {
   late ScrollController controller;
 
   setUp(() => controller = ScrollController());
   tearDown(() => controller.dispose());
 
-  /// Lista 2000 wierszy o **różnej** wysokości — co dziesiąty jest wyższy, tak jak wiersz
-  /// z zawiniętym tytułem. Gdyby kod liczył pozycję ze stałej wysokości, tu by się wywrócił.
+  /// A list of 2000 rows of **different** heights — every tenth one is taller, like a row
+  /// with a wrapped title. If the code computed the position from a fixed height, it would fail here.
   Future<void> pumpList(
     WidgetTester tester, {
     bool enabled = true,
@@ -49,7 +49,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// Przeciąga uchwyt do podanego ułamka toru.
+  /// Drags the thumb to the given fraction of the track.
   Future<void> dragThumbTo(WidgetTester tester, double fraction) async {
     final bar = tester.getRect(find.byType(SongScrollBar));
     final start = Offset(bar.right - SongScrollBar.hitWidth / 2, bar.top + SongScrollBar.thumbHeight / 2);
@@ -57,10 +57,10 @@ void main() {
     await tester.pump();
     await gesture.moveTo(Offset(start.dx, bar.top + bar.height * fraction));
     await tester.pumpAndSettle();
-    // Gest zostaje wciśnięty: etykieta pokazuje się tylko w trakcie przeciągania.
+    // The gesture stays pressed: the label shows only while dragging.
   }
 
-  testWidgets('przeciągnięcie uchwytu przewija listę', (tester) async {
+  testWidgets('dragging the thumb scrolls the list', (tester) async {
     await pumpList(tester);
     expect(controller.offset, 0.0);
 
@@ -74,12 +74,12 @@ void main() {
     );
   });
 
-  testWidgets('etykieta pokazuje numer pieśni, która naprawdę jest na górze', (tester) async {
+  testWidgets('the label shows the number of the song that is actually at the top', (tester) async {
     await pumpList(tester);
 
     await dragThumbTo(tester, 0.5);
 
-    // Numer bierzemy z modelu przez labelForIndex, a indeks z listy — nie z dzielenia offsetu.
+    // We take the number from the model through labelForIndex and the index from the list — not from dividing the offset.
     final label = find.descendant(of: find.byType(SongScrollBar), matching: find.byType(Text));
     final numbers = tester
         .widgetList<Text>(label)
@@ -98,7 +98,7 @@ void main() {
     );
   });
 
-  testWidgets('etykieta znika po puszczeniu uchwytu', (tester) async {
+  testWidgets('the label disappears after the thumb is released', (tester) async {
     await pumpList(tester);
     final bar = tester.getRect(find.byType(SongScrollBar));
     final start = Offset(bar.right - SongScrollBar.hitWidth / 2, bar.top + SongScrollBar.thumbHeight / 2);
@@ -114,10 +114,10 @@ void main() {
     expect(tester.widgetList<Text>(find.byType(Text)).length, lessThan(duringDrag));
   });
 
-  testWidgets('uchwyt znika przy aktywnym wyszukiwaniu', (tester) async {
+  testWidgets('the thumb disappears during an active search', (tester) async {
     await pumpList(tester, enabled: false);
 
-    // Zostaje sama lista: przy wynikach wyszukiwania uchwyt nic nie wnosi.
+    // Only the list remains: with search results the thumb adds nothing.
     expect(find.byType(ListView), findsOneWidget);
     final bar = tester.getRect(find.byType(SongScrollBar));
     final hit = Offset(bar.right - SongScrollBar.hitWidth / 2, bar.top + SongScrollBar.thumbHeight / 2);
@@ -129,7 +129,7 @@ void main() {
     await gesture.up();
   });
 
-  testWidgets('uchwyt nie pokazuje się przy krótkiej liście', (tester) async {
+  testWidgets('the thumb does not show for a short list', (tester) async {
     await pumpList(tester, itemCount: 5);
 
     await dragThumbTo(tester, 0.9);
@@ -137,9 +137,9 @@ void main() {
     expect(controller.offset, 0.0);
   });
 
-  group('powiększenie czcionki', () {
+  group('text scaling', () {
     for (final scale in [1.0, 2.0]) {
-      testWidgets('działa przy ×$scale', (tester) async {
+      testWidgets('works at ×$scale', (tester) async {
         await pumpList(tester, textScale: scale);
 
         await dragThumbTo(tester, 0.6);
@@ -151,7 +151,7 @@ void main() {
     }
   });
 
-  testWidgets('cel dotknięcia uchwytu ma co najmniej 48 dp', (tester) async {
+  testWidgets('the thumb tap target is at least 48 dp', (tester) async {
     await pumpList(tester);
 
     final hitArea = find.descendant(of: find.byType(SongScrollBar), matching: find.byType(GestureDetector));
@@ -161,7 +161,7 @@ void main() {
     expect(size.height, greaterThanOrEqualTo(48.0));
   });
 
-  testWidgets('kolory idą z motywu, w obu wariantach', (tester) async {
+  testWidgets('colors come from the theme, in both light and dark', (tester) async {
     for (final theme in [lightTheme, darkTheme]) {
       await tester.pumpWidget(
         MaterialApp(
@@ -191,9 +191,9 @@ void main() {
     }
   });
 
-  testWidgets('wiersz ucięty do kilku pikseli nie liczy się jako widoczny', (tester) async {
+  testWidgets('a row cut down to a few pixels does not count as visible', (tester) async {
     await pumpList(tester);
-    // Ustawiamy się tuż pod granicą wiersza 10: z poprzedniego zostaje ułamek piksela.
+    // We scroll to just below the boundary of row 10: a fraction of a pixel of the previous row remains.
     controller.jumpTo(96.0 + 48.0 * 9 - 1.0);
     await tester.pumpAndSettle();
 
@@ -204,17 +204,17 @@ void main() {
     );
   });
 
-  group('odczyt pierwszego widocznego wiersza', () {
-    testWidgets('bez podpiętej listy zwraca null zamiast rzucać', (tester) async {
+  group('firstVisibleItemIndex', () {
+    testWidgets('returns null instead of throwing when no list is attached', (tester) async {
       final loose = ScrollController();
       addTearDown(loose.dispose);
 
       expect(firstVisibleItemIndex(loose), isNull);
     });
 
-    testWidgets('gdy w drzewie nie ma listy, etykieta się nie pokazuje, a ekran żyje', (tester) async {
-      // SingleChildScrollView nie ma RenderSliverMultiBoxAdaptor — dokładnie przypadek,
-      // w którym odczyt musi odpuścić.
+    testWidgets('without a list in the tree, the label does not show and the screen keeps working', (tester) async {
+      // SingleChildScrollView has no RenderSliverMultiBoxAdaptor — exactly the case
+      // in which the lookup has to give up.
       await tester.pumpWidget(
         MaterialApp(
           theme: lightTheme,
@@ -245,7 +245,7 @@ void main() {
       await gesture.up();
     });
 
-    testWidgets('pusta lista nie wywraca odczytu', (tester) async {
+    testWidgets('an empty list does not break the lookup', (tester) async {
       await pumpList(tester, itemCount: 0);
 
       expect(firstVisibleItemIndex(controller), isNull);

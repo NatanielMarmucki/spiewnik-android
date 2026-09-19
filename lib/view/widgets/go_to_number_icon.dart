@@ -3,27 +3,27 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_text_theme.dart';
 
-/// Lupa ze znakiem **w soczewce**: „szukaj po numerze", a nie numer bieżącej pieśni.
+/// A magnifying glass with a character **in the lens**: "search by number", not the current song's number.
 ///
-/// W soczewce stoi stały [label] — numer otwartej pieśni jest już w pasku górnym, a zmienna
-/// liczba cyfr kazałaby soczewce zmieniać szerokość przy każdym przejściu między pieśniami.
+/// The lens holds a fixed [label] — the open song's number is already in the top bar, and a varying
+/// number of digits would make the lens change width on every move between songs.
 class GoToNumberIcon extends StatelessWidget {
   final Color color;
 
-  /// Znak w soczewce. Stały i **jednoznakowy**: trzy cyfry rozdmuchiwały soczewkę do rozmiaru,
-  /// przy którym lupa przytłaczała pasek.
+  /// The character in the lens. Fixed and **a single character**: three digits blew the lens up to
+  /// a size at which the magnifying glass overwhelmed the bar.
   final String label;
 
   const GoToNumberIcon({super.key, required this.color, this.label = '1'});
 
-  /// Najmniejsza soczewka; przy jednym znaku to ona wyznacza rozmiar ikony.
+  /// The smallest lens; with a single character it is what sets the icon size.
   static const double minLensDiameter = 15.0;
 
-  /// Odstęp między znakiem a obwódką soczewki.
+  /// Gap between the character and the lens outline.
   static const double _padding = 2.0;
 
-  /// Długość uchwytu lupy, liczona od krawędzi soczewki. Krótszy ginął przy soczewce
-  /// i lupa czytała się jak samo kółko.
+  /// Length of the magnifier handle, measured from the lens edge. A shorter one got lost next to the
+  /// lens and the magnifier read as a plain circle.
   static const double _handle = 7.0;
 
   static const double _stroke = 1.4;
@@ -33,8 +33,8 @@ class GoToNumberIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final textScaler = MediaQuery.textScalerOf(context);
     final style = TextStyle(
-      // Krój z tokenów: bez niego cyfry lecą na domyślny systemowy, którego w kontenerze
-      // golden w ogóle nie ma i rysują się jako prostokąty.
+      // Typeface from the tokens: without it the digits fall back to the system default, which the
+      // golden container does not have at all, so they render as rectangles.
       fontFamily: AppFonts.ui,
       fontSize: textScaler.scale(_fontSize),
       height: 1.0,
@@ -79,7 +79,7 @@ class _GoToNumberPainter extends CustomPainter {
 
     canvas.drawCircle(center, radius, stroke);
 
-    // Uchwyt wychodzi z soczewki pod 45°, w prawo i w dół, jak w ikonie lupy.
+    // The handle leaves the lens at 45°, to the right and down, as in a magnifier icon.
     final diagonal = math.sqrt1_2;
     final from = center + Offset(radius * diagonal, radius * diagonal);
     final to = from + Offset(GoToNumberIcon._handle * diagonal, GoToNumberIcon._handle * diagonal);

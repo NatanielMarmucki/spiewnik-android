@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/view/widgets/go_to_number_icon.dart';
 
-/// Pasek pod treścią pieśni z docs/DESIGN-SYSTEM.md, sekcja 5: strzałka w lewo z numerem
-/// poprzedniej pieśni, lupa z cyframi w soczewce jako najszerszy cel w środku i strzałka w prawo
-/// z numerem następnej. Numeru bieżącej pieśni tu nie ma — stoi w pasku górnym, obok tytułu.
+/// The bar below the song content from docs/DESIGN-SYSTEM.md, section 5: a left arrow with the
+/// previous song's number, a magnifying glass with digits in the lens as the widest target in the
+/// middle, and a right arrow with the next song's number. The current song's number is not here —
+/// it sits in the top bar, next to the title.
 ///
-/// Strzałki stoją **zawsze w tym samym miejscu**, także na krańcach śpiewnika: wtedy są wygaszone
-/// i nieaktywne, żeby pasek nie skakał. Wysokość jest minimalna, więc rośnie z czcionką systemową.
+/// The arrows **always stay in the same place**, also at the ends of the songbook: there they are
+/// dimmed and inactive, so the bar does not jump. The height is a minimum, so it grows with the
+/// system font.
 class SongBottomBar extends StatelessWidget {
-  /// Numer poprzedniej pieśni albo null, gdy nie ma dokąd wrócić.
+  /// Number of the previous song, or null when there is nowhere to go back to.
   final int? previousNumber;
 
-  /// Numer następnej pieśni albo null.
+  /// Number of the next song, or null.
   final int? nextNumber;
 
   final VoidCallback? onPrevious;
@@ -87,8 +89,8 @@ class _Arrow extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final enabled = number != null && onTap != null;
-    // Nieaktywna strzałka ma zostać widoczna (3:1), stąd tekst trzeci zamiast koloru linii,
-    // który dawał 1,24:1. Że jest nieaktywna, widać po braku numeru obok.
+    // An inactive arrow has to stay visible (3:1), hence tertiary text instead of the line color,
+    // which gave 1.24:1. That it is inactive shows from the missing number next to it.
     final color = enabled ? appColors.textSecondary : appColors.textTertiary;
     final numberText = Text(
       number == null ? '' : '$number',
@@ -106,7 +108,7 @@ class _Arrow extends StatelessWidget {
       child: InkWell(
         onTap: enabled ? onTap : null,
         child: ConstrainedBox(
-          // Cel dotknięcia 40 x 48 dp (sekcja 6 dokumentu).
+          // Touch target 40 x 48 dp (section 6 of the document).
           constraints: const BoxConstraints(minWidth: 56.0, minHeight: SongBottomBar.minHeight),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
@@ -145,9 +147,9 @@ class _GoToNumber extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: SongBottomBar.minHeight),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-            // Lupa z cyframi w soczewce: znak, że szuka się po numerze.
-            // Oba współczynniki: bez heightFactor Center bierze całą wysokość, jaką dostanie
-            // od Scaffolda, i pasek zjada ekran.
+            // Magnifying glass with digits in the lens: a sign that you search by number.
+            // Both factors: without heightFactor, Center takes all the height it gets
+            // from the Scaffold, and the bar eats the screen.
             child: Center(
               widthFactor: 1.0,
               heightFactor: 1.0,

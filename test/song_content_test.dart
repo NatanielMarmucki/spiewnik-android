@@ -58,8 +58,8 @@ void main() {
     return spans;
   }
 
-  testWidgets('zwrotka zaczynająca się od znaku idzie bez inicjału', (tester) async {
-    // 98 pieśni w assecie zaczyna się od „[:”; powiększony nawias wyglądał jak błąd.
+  testWidgets('a verse that starts with a repeat mark gets no drop cap', (tester) async {
+    // 98 songs in the asset start with „[:”; an enlarged bracket looked like a bug.
     await pumpContent(tester, content: '1. [:Barankowi cześć,:] Barankowi cześć.');
 
     final spans = flatten(spanOf(tester, 'Barankowi cześć')).cast<TextSpan>();
@@ -69,7 +69,7 @@ void main() {
     expect(find.textContaining('[:'), findsOneWidget, reason: 'znacznik powtórzenia zostaje');
   });
 
-  testWidgets('krótka pieśń zaczyna się u góry, nie na środku ekranu', (tester) async {
+  testWidgets('a short song starts at the top, not in the middle of the screen', (tester) async {
     await pumpContent(tester, content: '1. Krótka pieśń.');
 
     final body = tester.getRect(find.byType(SongContent));
@@ -82,7 +82,7 @@ void main() {
     );
   });
 
-  testWidgets('zdejmuje znaczniki z toku tekstu', (tester) async {
+  testWidgets('removes the markers from the running text', (tester) async {
     await pumpContent(tester);
 
     expect(find.textContaining('1. Alleluja'), findsNothing);
@@ -90,7 +90,7 @@ void main() {
     expect(find.textContaining('Alleluja, chwalcie Pana'), findsOneWidget);
   });
 
-  testWidgets('pierwsza zwrotka otwiera się inicjałem zamiast numeru', (tester) async {
+  testWidgets('the first verse opens with a drop cap instead of a number', (tester) async {
     await pumpContent(tester);
 
     final spans = flatten(spanOf(tester, 'lleluja, chwalcie Pana')).cast<TextSpan>();
@@ -100,7 +100,7 @@ void main() {
     expect(find.text('1'), findsNothing, reason: 'numer pierwszej zwrotki zastępuje inicjał');
   });
 
-  testWidgets('kolejna zwrotka ma cyfrę w rozmiarze 0,74 × S', (tester) async {
+  testWidgets('a later verse has a tabular number at 0.74 × S', (tester) async {
     await pumpContent(tester);
 
     final number = tester.widget<Text>(find.text('2'));
@@ -108,7 +108,7 @@ void main() {
     expect(number.style?.fontFeatures?.map((f) => f.feature), contains('tnum'));
   });
 
-  testWidgets('refren ma wersalik bez kursywy i wcięcie treści', (tester) async {
+  testWidgets('the chorus has an upright uppercase label and indented text', (tester) async {
     await pumpContent(tester);
 
     final label = tester.widget<Text>(find.text('REFREN'));
@@ -122,7 +122,7 @@ void main() {
     expect((padding.padding as EdgeInsets).left, closeTo(0.74 * 19.0, 0.001));
   });
 
-  testWidgets('znaki powtórzenia są w akcencie i przyklejone do frazy', (tester) async {
+  testWidgets('repeat marks use the accent color and attach to the phrase', (tester) async {
     await pumpContent(tester);
 
     final spans = flatten(spanOf(tester, 'Niech są pełne')).cast<TextSpan>();
@@ -136,7 +136,7 @@ void main() {
     expect(joined, contains('chwały,:]'), reason: 'bez odstępu przed znakiem');
   });
 
-  testWidgets('rozmiar i interlinia idą z ustawień użytkownika', (tester) async {
+  testWidgets('text size and line height come from the user settings', (tester) async {
     await pumpContent(tester, settings: const {'fontSize': 26.0, 'lineHeight': 1.75});
 
     final body = tester.widget<Text>(find.textContaining('Chwalcie wszystkie Go narody'));
@@ -144,17 +144,17 @@ void main() {
     expect(body.style?.height, 1.75);
   });
 
-  testWidgets('systemowe powiększenie czcionki działa obok S, nie zamiast', (tester) async {
+  testWidgets('system text scaling applies on top of S, not instead of it', (tester) async {
     await pumpContent(tester, textScaler: const TextScaler.linear(2.0));
 
     final body = tester.widget<Text>(find.textContaining('Chwalcie wszystkie Go narody'));
-    // W stylu zostaje S, mnożnik dokłada warstwa tekstu.
+    // The style keeps S; the text layer applies the multiplier.
     expect(body.style?.fontSize, 19.0);
     final scaler = MediaQuery.textScalerOf(tester.element(find.byType(SongContent)));
     expect(scaler.scale(19.0), 38.0);
   });
 
-  testWidgets('kolumna ma margines 22 dp i limit szerokości 34 × S', (tester) async {
+  testWidgets('the column has a 22 dp margin and a 34 × S width limit', (tester) async {
     await pumpContent(tester);
 
     final box = tester.widget<ConstrainedBox>(
@@ -166,7 +166,7 @@ void main() {
     expect((scroll.padding as EdgeInsets).left, SongTextScale.sideMargin);
   });
 
-  testWidgets('bloki rozdziela odstęp, nie puste wiersze', (tester) async {
+  testWidgets('blocks are separated by a gap, not by empty lines', (tester) async {
     await pumpContent(tester);
 
     final gaps = tester
@@ -177,7 +177,7 @@ void main() {
     expect(find.text(''), findsNothing);
   });
 
-  testWidgets('pieśń bez refrenu renderuje się bez wersalika', (tester) async {
+  testWidgets('a song without a chorus renders without the uppercase label', (tester) async {
     await pumpContent(tester, content: '1. Pierwsza zwrotka\n\n2. Druga zwrotka');
 
     expect(find.text('REFREN'), findsNothing);

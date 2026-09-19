@@ -9,15 +9,15 @@ import 'package:spiewnik/view/widgets/settings_section.dart';
 import 'package:spiewnik/view/widgets/song_content.dart';
 import 'package:spiewnik/viewmodel/settings_viewmodel.dart';
 
-/// Ustawienia po redesignie (docs/DESIGN-SYSTEM.md, sekcje 4-6).
+/// Settings after the redesign (docs/DESIGN-SYSTEM.md, sections 4-6).
 ///
-/// Sekcje zamiast kart: „Czytanie”, „Wygląd”, „Aplikacja” i wersje na końcu. Próbka pieśni stoi
-/// **bezpośrednio pod suwakiem rozmiaru** i rośnie razem z tekstem — nie ma stałej wysokości,
-/// więc przy największej czcionce nic się nie ucina (reguła 1 z sekcji 7).
+/// Sections instead of cards: „Czytanie”, „Wygląd”, „Aplikacja” and the versions at the end. The song
+/// sample sits **directly below the size slider** and grows with the text — it has no fixed height,
+/// so nothing gets cut off at the largest font size (rule 1 from section 7).
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
 
-  /// Dwa wersy pieśni: dość, żeby zobaczyć interlinię, i mało, żeby nie zasłonić suwaków.
+  /// Two lines of a song: enough to see the line height, and few enough not to hide the sliders.
   static const String sampleText = 'Alleluja, chwalcie Pana,\nNućcie Jemu chwałę, cześć!';
 
   @override
@@ -67,7 +67,7 @@ class SettingsView extends StatelessWidget {
   }
 }
 
-/// Otwiera stronę, a gdy się nie uda — mówi o tym zamiast milczeć.
+/// Opens a web page, and when that fails, says so instead of staying silent.
 Future<void> _openPage(BuildContext context, SettingsViewModel viewModel, String url) async {
   final opened = await viewModel.launchURL(url);
   if (!opened && context.mounted) {
@@ -112,7 +112,7 @@ class _ReadingSection extends StatelessWidget {
           divisions: ((FontSizeModel.maxLineHeight - FontSizeModel.minLineHeight) / 0.05).round(),
           onChanged: fontSizeModel.setLineHeight,
         ),
-        // Próbka pod obydwoma suwakami: pokazuje naraz rozmiar i interlinię.
+        // Sample below both sliders: shows size and line height at once.
         Padding(
           padding: const EdgeInsets.fromLTRB(22.0, 4.0, 22.0, 16.0),
           child: DecoratedBox(
@@ -122,7 +122,7 @@ class _ReadingSection extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              // Bez ograniczenia wysokości: próbka rośnie razem z czcionką.
+              // No height limit: the sample grows with the font.
               child: SongContent(
                 content: SettingsView.sampleText,
                 padding: EdgeInsets.zero,
@@ -136,7 +136,7 @@ class _ReadingSection extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerLeft,
             child: TextButton(
-              // Reset dotyczy tylko rozmiaru i interlinii: motyw i blokada ekranu zostają.
+              // The reset applies only to size and line height: theme and keep-screen-on stay.
               onPressed: fontSizeModel.resetToDefaults,
               style: TextButton.styleFrom(foregroundColor: context.appColors.accent),
               child: const Text('Przywróć domyślny rozmiar i interlinię'),
@@ -179,8 +179,8 @@ class _AppearanceSection extends StatelessWidget {
             children: [
               Text('Motyw', style: textTheme.bodyMedium),
               const SizedBox(height: 8.0),
-              // Przełącznik trójstanowy zamiast listy: wybór widać bez czytania trzech wierszy.
-              // Na całą szerokość, żeby podpisy miały miejsce także przy powiększonej czcionce.
+              // A three-way switch instead of a list: the choice is visible without reading three rows.
+              // Full width, so the labels have room even with an enlarged font.
               SegmentedButton<ThemeMode>(
                 segments: [
                   for (final option in _options)
@@ -195,7 +195,7 @@ class _AppearanceSection extends StatelessWidget {
                   selectedBackgroundColor: appColors.accent,
                   side: BorderSide(color: appColors.line),
                   textStyle: textTheme.labelLarge,
-                  // Cel dotknięcia rośnie z czcionką: wysokość jest minimalna, nie stała.
+                  // The touch target grows with the font: the height is a minimum, not fixed.
                   minimumSize: const Size(0.0, 48.0),
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 ),

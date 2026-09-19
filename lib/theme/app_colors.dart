@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
 
-/// Kolory z docs/DESIGN-SYSTEM.md, dla których Material nie ma własnej roli.
+/// Colors from docs/DESIGN-SYSTEM.md that have no role of their own in Material.
 ///
-/// Widoki biorą je przez `Theme.of(context).extension<AppColors>()!` albo krócej,
-/// przez [AppColorsContext.appColors]. W widokach nie wolno pisać literałów kolorów
-/// ani sprawdzać jasności motywu (reguła 4 z sekcji 7 dokumentu).
+/// Views get them through `Theme.of(context).extension<AppColors>()!` or, shorter,
+/// through [AppColorsContext.appColors]. Views must not use color literals
+/// or check the theme brightness (rule 4 from section 7 of the document).
 @immutable
 class AppColors extends ThemeExtension<AppColors> {
-  /// Szafran: inicjał, wersaliki, znaki powtórzenia, aktywna zakładka.
+  /// Saffron: drop cap, uppercase labels, repeat marks, active tab.
   final Color accent;
 
-  /// Tekst i ikony leżące na [accent].
+  /// Text and icons on top of [accent].
   final Color onAccent;
 
-  /// Akcja niszcząca (usuwanie).
+  /// Destructive action (deleting).
   final Color destructive;
 
-  /// Serce ulubionej pieśni.
+  /// Heart of a favorite song.
   final Color favorite;
 
   /// Hairline 1 dp.
   final Color line;
 
-  /// Linia wiodąca z kropek w wierszu listy.
+  /// Dotted leader line in a list row.
   final Color indexDots;
 
-  /// Tło wiersza w reakcji na dotknięcie.
+  /// Row background in response to a tap.
   final Color pressedSurface;
 
-  /// Tekst drugiego planu: numer pieśni, opisy.
+  /// Secondary text: song number, descriptions.
   final Color textSecondary;
 
-  /// Tekst trzeciego planu: nieaktywna zakładka.
+  /// Tertiary text: inactive tab.
   final Color textTertiary;
 
   const AppColors({
@@ -46,7 +46,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.textTertiary,
   });
 
-  /// Motyw ciemny, wobec tła #191A1D.
+  /// Dark theme, against the #191A1D background.
   static const AppColors dark = AppColors(
     accent: Color(0xFFE2B872),
     onAccent: Color(0xFF191A1D),
@@ -59,7 +59,7 @@ class AppColors extends ThemeExtension<AppColors> {
     textTertiary: Color(0xFF938F87),
   );
 
-  /// Motyw jasny, wobec tła #F7F4EE.
+  /// Light theme, against the #F7F4EE background.
   static const AppColors light = AppColors(
     accent: Color(0xFF7A5518),
     onAccent: Color(0xFFFFFDF8),
@@ -117,6 +117,6 @@ class AppColors extends ThemeExtension<AppColors> {
 }
 
 extension AppColorsContext on BuildContext {
-  /// Skrót do kolorów spoza ColorScheme.
+  /// Shortcut to the colors outside ColorScheme.
   AppColors get appColors => Theme.of(this).extension<AppColors>()!;
 }

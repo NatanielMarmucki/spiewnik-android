@@ -122,16 +122,16 @@ void main() {
     expect((await prefs()).getBool(LegacySettingsMigration.doneKey), isTrue);
   });
 
-  group('kanał nie odpowiada', () {
-    /// Kanału nie ma w ogóle: dokładnie to zobaczymy, gdyby rejestracja po migracji na UIScene
-    /// spóźniła się względem wywołania z Darta.
+  group('channel does not respond', () {
+    /// No channel at all: exactly what we would see if, after the move to UIScene, the channel
+    /// were registered later than the call from Dart.
     void noChannel() {
       calls = [];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(LegacySettingsMigration.channel, null);
     }
 
-    test('nie zapisuje flagi, więc migracja spróbuje jeszcze raz', () async {
+    test('does not save the flag, so the migration will try again', () async {
       SharedPreferences.setMockInitialValues({});
       noChannel();
 
@@ -146,12 +146,12 @@ void main() {
       );
     });
 
-    test('przy następnym starcie migracja dochodzi do skutku', () async {
+    test('the migration succeeds on the next launch', () async {
       SharedPreferences.setMockInitialValues({});
       noChannel();
       await LegacySettingsMigration(logger: logger).run(isIOS: true);
 
-      // Drugie uruchomienie, tym razem kanał odpowiada.
+      // Second launch, this time the channel responds.
       mockChannel(24.0);
       final result = await LegacySettingsMigration(logger: logger).run(isIOS: true);
 
@@ -160,7 +160,7 @@ void main() {
       expect((await prefs()).getBool(LegacySettingsMigration.doneKey), isTrue);
     });
 
-    test('brak klucza w starej aplikacji nadal zamyka migrację', () async {
+    test('a missing key in the old app still completes the migration', () async {
       SharedPreferences.setMockInitialValues({});
       mockChannel(null);
 
@@ -195,6 +195,6 @@ void main() {
     await model.loaded;
 
     expect(model.fontSize, 26.0);
-    expect(model.lineHeight, FontSizeModel.defaultLineHeight); // interlinii stara aplikacja nie migruje
+    expect(model.lineHeight, FontSizeModel.defaultLineHeight); // the old app does not migrate line height
   });
 }

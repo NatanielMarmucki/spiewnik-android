@@ -3,14 +3,14 @@ import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spiewnik/review_service.dart';
 
-/// Prośba o ocenę: rzadko, na progach uruchomień i najwyżej raz na wersję.
+/// The review request: rarely, at launch thresholds and at most once per version.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late List<String> asked;
   late bool available;
 
-  /// Usługa bez prawdziwego in_app_review: zapisujemy, o co została poproszona.
+  /// A service without the real in_app_review: we record what it was asked to do.
   ReviewService service({String version = '12.0.0+1'}) {
     return ReviewService(
       logger: Logger(level: Level.off),
@@ -29,7 +29,7 @@ void main() {
   Future<int> launchCount() async =>
       (await SharedPreferences.getInstance()).getInt(ReviewService.launchCountKey) ?? 0;
 
-  /// Uruchamia aplikację [times] razy i zwraca numery uruchomień, przy których padła prośba.
+  /// Launches the app [times] times and returns the numbers of the launches that made the request.
   Future<List<int>> runLaunches(int times, {String version = '12.0.0+1'}) async {
     final askedAt = <int>[];
     for (var i = 1; i <= times; i++) {
@@ -40,7 +40,7 @@ void main() {
     return askedAt;
   }
 
-  test('liczy każde uruchomienie', () async {
+  test('counts every launch', () async {
     await service().onLaunch();
     await service().onLaunch();
     await service().onLaunch();
@@ -48,40 +48,40 @@ void main() {
     expect(await launchCount(), 3);
   });
 
-  test('nie pyta przed pierwszym progiem', () async {
+  test('does not ask before the first threshold', () async {
     expect(await runLaunches(19), isEmpty);
   });
 
-  test('pyta dokładnie na pierwszym progu', () async {
+  test('asks exactly at the first threshold', () async {
     expect(await runLaunches(20), [20]);
   });
 
-  test('progi startują od 20, a nie od 5 jak dotąd', () async {
+  test('thresholds start at 20, not at 5 as before', () async {
     expect(ReviewService.launchThresholds.first, 20);
     expect(ReviewService.launchThresholds, contains(1940));
     expect(ReviewService.launchThresholds, isNot(contains(5)));
   });
 
-  group('limit jednej prośby na wersję', () {
-    test('kolejne progi w tej samej wersji nie pytają', () async {
+  group('one request per version', () {
+    test('later thresholds in the same version do not ask', () async {
       final askedAt = await runLaunches(60);
 
       expect(askedAt, [20], reason: 'próg 50 wypada w tej samej wersji');
       expect(asked, hasLength(1));
     });
 
-    test('po zmianie wersji prośba może paść ponownie', () async {
+    test('after a version change the request can be made again', () async {
       await runLaunches(49);
       expect(asked, hasLength(1));
 
-      // Aktualizacja aplikacji: kolejny próg (50) znów jest w grze.
+      // App update: the next threshold (50) is back in play.
       final afterUpdate = await service(version: '12.1.0+2').onLaunch();
 
       expect(afterUpdate, isTrue);
       expect(asked, ['12.0.0+1', '12.1.0+2']);
     });
 
-    test('zapisuje wersję dopiero po udanej prośbie', () async {
+    test('saves the version only after a successful request', () async {
       available = false;
       await runLaunches(20);
 
@@ -91,14 +91,14 @@ void main() {
     });
   });
 
-  test('gdy system nie ma okna oceny, nic się nie dzieje', () async {
+  test('nothing happens when the system has no review dialog', () async {
     available = false;
 
     expect(await runLaunches(25), isEmpty);
     expect(await launchCount(), 25, reason: 'licznik i tak rośnie');
   });
 
-  test('błąd przy prośbie nie wywraca startu', () async {
+  test('an error during the request does not break startup', () async {
     final failing = ReviewService(
       logger: Logger(level: Level.off),
       isAvailable: () async => true,
@@ -110,7 +110,7 @@ void main() {
     expect(await failing.onLaunch(), isFalse);
   });
 
-  test('licznik uruchomień korzysta z klucza, który jest już na urządzeniach', () async {
+  test('the launch counter uses the key that is already on devices', () async {
     expect(ReviewService.launchCountKey, 'launch_count');
     SharedPreferences.setMockInitialValues({'launch_count': 18});
 

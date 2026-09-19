@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 
-/// Rodziny krojów z assets (patrz pubspec.yaml i tools/build_fonts.py).
+/// Font families from assets (see pubspec.yaml and tools/build_fonts.py).
 class AppFonts {
-  /// Newsreader: tekst pieśni, tytuły, numery.
+  /// Newsreader: song text, titles, numbers.
   static const String serif = 'Newsreader';
 
-  /// Schibsted Grotesk: interfejs, etykiety, przyciski, nawigacja.
+  /// Schibsted Grotesk: interface, labels, buttons, navigation.
   static const String ui = 'SchibstedGrotesk';
 
   const AppFonts._();
 }
 
-/// Cyfry tabelaryczne: numery pieśni mają trzymać kolumnę.
+/// Tabular figures: song numbers must stay aligned in a column.
 const List<FontFeature> tabularFigures = [FontFeature.tabularFigures()];
 
-/// Skala interfejsu z docs/DESIGN-SYSTEM.md, sekcja 2, przypisana do ról Material.
+/// Interface scale from docs/DESIGN-SYSTEM.md, section 2, mapped to Material roles.
 ///
-/// | rola w dokumencie | slot TextTheme |
+/// | role in the document | TextTheme slot |
 /// |---|---|
-/// | tytuł ekranu 20 / 1,05 Newsreader | titleLarge |
-/// | tytuł pieśni na liście 17 / 1,2 Newsreader | titleMedium |
-/// | numer na liście 15 / 1 Newsreader, tabelarycznie | titleSmall |
-/// | tytuł dialogu 19 / 1,3 Grotesk 500 | headlineSmall |
-/// | treść dialogu, arkusz, stan pusty 15 / 1,5 Grotesk 400 | bodyMedium |
-/// | przycisk tekstowy 15 / 1,2 Grotesk 600 | labelLarge |
-/// | etykieta zakładki 10,5 / 1 Grotesk 500 | labelSmall |
-/// | wersalik sekcji 8,5 + odstęp liter 0,26 em Grotesk 500 | labelMedium |
+/// | screen title 20 / 1.05 Newsreader | titleLarge |
+/// | song title in the list 17 / 1.2 Newsreader | titleMedium |
+/// | number in the list 15 / 1 Newsreader, tabular | titleSmall |
+/// | dialog title 19 / 1.3 Grotesk 500 | headlineSmall |
+/// | dialog body, sheet, empty state 15 / 1.5 Grotesk 400 | bodyMedium |
+/// | text button 15 / 1.2 Grotesk 600 | labelLarge |
+/// | tab label 10.5 / 1 Grotesk 500 | labelSmall |
+/// | section uppercase label 8.5 + letter spacing 0.26 em Grotesk 500 | labelMedium |
 TextTheme buildAppTextTheme(ColorScheme scheme) {
   final onSurface = scheme.onSurface;
   final onSurfaceVariant = scheme.onSurfaceVariant;
@@ -93,7 +93,7 @@ TextTheme buildAppTextTheme(ColorScheme scheme) {
       fontSize: 8.5,
       height: 1.0,
       fontWeight: FontWeight.w500,
-      letterSpacing: 8.5 * 0.26, // 0,26 em
+      letterSpacing: 8.5 * 0.26, // 0.26 em
       color: onSurfaceVariant,
     ),
     labelSmall: TextStyle(

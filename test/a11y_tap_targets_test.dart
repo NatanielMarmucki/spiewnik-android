@@ -19,10 +19,10 @@ import 'support/fakes/fake_song_repository.dart';
 import 'support/platform_fakes.dart';
 import 'support/screen_harness.dart';
 
-/// Krok 5b: każdy cel dotknięcia ma co najmniej 40 x 48 dp (docs/DESIGN-SYSTEM.md, sekcja 6).
+/// Step 5b: every tap target is at least 40 x 48 dp (docs/DESIGN-SYSTEM.md, section 6).
 ///
-/// Mierzone są też stany nieaktywne: strzałka na krańcu śpiewnika zostaje na miejscu, więc
-/// musi trzymać swój rozmiar, żeby pasek nie skakał.
+/// Disabled states are measured too: the arrow at either end of the songbook stays in place, so
+/// it has to keep its size so the bar does not jump.
 void main() {
   late FakeWakelock wakelock;
   late FakeShare share;
@@ -39,9 +39,9 @@ void main() {
     share.uninstall();
   });
 
-  /// Cel dotknięcia bywa większy niż rysunek: Material dokłada wokół ikony obszar reakcji
-  /// (`MaterialTapTargetSize.padded`), który widać dopiero w drzewie semantyki. Liczy się to,
-  /// co faktycznie łapie palec, czyli większy z dwóch prostokątów.
+  /// A tap target can be larger than what is drawn: Material adds a reaction area around the icon
+  /// (`MaterialTapTargetSize.padded`), which only shows up in the semantics tree. What counts is
+  /// what the finger actually hits, that is, the larger of the two rectangles.
   void expectTarget(WidgetTester tester, Finder finder, String what) {
     semantics = tester.ensureSemantics();
     final widgetSize = tester.getSize(finder);
@@ -70,7 +70,7 @@ void main() {
     return MySongViewModel(repository);
   }
 
-  testWidgets('wiersz listy i pole wyszukiwania', (tester) async {
+  testWidgets('list row and search field', (tester) async {
     final viewModel = songs();
     await pumpScreen(tester, (context) => Scaffold(body: SongListView(viewModel: viewModel)));
 
@@ -81,7 +81,7 @@ void main() {
     expectTarget(tester, find.byTooltip('Wyczyść wyszukiwanie'), 'czyszczenie wyszukiwania');
   });
 
-  testWidgets('zakładki dolnej nawigacji, także nieaktywne', (tester) async {
+  testWidgets('bottom navigation tabs, including inactive ones', (tester) async {
     await pumpScreen(
       tester,
       (context) => Scaffold(
@@ -95,8 +95,8 @@ void main() {
     }
   });
 
-  group('pasek pieśni', () {
-    testWidgets('ikony paska górnego', (tester) async {
+  group('song detail', () {
+    testWidgets('top bar icons', (tester) async {
       final viewModel = songs();
       await pumpScreen(
         tester,
@@ -107,9 +107,9 @@ void main() {
       expectTarget(tester, find.byTooltip('Opcje pieśni'), 'trzy kropki');
     });
 
-    testWidgets('strzałki i przejście do numeru, przy nieaktywnej strzałce', (tester) async {
+    testWidgets('arrows and go-to-number, with a disabled arrow', (tester) async {
       final viewModel = songs();
-      // Pierwsza pieśń: lewa strzałka jest nieaktywna, ale zostaje na miejscu.
+      // First song: the left arrow is disabled but stays in place.
       await pumpScreen(
         tester,
         (context) => SongDetailView(song: viewModel.findSongByNumber(1)!, viewModel: viewModel),
@@ -120,7 +120,7 @@ void main() {
       expectTarget(tester, tapRegionOf(find.byType(GoToNumberIcon)), 'przejście do numeru');
     });
 
-    testWidgets('pozycje arkusza opcji', (tester) async {
+    testWidgets('options sheet items', (tester) async {
       final viewModel = songs();
       await pumpScreen(
         tester,
@@ -134,7 +134,7 @@ void main() {
       }
     });
 
-    testWidgets('akcje modalu przejścia do numeru, w tym zablokowany przycisk', (tester) async {
+    testWidgets('go-to-number modal actions, including the disabled button', (tester) async {
       final viewModel = songs();
       await pumpScreen(
         tester,
@@ -143,13 +143,13 @@ void main() {
       await tester.tap(find.byType(GoToNumberIcon), warnIfMissed: false);
       await tester.pumpAndSettle();
 
-      // Bez wpisanego numeru „Przejdź” jest zablokowany, a mimo to trzyma swój rozmiar.
+      // With no number entered, „Przejdź” is disabled, yet it keeps its size.
       expectTarget(tester, find.widgetWithText(TextButton, 'Przejdź'), 'Przejdź (zablokowany)');
       expectTarget(tester, find.widgetWithText(TextButton, 'Anuluj'), 'Anuluj');
     });
   });
 
-  testWidgets('akcje własnej pieśni', (tester) async {
+  testWidgets('user song actions', (tester) async {
     final viewModel = mySongs();
     await pumpScreen(
       tester,
@@ -165,12 +165,12 @@ void main() {
     }
   });
 
-  testWidgets('wiersze ustawień, przełącznik i wybór motywu', (tester) async {
+  testWidgets('settings rows, switch and theme picker', (tester) async {
     await pumpScreen(tester, (context) => const SettingsView());
 
     expectTarget(tester, tapRegionOf(find.text('Nie gaś ekranu przy pieśni')), 'przełącznik blokady');
     expectTarget(tester, tapRegionOf(find.text('Kontakt')), 'ustawienia: Kontakt');
-    // Segmenty motywu: każdy osobnym celem, choć siedzą w jednym przełączniku.
+    // Theme segments: each is a separate target, even though they sit in one segmented control.
     for (final label in ['System', 'Jasny', 'Ciemny']) {
       expectTarget(tester, tapRegionOf(find.text(label)), 'motyw: $label');
     }

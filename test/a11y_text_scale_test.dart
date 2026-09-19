@@ -19,11 +19,11 @@ import 'support/fakes/fake_song_repository.dart';
 import 'support/platform_fakes.dart';
 import 'support/screen_harness.dart';
 
-/// Krok 5c: wszystko działa przy systemowym powiększeniu czcionki ×1,3 i ×2,0
-/// (docs/DESIGN-SYSTEM.md, sekcja 6).
+/// Step 5c: everything works with system font scaling of ×1.3 and ×2.0
+/// (docs/DESIGN-SYSTEM.md, section 6).
 ///
-/// „Działa” znaczy: nic się nie przepełnia (przepełnienie jest w teście wyjątkiem),
-/// a treść i akcje wciąż są na ekranie.
+/// "Works" means: nothing overflows (in a test an overflow is an exception),
+/// and the content and actions are still on screen.
 void main() {
   late FakeWakelock wakelock;
   late FakeShare share;
@@ -55,8 +55,8 @@ void main() {
   }
 
   for (final scale in [1.3, 2.0]) {
-    group('powiększenie ×$scale', () {
-      testWidgets('lista pieśni z wyszukiwarką', (tester) async {
+    group('text scale ×$scale', () {
+      testWidgets('song list with search field', (tester) async {
         final viewModel = songs();
         await pumpScreen(
           tester,
@@ -64,13 +64,13 @@ void main() {
           textScale: scale,
         );
 
-        // Przy powiększeniu tytuł zawija się na kilka wierszy, więc szukamy fragmentu.
+        // When scaled, the title wraps onto several lines, so we look for a fragment.
         expect(find.textContaining('Alleluja'), findsOneWidget);
         expect(find.byType(TextField), findsOneWidget);
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('ulubione i moje pieśni, też puste', (tester) async {
+      testWidgets('favorites and user songs, including empty', (tester) async {
         final viewModel = songs();
         await pumpScreen(
           tester,
@@ -95,7 +95,7 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('dolna nawigacja mieści trzy podpisy', (tester) async {
+      testWidgets('bottom navigation fits three labels', (tester) async {
         await pumpScreen(
           tester,
           (context) => Scaffold(
@@ -111,13 +111,13 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('szczegóły pieśni z paskiem, arkuszem i modalem', (tester) async {
+      testWidgets('song detail with bar, options sheet and modal', (tester) async {
         final viewModel = songs();
         await pumpScreen(
           tester,
           (context) => SongDetailView(song: viewModel.findSongByNumber(1234)!, viewModel: viewModel),
           textScale: scale,
-          // Największy rozmiar tekstu pieśni razem z systemowym powiększeniem.
+          // The largest song text size together with system font scaling.
           preferences: const {'fontSize': 30.0, 'lineHeight': 1.8},
         );
         expect(tester.takeException(), isNull, reason: 'pasek z numerami sąsiadów');
@@ -127,7 +127,7 @@ void main() {
         expect(find.text('Kopiuj tekst'), findsOneWidget);
         expect(tester.takeException(), isNull, reason: 'arkusz opcji');
 
-        await tester.tapAt(const Offset(200, 50)); // zamknięcie arkusza dotknięciem tła
+        await tester.tapAt(const Offset(200, 50)); // close the sheet by tapping the backdrop
         await tester.pumpAndSettle();
         await tester.tap(find.byType(GoToNumberIcon), warnIfMissed: false);
         await tester.pumpAndSettle();
@@ -135,7 +135,7 @@ void main() {
         expect(tester.takeException(), isNull, reason: 'modal przejścia do numeru');
       });
 
-      testWidgets('podgląd i formularz własnej pieśni', (tester) async {
+      testWidgets('user song preview and form', (tester) async {
         final viewModel = mySongs();
         await pumpScreen(
           tester,
@@ -149,7 +149,7 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('ustawienia przy największym rozmiarze tekstu', (tester) async {
+      testWidgets('settings at the largest text size', (tester) async {
         await pumpScreen(
           tester,
           (context) => const SettingsView(),
@@ -160,7 +160,7 @@ void main() {
         expect(find.text('Nie gaś ekranu przy pieśni'), findsOneWidget);
         expect(tester.takeException(), isNull);
 
-        // Do dołu listy da się dojechać: nic nie zasłania ostatniej sekcji.
+        // The list can be scrolled to the bottom: nothing covers the last section.
         await tester.scrollUntilVisible(find.text('Zgłoś błąd'), 300.0);
         expect(tester.takeException(), isNull);
       });

@@ -16,7 +16,7 @@ import 'support/fakes/fake_song_repository.dart';
 void main() {
   Widget wrap(Widget body) => MaterialApp(theme: lightTheme, home: Scaffold(body: body));
 
-  testWidgets('brak wyników wyszukiwania: komunikat i wyjście', (tester) async {
+  testWidgets('no search results: shows a message and a way to clear the search', (tester) async {
     final repository = FakeSongRepository([
       Song(number: 1, title: 'Alleluja', content: 'treść', favorite: false),
     ]);
@@ -28,7 +28,7 @@ void main() {
 
     expect(find.byType(EmptyState), findsOneWidget);
     expect(find.text('Brak wyników'), findsOneWidget);
-    // Zapytanie jest w polu i w komunikacie.
+    // The query is both in the field and in the message.
     expect(find.descendant(of: find.byType(EmptyState), matching: find.textContaining('qqqq')), findsOneWidget);
 
     await tester.tap(find.text('Wyczyść wyszukiwanie'));
@@ -39,21 +39,21 @@ void main() {
     expect(find.text('Alleluja'), findsOneWidget);
   });
 
-  testWidgets('brak ulubionych: komunikat mówi co zrobić', (tester) async {
+  testWidgets('no favorites: the message says what to do', (tester) async {
     await tester.pumpWidget(wrap(FavoriteSongsView(viewModel: SongViewModel(FakeSongRepository()))));
 
     expect(find.text('Brak ulubionych'), findsOneWidget);
     expect(find.textContaining('dotknij serca'), findsOneWidget);
   });
 
-  testWidgets('brak własnych pieśni: komunikat mówi co zrobić', (tester) async {
+  testWidgets('no user songs: the message says what to do', (tester) async {
     await tester.pumpWidget(wrap(MySongsView(viewModel: MySongViewModel(FakeMySongRepository()))));
 
     expect(find.text('Brak własnych pieśni'), findsOneWidget);
     expect(find.textContaining('plusem w pasku'), findsOneWidget);
   });
 
-  testWidgets('wygląd wg systemu wizualnego: ikona 26 dp w kolorze linii, nagłówek 21', (tester) async {
+  testWidgets('follows the design system: 26 dp icon in the line color, heading at 21', (tester) async {
     await tester.pumpWidget(
       wrap(const EmptyState(icon: Icons.search_off, title: 'Nagłówek', message: 'Zdanie.')),
     );
@@ -71,7 +71,7 @@ void main() {
     expect(message.style?.height, 1.55);
   });
 
-  testWidgets('bez akcji nie ma przycisku', (tester) async {
+  testWidgets('shows no button without an action', (tester) async {
     await tester.pumpWidget(
       wrap(const EmptyState(icon: Icons.favorite_border, title: 'Tytuł', message: 'Zdanie.')),
     );
