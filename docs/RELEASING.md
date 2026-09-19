@@ -3,7 +3,9 @@
 How to ship a new version of Śpiewnik on Android and iOS. Done by hand, step by step.
 
 Console UI names are given in English with the Polish name in parentheses, because both consoles are used in Polish
-as well: **Test and release** (**Testowanie i publikowanie**).
+as well: **Test and release** (**Testowanie i publikowanie**). Some of these names are not verified yet (the English
+names of Play Console errors and of **+ Wersja**, and the Polish names of the other App Store Connect items); confirm
+them at the next release.
 
 **The order matters: Android first, then iOS.** Android is less risky (no migration from Core Data), and it allows
 a staged rollout and halting the change. App Store review takes a few days, so a fix after release costs much more
