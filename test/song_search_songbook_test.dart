@@ -65,6 +65,13 @@ void main() {
       expect(search('  duszo    chwałę '), search('duszo chwałę'));
     });
 
+    test('highlights every word found in the title, with its original letters', () {
+      viewModel.searchText = 'panu chwałę';
+      final song = viewModel.filteredSongsNotifier.value.firstWhere((song) => song.number == 9);
+
+      expect(viewModel.titleMatches(song), ['Panu', 'Chwałę']);
+    });
+
     test('punctuation in the query is ignored, as in the text', () {
       expect(search('alleluja!'), search('alleluja'));
       expect(search('alleluja!'), hasLength(84));

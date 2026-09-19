@@ -58,21 +58,21 @@ void main() {
       viewModel.searchText = 'zrodlo';
       final song = viewModel.filteredSongsNotifier.value.firstWhere((song) => song.number == 1);
 
-      expect(viewModel.titleMatch(song), 'Źródło');
+      expect(viewModel.titleMatches(song), ['Źródło']);
     });
 
-    test('returns null when the title does not match', () {
+    test('returns nothing when the title does not match', () {
       viewModel.searchText = 'ogonkow';
       final song = viewModel.filteredSongsNotifier.value.single;
 
       expect(song.number, 2);
-      expect(viewModel.titleMatch(song), isNull);
+      expect(viewModel.titleMatches(song), isEmpty);
     });
 
     test('an empty query highlights nothing', () {
       viewModel.searchText = '';
 
-      expect(viewModel.titleMatch(viewModel.filteredSongsNotifier.value.first), isNull);
+      expect(viewModel.titleMatches(viewModel.filteredSongsNotifier.value.first), isEmpty);
     });
   });
 

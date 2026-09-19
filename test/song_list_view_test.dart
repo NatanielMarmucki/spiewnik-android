@@ -59,7 +59,7 @@ void main() {
     await search(tester, 'zrodlo');
 
     expect(tiles(tester).map((tile) => tile.title), ['Źródło']);
-    expect(tiles(tester).single.highlight, 'Źródło');
+    expect(tiles(tester).single.highlights, ['Źródło']);
   });
 
   testWidgets('filters by number', (tester) async {

@@ -67,7 +67,7 @@ void main() {
       addTearDown(tester.view.reset);
       await pumpTile(
         tester,
-        SongListTile(title: longTitle, number: 1234, highlight: highlight),
+        SongListTile(title: longTitle, number: 1234, highlights: [if (highlight != null) highlight]),
       );
       await tester.pumpAndSettle();
     }
@@ -259,8 +259,16 @@ void main() {
     expect(background(), lightTheme.colorScheme.surface);
   });
 
+  testWidgets('every searched word is highlighted in the title', (tester) async {
+    await pumpTile(tester, const SongListTile(title: 'Chwałę daj Panu', number: 9, highlights: ['Panu', 'Chwałę']));
+
+    final spans = (tester.widget<Text>(find.byType(Text).first).textSpan! as TextSpan).children!.cast<TextSpan>();
+    final highlighted = [for (final span in spans) if (span.style?.color == AppColors.light.accent) span.text];
+    expect(highlighted, ['Chwałę', 'Panu']);
+  });
+
   testWidgets('the search match is highlighted in the title', (tester) async {
-    await pumpTile(tester, const SongListTile(title: 'Chwalże ma duszo', number: 8, highlight: 'chwal'));
+    await pumpTile(tester, const SongListTile(title: 'Chwalże ma duszo', number: 8, highlights: ['chwal']));
 
     final rich = tester.widget<Text>(find.byType(Text).first);
     final spans = (rich.textSpan! as TextSpan).children!.cast<TextSpan>();

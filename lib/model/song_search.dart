@@ -12,21 +12,39 @@ import 'package:spiewnik/model/song_model.dart';
 class SongSearch {
   final Map<int, _SearchText> _texts = {};
 
-  /// Songs matching [query], in the order of [songs]: title, content or number contains the query,
-  /// ignoring letter case and Polish diacritics.
+  /// Songs matching [query], in the order of [songs]: the number contains the query, or **every** word
+  /// of the query occurs in the title or the content, in any order, ignoring letter case, Polish
+  /// diacritics and punctuation.
   List<Song> filter(List<Song> songs, String query) {
-    final needle = normalizeWhitespace(removePolishDiacritics(query.toLowerCase()));
-    final titleNeedle = removePolishDiacritics(query.toLowerCase());
+    final words = queryWords(query);
     return [
       for (final song in songs)
-        if (_matches(_textOf(song), song, needle, titleNeedle, query)) song,
+        if (song.number.toString().contains(query) || (words.isNotEmpty && _hasAll(_textOf(song), words))) song,
     ];
   }
 
-  bool _matches(_SearchText text, Song song, String needle, String titleNeedle, String query) =>
-      (titleNeedle.isNotEmpty && text.title.contains(titleNeedle)) ||
-      text.content.contains(needle) ||
-      song.number.toString().contains(query);
+  bool _hasAll(_SearchText text, List<String> words) =>
+      words.every((word) => text.title.contains(word) || text.content.contains(word));
+
+  /// Parts of [song]'s title matching the words of [query], with the original letters, for highlighting.
+  List<String> titleMatches(Song song, String query) {
+    final title = _textOf(song).title;
+    return [
+      for (final word in queryWords(query))
+        if (title.indexOf(word) case final start when start >= 0)
+          // Lowercasing and removing diacritics keep every letter in place, so positions match the original.
+          song.title.substring(start, start + word.length),
+    ];
+  }
+
+  /// Words of [query]: lower case, no diacritics, split on whitespace and on the punctuation that is
+  /// removed from the song text too.
+  static List<String> queryWords(String query) => [
+        for (final word in removePolishDiacritics(query.toLowerCase()).split(_wordSeparators))
+          if (word.isNotEmpty) word,
+      ];
+
+  static final RegExp _wordSeparators = RegExp(r"[\s,.;:'\[\]()!?\-”—„]+");
 
   _SearchText _textOf(Song song) {
     final cached = _texts[song.number];
