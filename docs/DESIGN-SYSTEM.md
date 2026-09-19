@@ -192,7 +192,8 @@ A single field handles both number and title, diacritic-insensitive search, matc
 **Moving between songs** — the song text is a page, and going to the previous or next song turns it,
 as in a book; it is not opening something new. Only the text moves, horizontally, across the full width;
 the top bar and the song bar **stay put** and only change their number and title. No fade, scale or
-parallax. A swipe follows the finger 1:1 and on release finishes the turn or springs back (a flick, or a
+parallax. While the page turns, a **hairline** in the line color marks the seam between the two songs,
+like the edge of a sheet of paper; at rest it is not drawn. A swipe follows the finger 1:1 and on release finishes the turn or springs back (a flick, or a
 drag past half the width), on a stiffer spring than the platform default: critically damped, mass 0.5,
 stiffness 300, so the page settles in about **0.45 s** instead of 0.9 s, without overshooting. The song
 bar arrows turn the page in **200 ms** with the Material 3 **emphasized decelerate** easing

@@ -400,6 +400,25 @@ void main() {
       expect(elapsed, lessThanOrEqualTo(const Duration(milliseconds: 500)));
     });
 
+    testWidgets('a hairline marks the page edge while turning, and is gone at rest', (tester) async {
+      await openSong(tester, 4);
+      final pageEdges = find.byWidgetPredicate(
+        (widget) {
+          final border = widget is DecoratedBox ? (widget.decoration as BoxDecoration?)?.border : null;
+          return border is Border && border.left != BorderSide.none && border.top == BorderSide.none;
+        },
+      );
+      expect(pageEdges, findsNothing, reason: 'w spoczynku bez linii');
+
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 60));
+      expect(pageEdges, findsOneWidget, reason: 'jedna krawędź między pieśniami');
+
+      await tester.pumpAndSettle();
+      expect(pageEdges, findsNothing);
+    });
+
     testWidgets('the bars do not move while the text turns', (tester) async {
       await openSong(tester, 4);
       final appBar = tester.getRect(find.byType(AppBar));

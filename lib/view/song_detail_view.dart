@@ -97,9 +97,13 @@ class SongDetailViewState extends State<SongDetailView> {
             physics: const _PageTurnPhysics(),
             itemCount: songs.length,
             onPageChanged: (index) => setState(() => _index = index),
-            itemBuilder: (context, index) => SongContent(
-              key: ValueKey(songs[index].number),
-              content: songs[index].content,
+            itemBuilder: (context, index) => _PageEdge(
+              controller: _pageController,
+              index: index,
+              child: SongContent(
+                key: ValueKey(songs[index].number),
+                content: songs[index].content,
+              ),
             ),
           ),
           bottomNavigationBar: SongBottomBar(
@@ -196,6 +200,38 @@ class SongDetailViewState extends State<SongDetailView> {
     } else {
       _pageController.animateToPage(index, duration: Durations.short4, curve: Easing.emphasizedDecelerate);
     }
+  }
+}
+
+/// The edge of a page while it turns: a hairline in the line color on the seam between two songs, like the
+/// edge of a sheet of paper (a hairline instead of a shadow, docs/DESIGN-SYSTEM.md). At rest it is not drawn,
+/// because the seam is off screen and the page's own edge would show at the screen edge.
+class _PageEdge extends StatelessWidget {
+  final PageController controller;
+  final int index;
+  final Widget child;
+
+  const _PageEdge({required this.controller, required this.index, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final line = context.appColors.line;
+    return AnimatedBuilder(
+      animation: controller,
+      child: child,
+      builder: (context, child) {
+        final page = controller.hasClients ? controller.page : null;
+        // The seam on this page's left edge is on screen while the view is between the previous page and this one.
+        final turning = page != null && page > index - 1 && page < index;
+        return DecoratedBox(
+          position: DecorationPosition.foreground,
+          decoration: BoxDecoration(
+            border: turning ? Border(left: BorderSide(color: line, width: 0)) : null,
+          ),
+          child: child,
+        );
+      },
+    );
   }
 }
 
