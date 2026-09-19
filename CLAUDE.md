@@ -16,7 +16,8 @@ UI po polsku; kod, komentarze, commity i opisy PR po angielsku.
   osobno rozmiar czcionki przez kanał platformy z `ios/Runner/AppDelegate.swift`. **Migracja jest skończona i przetestowana
   end-to-end** — nie zmieniaj jej bez ponownego testu (procedura w `docs/DEVELOPMENT.md`).
 - `lib/viewmodel/` — view modele: zwykłe klasy z `ValueNotifier`, zależności przez konstruktor.
-- `lib/view/` — ekrany. `ScreenWakeLock` (`view/screen_wake_lock.dart`) liczy otwarte ekrany szczegółów.
+- `lib/view/` — ekrany. `SongDetailView` to `PageView` po całym śpiewniku: zmiana pieśni przewraca stronę, nie otwiera
+  nowego ekranu. `ScreenWakeLock` (`view/screen_wake_lock.dart`) trzyma ekran włączony, gdy pieśń jest otwarta.
 - `ios/`, `android/` — projekty natywne. Wtyczki iOS idą przez Swift Package Manager; w CocoaPods został tylko ObjectBox.
 - Dokumenty: `README.md` (opis, uruchomienie, testy w skrócie), `docs/DEVELOPMENT.md` (szczegóły testów, CI,
   test migracji E2E, pułapki), `docs/RELEASING.md` (wydanie), `docs/PARITY.md` (różnice wobec starej aplikacji iOS),

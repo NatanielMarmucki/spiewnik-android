@@ -145,7 +145,8 @@ void main() {
       expect(find.byType(SongBottomBar), findsOneWidget);
       expect(find.byIcon(Icons.chevron_left), findsOneWidget);
       expect(find.byIcon(Icons.chevron_right), findsOneWidget);
-      // The numbers are 1, 2, 4, 5: there is a gap before 4, so the left arrow has no number.
+      // The numbers are 1, 2, 4, 5: the arrows show the neighbors in the songbook, skipping the gap.
+      expect(find.text('2'), findsOneWidget, reason: 'numer poprzedniej pieśni, za dziurą');
       expect(find.text('5'), findsOneWidget, reason: 'numer następnej pieśni');
 
       await tester.tap(find.byIcon(Icons.chevron_right));
@@ -209,23 +210,24 @@ void main() {
       expect(bar, greaterThanOrEqualTo(SongBottomBar.minHeight));
     });
 
-    testWidgets('swipe and bar lead to the same song, and the keep-screen-on count drops to zero', (tester) async {
+    testWidgets('swipe and bar stay on one song screen, and keep-screen-on ends when it closes', (tester) async {
       await openSong(tester, 4);
 
-      await tester.drag(find.byType(SongContent), const Offset(-300, 0));
+      await tester.fling(find.byType(SongContent), const Offset(-300, 0), 1000);
       await tester.pumpAndSettle();
       expect(find.text('5. Pieśń 5'), findsOneWidget);
-      expect(ScreenWakeLock.holders, 1, reason: 'jeden otwarty ekran po pushReplacement');
+      expect(find.byType(SongDetailView), findsOneWidget, reason: 'strona się przewraca, ekran zostaje ten sam');
+      expect(ScreenWakeLock.isHeld, isTrue);
 
       await tester.tap(find.byIcon(Icons.chevron_left));
       await tester.pumpAndSettle();
       expect(find.text('4. Pieśń 4'), findsOneWidget);
-      expect(ScreenWakeLock.holders, 1);
+      expect(ScreenWakeLock.isHeld, isTrue);
 
       // Closing the screen: instead of the back button (there is nothing to go back to here) we tear down the tree.
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpAndSettle();
-      expect(ScreenWakeLock.holders, 0, reason: 'po wyjściu licznik schodzi do zera');
+      expect(ScreenWakeLock.isHeld, isFalse, reason: 'po wyjściu blokada schodzi');
     });
   });
 
@@ -312,23 +314,23 @@ void main() {
   testWidgets('swiping left opens the next song, swiping right the previous one', (tester) async {
     await openSong(tester, 4);
 
-    await tester.drag(find.byType(SongContent), const Offset(-300, 0));
+    await tester.fling(find.byType(SongContent), const Offset(-300, 0), 1000);
     await tester.pumpAndSettle();
     expect(find.text('5. Pieśń 5'), findsOneWidget);
 
-    await tester.drag(find.byType(SongContent), const Offset(300, 0));
+    await tester.fling(find.byType(SongContent), const Offset(300, 0), 1000);
     await tester.pumpAndSettle();
     expect(find.text('4. Pieśń 4'), findsOneWidget);
   });
 
-  testWidgets('swiping does nothing at a gap in the numbering', (tester) async {
-    // The numbers are 1, 2, 4, 5: there is no 3 after 2, so there is nowhere to go.
+  testWidgets('swiping skips a gap in the numbering', (tester) async {
+    // The numbers are 1, 2, 4, 5: the next page after 2 is 4. The real songbook has no gaps (1-2000).
     await openSong(tester, 2);
 
-    await tester.drag(find.byType(SongContent), const Offset(-300, 0));
+    await tester.fling(find.byType(SongContent), const Offset(-300, 0), 1000);
     await tester.pumpAndSettle();
 
-    expect(find.text('2. Pieśń 2'), findsOneWidget);
+    expect(find.text('4. Pieśń 4'), findsOneWidget);
   });
 
   testWidgets('canceling keeps us on the same song', (tester) async {
@@ -341,5 +343,156 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('1. Pieśń 1'), findsOneWidget);
+  });
+
+  group('moving between songs', () {
+    // docs/DESIGN-SYSTEM.md, section 5: the text turns like a page, the bars stay.
+    testWidgets('the next song comes in from the right, the previous one from the left', (tester) async {
+      await openSong(tester, 4);
+
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.getTopLeft(find.text('treść 5')).dx, greaterThan(tester.getTopLeft(find.text('treść 4')).dx));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.chevron_left));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.getTopLeft(find.text('treść 4')).dx, lessThan(tester.getTopLeft(find.text('treść 5')).dx));
+      await tester.pumpAndSettle();
+      expect(find.text('4. Pieśń 4'), findsOneWidget);
+    });
+
+    testWidgets('a drag that stops before release turns the page only past half the width', (tester) async {
+      await openSong(tester, 4);
+      final width = tester.getSize(find.byType(PageView)).width;
+
+      Future<void> dragAndStop(double fraction) async {
+        final gesture = await tester.startGesture(tester.getCenter(find.byType(SongContent)));
+        for (var i = 0; i < 10; i++) {
+          await gesture.moveBy(Offset(-width * fraction / 10, 0));
+          await tester.pump(const Duration(milliseconds: 20));
+        }
+        await tester.pump(const Duration(milliseconds: 300)); // the finger rests, no fling
+        await gesture.up();
+        await tester.pumpAndSettle();
+      }
+
+      await dragAndStop(0.4);
+      expect(find.text('4. Pieśń 4'), findsOneWidget, reason: 'za mało: strona wraca');
+
+      await dragAndStop(0.6);
+      expect(find.text('5. Pieśń 5'), findsOneWidget, reason: 'ponad połowa: strona się przewraca');
+    });
+
+    testWidgets('after a swipe the page settles within half a second', (tester) async {
+      await openSong(tester, 4);
+
+      await tester.fling(find.byType(SongContent), const Offset(-120, 0), 800);
+      var elapsed = Duration.zero;
+      while (tester.binding.hasScheduledFrame && elapsed < const Duration(seconds: 2)) {
+        await tester.pump(const Duration(milliseconds: 10));
+        elapsed += const Duration(milliseconds: 10);
+      }
+
+      expect(find.text('5. Pieśń 5'), findsOneWidget);
+      expect(elapsed, lessThanOrEqualTo(const Duration(milliseconds: 500)));
+    });
+
+    testWidgets('a hairline marks the page edge while turning, and is gone at rest', (tester) async {
+      await openSong(tester, 4);
+      final pageEdges = find.byWidgetPredicate(
+        (widget) {
+          final border = widget is DecoratedBox ? (widget.decoration as BoxDecoration?)?.border : null;
+          return border is Border && border.left != BorderSide.none && border.top == BorderSide.none;
+        },
+      );
+      expect(pageEdges, findsNothing, reason: 'w spoczynku bez linii');
+
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 60));
+      expect(pageEdges, findsOneWidget, reason: 'jedna krawędź między pieśniami');
+
+      await tester.pumpAndSettle();
+      expect(pageEdges, findsNothing);
+    });
+
+    testWidgets('the bars do not move while the text turns', (tester) async {
+      await openSong(tester, 4);
+      final appBar = tester.getRect(find.byType(AppBar));
+      final bottomBar = tester.getRect(find.byType(SongBottomBar));
+
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(tester.getRect(find.text('treść 4')).left, isNot(0), reason: 'treść jest w ruchu');
+      expect(tester.getRect(find.byType(AppBar)), appBar);
+      expect(tester.getRect(find.byType(SongBottomBar)), bottomBar);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('the arrows turn in 200 ms', (tester) async {
+      await openSong(tester, 4);
+
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 190));
+      expect(find.text('treść 4'), findsOneWidget, reason: 'jeszcze w ruchu');
+      await tester.pump(const Duration(milliseconds: 20));
+      expect(find.text('treść 4'), findsNothing);
+      expect(find.text('5. Pieśń 5'), findsOneWidget);
+    });
+
+    testWidgets('with reduced motion the arrows switch songs without animation', (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+      await openSong(tester, 4);
+
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pump();
+
+      expect(find.text('treść 4'), findsNothing);
+      expect(find.text('5. Pieśń 5'), findsOneWidget);
+    });
+
+    testWidgets('on iOS a swipe from the left edge goes back to the list, from the middle to the previous song',
+        (tester) async {
+      await tester.pumpWidget(
+        ChangeNotifierProvider(
+          create: (_) => FontSizeModel(),
+          child: MaterialApp(
+            theme: lightTheme.copyWith(platform: TargetPlatform.iOS),
+            home: Builder(
+              builder: (context) => Scaffold(
+                body: TextButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) => SongDetailView(song: viewModel.findSongByNumber(4)!, viewModel: viewModel),
+                    ),
+                  ),
+                  child: const Text('Lista'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Lista'));
+      await tester.pumpAndSettle();
+      final middle = tester.getCenter(find.byType(SongContent));
+
+      await tester.flingFrom(middle, const Offset(300, 0), 1000);
+      await tester.pumpAndSettle();
+      expect(find.text('2. Pieśń 2'), findsOneWidget, reason: 'od środka: poprzednia pieśń');
+
+      await tester.flingFrom(Offset(2, middle.dy), const Offset(300, 0), 1000);
+      await tester.pumpAndSettle();
+      expect(find.byType(SongDetailView), findsNothing, reason: 'od krawędzi: systemowy gest wstecz');
+      expect(find.text('Lista'), findsOneWidget);
+    });
   });
 }

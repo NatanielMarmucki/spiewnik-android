@@ -56,36 +56,55 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  // Regression tests: pushReplacement builds the new screen before the old one is disposed, so a plain
-  // enable/disable pair turned the screen off while a song was open. See ScreenWakeLock.
-  testWidgets('screen stays on after going to another song by number', (tester) async {
-    await openSong(tester, 1);
-    expect(wakelock.toggles, [true]);
+  // Regression tests for #16: the screen does not turn off when switching songs.
+  // Then, pushReplacement built the new song screen before disposing the old one, and the old screen's
+  // disable came last. Now songs are pages of one screen, but the promise stays the same, whatever the
+  // mechanism: switching songs never asks the platform to turn the screen off.
+  group('the screen does not turn off when switching songs', () {
+    testWidgets('by number', (tester) async {
+      await openSong(tester, 1);
+      expect(wakelock.toggles, [true]);
 
-    await tester.tap(find.byType(GoToNumberIcon));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), '2');
-    await tester.pumpAndSettle(); // the title preview enables the button
-    await tester.tap(find.text('Przejdź'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byType(GoToNumberIcon));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '3');
+      await tester.pumpAndSettle(); // the title preview enables the button
+      await tester.tap(find.text('Przejdź'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('2. Pieśń 2'), findsOneWidget);
-    expect(wakelock.toggles.last, isTrue, reason: 'toggles: ${wakelock.toggles}');
+      expect(find.text('3. Pieśń 3'), findsOneWidget);
+      expect(wakelock.toggles, isNot(contains(false)), reason: 'toggles: ${wakelock.toggles}');
+      expect(wakelock.enabled, isTrue);
+    });
+
+    testWidgets('by swiping', (tester) async {
+      await openSong(tester, 1);
+
+      await tester.fling(find.text('treść 1'), const Offset(-300, 0), 1000);
+      await tester.pumpAndSettle();
+
+      expect(find.text('2. Pieśń 2'), findsOneWidget);
+      expect(wakelock.toggles, isNot(contains(false)), reason: 'toggles: ${wakelock.toggles}');
+      expect(wakelock.enabled, isTrue);
+    });
+
+    testWidgets('with the arrows', (tester) async {
+      await openSong(tester, 1);
+
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.chevron_left));
+      await tester.pumpAndSettle();
+
+      expect(find.text('1. Pieśń 1'), findsOneWidget);
+      expect(wakelock.toggles, isNot(contains(false)), reason: 'toggles: ${wakelock.toggles}');
+      expect(wakelock.enabled, isTrue);
+    });
   });
 
-  testWidgets('screen stays on after swiping to the next song', (tester) async {
+  testWidgets('the screen turns off when leaving the song after switching songs', (tester) async {
     await openSong(tester, 1);
-
-    await tester.drag(find.text('treść 1'), const Offset(-300, 0));
-    await tester.pumpAndSettle();
-
-    expect(find.text('2. Pieśń 2'), findsOneWidget);
-    expect(wakelock.toggles.last, isTrue, reason: 'toggles: ${wakelock.toggles}');
-  });
-
-  testWidgets('screen turns off when leaving the song after switching songs', (tester) async {
-    await openSong(tester, 1);
-    await tester.drag(find.text('treść 1'), const Offset(-300, 0));
+    await tester.fling(find.text('treść 1'), const Offset(-300, 0), 1000);
     await tester.pumpAndSettle();
 
     await tester.pageBack();
@@ -93,6 +112,6 @@ void main() {
 
     expect(find.byType(SongDetailView), findsNothing);
     expect(wakelock.toggles.last, isFalse, reason: 'toggles: ${wakelock.toggles}');
-    expect(ScreenWakeLock.holders, 0);
+    expect(ScreenWakeLock.isHeld, isFalse);
   });
 }
