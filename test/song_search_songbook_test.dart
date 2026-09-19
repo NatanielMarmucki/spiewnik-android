@@ -77,6 +77,33 @@ void main() {
       expect(search('alleluja!'), hasLength(84));
     });
   });
+
+  group('inflected forms', () {
+    test('"chwała" finds a song that only has "chwały"', () {
+      // Song 3 "Bądź Panu cześć": "chwały", no form of "chwała" that contains it.
+      expect(search('chwała'), contains(3));
+      expect(search('chwala'), contains(3));
+    });
+
+    test('"matko" finds a song that only has "matka"', () {
+      expect(search('matko'), contains(1000)); // "Pewna matka bardzo"
+    });
+
+    test('"zbawien" finds "zbawienia"', () {
+      expect(search('zbawien'), contains(3));
+    });
+
+    test('a word matches the beginning of words in the text, not their middle', () {
+      // Song 24 has "pan" only inside "wspaniałości".
+      expect(search('pan'), isNot(contains(24)));
+      expect(search('pan'), contains(9)); // "Chwałę daj Panu"
+    });
+
+    test('a one- or two-letter word matches whole words only, so it does not return everything', () {
+      expect(search('o'), contains(9)); // "o duszo moja"
+      expect(search('o').length, lessThan(songbook.length ~/ 2));
+    });
+  });
 }
 
 /// The search as it was before the normalized text was kept in memory: everything recomputed per query.
