@@ -131,6 +131,11 @@ ThemeData _buildTheme(ColorScheme scheme, AppColors appColors) {
         backgroundColor: appColors.accent,
         textStyle: textTheme.labelLarge,
         shape: const StadiumBorder(),
+      ).copyWith(
+        // No shadows anywhere (docs/DESIGN-SYSTEM.md). styleFrom(elevation: 0) is not enough: it still
+        // raises the button by 2 dp on hover and focus and by 6 dp when pressed.
+        elevation: const WidgetStatePropertyAll(0.0),
+        shadowColor: const WidgetStatePropertyAll(Colors.transparent),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
