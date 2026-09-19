@@ -1,7 +1,7 @@
 # PARITY — Śpiewnik iOS vs Android
 
 Źródła:
-- iOS: `/Users/natanielmarmucki/Spiewnik/AUDIT.md` (w prośbie nazwany `AUDIT-ios.md`). Opisuje stan HEAD `37f0a8e`, wersję `11.2024`, Core Data.
+- iOS: `AUDIT.md` w repozytorium starej aplikacji iOS (w prośbie nazwany `AUDIT-ios.md`). Opisuje stan HEAD `37f0a8e`, wersję `11.2024`, Core Data.
 - Android: `docs/AUDIT.md` (w prośbie nazwany `AUDIT-flutter.md`). Opisuje kopię roboczą `1.2.1+5`, ObjectBox.
 
 **Stan: przegląd przed wydaniem 12.0.0** (wrzesień 2026). Wiersze oznaczone „od 12.0.0” opisują

@@ -1,9 +1,13 @@
+> **Historical document, in Polish.** An audit of this Flutter app written in September 2026, before the migration
+> from the old iOS app and the redesign. It describes the code as it was then, not as it is now. It is kept as the
+> source material for `docs/PARITY.md`. For the current state see the README and `docs/DEVELOPMENT.md`.
+
 # AUDIT — Śpiewnik Android (Flutter)
 
 > **Stan sprzed migracji i redesignu, wrzesień 2026. Materiał źródłowy dla PARITY.md — nie opisuje
 > obecnego kodu.**
 
-Repozytorium: `/Users/natanielmarmucki/StudioProjects/Spiewnik`
+Repozytorium: ten projekt (kopia robocza Fluttera)
 Data audytu: 2026-09-17. Tryb tylko do odczytu.
 
 ## 0. Zakres i stan repozytorium (przeczytaj najpierw)
