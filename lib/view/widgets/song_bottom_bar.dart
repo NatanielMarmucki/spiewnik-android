@@ -108,7 +108,7 @@ class _Arrow extends StatelessWidget {
       child: InkWell(
         onTap: enabled ? onTap : null,
         child: ConstrainedBox(
-          // Touch target 40 x 48 dp (section 6 of the document).
+          // Touch target at least 56 x 48 dp, above the 40 x 48 dp minimum (section 6 of the document).
           constraints: const BoxConstraints(minWidth: 56.0, minHeight: SongBottomBar.minHeight),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
