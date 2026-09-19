@@ -4,8 +4,9 @@ import 'package:spiewnik/view/screen_wake_lock.dart';
 
 /// App settings outside reading: theme and keep-screen-on (wakelock).
 ///
-/// Kept separate from [FontSizeModel], because „Przywróć ustawienia domyślne” (restore defaults)
-/// applies **only** to text size and line height — theme and keep-screen-on must come out of it untouched.
+/// Kept separate from [FontSizeModel], because „Przywróć domyślny rozmiar i interlinię” (restore default size
+/// and line height) applies **only** to text size and line height — theme and keep-screen-on must come out of it
+/// untouched.
 ///
 /// The keys are new (`themeMode`, `keepScreenOn`), so they overwrite nothing on users' devices.
 /// A missing key means the default value: system theme and keep-screen-on enabled,

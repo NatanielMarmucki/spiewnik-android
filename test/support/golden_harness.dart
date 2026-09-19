@@ -107,7 +107,7 @@ Future<void> goldenScreen(
   }
 }
 
-/// Songbook songs for screenshots: numbers, titles and one favorite.
+/// Songbook songs for screenshots: numbers, titles and two favorites (songs 3 and 5).
 List<Song> sampleSongs() {
   const titles = [
     'Alleluja, chwalcie Pana',
