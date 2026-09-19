@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spiewnik/post_migration_welcome.dart';
 import 'package:spiewnik/theme/app_colors.dart';
 import 'package:spiewnik/theme/app_text_theme.dart';
 
@@ -8,12 +9,17 @@ import 'package:spiewnik/theme/app_text_theme.dart';
 /// before the song list, with a single way out: no "Wesprzyj" or "Zgłoś błąd" from the old app.
 /// Nothing has a fixed height and the content scrolls, so it holds at system text scale 2.0.
 class WelcomeView extends StatelessWidget {
+  final WelcomeVariant variant;
   final VoidCallback onContinue;
 
-  const WelcomeView({super.key, required this.onContinue});
+  const WelcomeView({super.key, this.variant = WelcomeVariant.songs, required this.onContinue});
 
   static const String title = 'Śpiewnik w nowej odsłonie';
-  static const String lead = 'Twoje ulubione i własne pieśni są na miejscu — przeniosły się razem z aplikacją.';
+  static const String songsLead =
+      'Twoje ulubione i własne pieśni są na miejscu — przeniosły się razem z aplikacją.';
+
+  /// When only the font size came over: the user had no favorites or songs to promise.
+  static const String settingsOnlyLead = 'Twoje ustawienia przeniosły się razem z aplikacją.';
   static const String changesTitle = 'Co się zmieniło:';
   static const List<String> changes = [
     'Nowy wygląd, czytelniejszy przy słabym świetle',
@@ -36,6 +42,11 @@ class WelcomeView extends StatelessWidget {
 
   /// Polish typesetting: a one-letter word ("i", "w", "z") never ends a line, a no-break space
   /// keeps it with the next word. Only the line breaking changes, not the text.
+  static String leadFor(WelcomeVariant variant) => switch (variant) {
+    WelcomeVariant.songs => songsLead,
+    WelcomeVariant.settingsOnly => settingsOnlyLead,
+  };
+
   static String typeset(String text) => text.replaceAllMapped(_oneLetterWord, (match) => '${match[1]}\u00A0');
 
   @override
@@ -74,7 +85,7 @@ class WelcomeView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16.0),
-                        Text(typeset(lead), style: body),
+                        Text(typeset(leadFor(variant)), style: body),
                         const SizedBox(height: 32.0),
                         Text(changesTitle, style: textTheme.labelLarge?.copyWith(color: colors.onSurface)),
                         const SizedBox(height: 12.0),
@@ -127,29 +138,34 @@ class WelcomeView extends StatelessWidget {
   }
 }
 
-/// Shows [WelcomeView] first when [showWelcome] is true, then the screen from [buildHome] for good.
+/// Shows [WelcomeView] in the given [welcome] variant first, then the screen from [buildHome] for good.
+/// With [welcome] null the welcome screen is skipped.
 ///
 /// The welcome screen replaces the home screen instead of being pushed over it, so there is no
 /// back gesture or back button leading anywhere: "Zaczynajmy" is the only way out.
 class WelcomeGate extends StatefulWidget {
-  final bool showWelcome;
+  final WelcomeVariant? welcome;
   final WidgetBuilder buildHome;
 
-  const WelcomeGate({super.key, required this.showWelcome, required this.buildHome});
+  const WelcomeGate({super.key, required this.welcome, required this.buildHome});
 
   @override
   State<WelcomeGate> createState() => _WelcomeGateState();
 }
 
 class _WelcomeGateState extends State<WelcomeGate> {
-  late bool _welcomeVisible = widget.showWelcome;
+  late bool _welcomeVisible = widget.welcome != null;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
       child: _welcomeVisible
-          ? WelcomeView(key: const ValueKey('welcome'), onContinue: () => setState(() => _welcomeVisible = false))
+          ? WelcomeView(
+              key: const ValueKey('welcome'),
+              variant: widget.welcome!,
+              onContinue: () => setState(() => _welcomeVisible = false),
+            )
           : KeyedSubtree(key: const ValueKey('home'), child: Builder(builder: widget.buildHome)),
     );
   }
