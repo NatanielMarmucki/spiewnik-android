@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spiewnik/theme/app_text_theme.dart';
 import 'package:spiewnik/theme/song_text_scale.dart';
 
-/// Values from the „Skala pieśni — proporcje od S” table in docs/DESIGN-SYSTEM.md.
+/// Values from the "Song text scale — proportions derived from S" table in docs/DESIGN-SYSTEM.md.
 void main() {
   group('proportions derived from S', () {
     test('S = 10 (smallest slider size)', () {
