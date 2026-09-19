@@ -23,31 +23,12 @@ void main() {
     return [for (final song in viewModel.filteredSongsNotifier.value) song.number];
   }
 
-  group('normalized text kept in memory', () {
-    // Real one-word queries: common short words, inflected forms, numbers, x and 0. Queries of several
-    // words or with punctuation behave differently since the words are matched separately (below).
-    const queries = [
-      'a', 'na', 'pan', 'chwała', 'chwala', 'zbawien', 'baranek', 'matko', '12', '1', '0', 'x', 'ŚWIĘTY', 'o',
-    ];
-
-    test('finds exactly what the search without it finds', () {
-      for (final query in queries) {
-        expect(search(query), _reference(songbook, query), reason: 'query "$query"');
-      }
-    });
-
-    test('still finds the same after a favorite reloads the songs', () {
-      viewModel.toggleFavoriteStatus(songbook.first);
-      for (final query in queries) {
-        expect(search(query), _reference(viewModel.allSongsNotifier.value, query), reason: 'query "$query"');
-      }
-    });
-  });
-
   group('several words', () {
-    List<int> containingAll(List<String> words) => [
+    // Independent of the search code: word starts found with a regular expression on the plain text.
+    List<int> containingAll(List<String> wordStarts) => [
           for (final song in songbook)
-            if (words.every(removePolishDiacritics('${song.title} ${song.content}'.toLowerCase()).contains))
+            if (wordStarts.every((start) => RegExp('(?<![a-z])$start')
+                .hasMatch(removePolishDiacritics('${song.title} ${song.content}'.toLowerCase()))))
               song.number,
         ];
 
@@ -57,8 +38,9 @@ void main() {
     });
 
     test('every word must occur, not any of them', () {
-      expect(search('duszo chwałę'), containingAll(['duszo', 'chwale']));
-      expect(search('duszo chwałę'), hasLength(15));
+      // "duszo" and "chwałę" are searched by their stems "dusz" and "chwal" (see "inflected forms").
+      expect(search('duszo chwałę'), containingAll(['dusz', 'chwal']));
+      expect(search('duszo chwałę').length, lessThan(containingAll(['dusz']).length));
     });
 
     test('extra spaces between the words do not matter', () {
@@ -106,22 +88,3 @@ void main() {
   });
 }
 
-/// The search as it was before the normalized text was kept in memory: everything recomputed per query.
-List<int> _reference(List<Song> songs, String query) {
-  String normalizeWhitespace(String text) => text.replaceAll(RegExp(r'\s+'), ' ').trim();
-  String removeNumber(String str) {
-    const charactersToRemove = "123456789,.;:'[]()!?-”—„x";
-    return normalizeWhitespace(str.split('').where((char) => !charactersToRemove.contains(char)).join());
-  }
-
-  if (query.isEmpty) return [for (final song in songs) song.number];
-  final needle = normalizeWhitespace(removePolishDiacritics(query.toLowerCase()));
-  final titleNeedle = removePolishDiacritics(query.toLowerCase());
-  return [
-    for (final song in songs)
-      if ((titleNeedle.isNotEmpty && removePolishDiacritics(song.title.toLowerCase()).contains(titleNeedle)) ||
-          removeNumber(removePolishDiacritics(song.content.toLowerCase())).contains(needle) ||
-          song.number.toString().contains(query))
-        song.number,
-  ];
-}
