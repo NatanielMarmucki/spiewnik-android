@@ -24,10 +24,10 @@ void main() {
   }
 
   group('normalized text kept in memory', () {
-    // Real queries: common short words, inflected forms, phrases, numbers, punctuation and extra spaces.
+    // Real one-word queries: common short words, inflected forms, numbers, x and 0. Queries of several
+    // words or with punctuation behave differently since the words are matched separately (below).
     const queries = [
-      'a', 'na', 'pan', 'chwała', 'chwala', 'zbawien', 'baranek', 'boży zmiłuj', 'alleluja!', 'matko',
-      '12', '1', '0', 'x', '  jezu   ufam  ', 'ŚWIĘTY', 'duch święty', 'o', 'nie ma',
+      'a', 'na', 'pan', 'chwała', 'chwala', 'zbawien', 'baranek', 'matko', '12', '1', '0', 'x', 'ŚWIĘTY', 'o',
     ];
 
     test('finds exactly what the search without it finds', () {
@@ -41,6 +41,33 @@ void main() {
       for (final query in queries) {
         expect(search(query), _reference(viewModel.allSongsNotifier.value, query), reason: 'query "$query"');
       }
+    });
+  });
+
+  group('several words', () {
+    List<int> containingAll(List<String> words) => [
+          for (final song in songbook)
+            if (words.every(removePolishDiacritics('${song.title} ${song.content}'.toLowerCase()).contains))
+              song.number,
+        ];
+
+    test('finds a song by words in a different order than in the text', () {
+      // Song 9: "Chwałę daj Panu, o duszo moja!" - the phrase "duszo chwałę" appears in no song.
+      expect(search('duszo chwałę'), contains(9));
+    });
+
+    test('every word must occur, not any of them', () {
+      expect(search('duszo chwałę'), containingAll(['duszo', 'chwale']));
+      expect(search('duszo chwałę'), hasLength(15));
+    });
+
+    test('extra spaces between the words do not matter', () {
+      expect(search('  duszo    chwałę '), search('duszo chwałę'));
+    });
+
+    test('punctuation in the query is ignored, as in the text', () {
+      expect(search('alleluja!'), search('alleluja'));
+      expect(search('alleluja!'), hasLength(84));
     });
   });
 }
